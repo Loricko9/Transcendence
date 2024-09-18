@@ -1,0 +1,1 @@
+document.write("<h2> Test page 1 </h2>")
