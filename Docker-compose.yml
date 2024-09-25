@@ -1,21 +1,21 @@
 services:
   django:
     build: Containers/Django
-    image: transcendance-django
+    image: transcendence-django
     container_name: Django
     env_file: .env
     restart: on-failure
     volumes:
-      - Django:/transcendance
+      - Django:/transcendence
     ports:
       - "8000:8000"
     networks:
-      - Transcendance
+      - Transcendence
     depends_on:
       - postgreSQL
   postgreSQL:
     build: Containers/PostgreSQL
-    image: transcendance-postgresql
+    image: transcendence-postgresql
     container_name: PostgreSQL
     env_file: .env
     restart: unless-stopped
@@ -24,7 +24,7 @@ services:
     expose:
       - "5432"
     networks:
-      - Transcendance
+      - Transcendence
 
 volumes:
   Django:
@@ -33,16 +33,16 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'C:\Users\Lorick\Documents\Transcendance\transcendance_srcs'
+      device: 'C:\Users\Lorick\Documents\Transcendence\transcendence_srcs'
   PostgreSQL:
     driver: local
     name: data_PostgreSQL
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'C:\Users\Lorick\Documents\Transcendance\database'
+      device: 'C:\Users\Lorick\Documents\Transcendence\database'
 
 networks:
-  Transcendance:
+  Transcendence:
     driver: bridge
-    name: Transcendance
+    name: Transcendence
