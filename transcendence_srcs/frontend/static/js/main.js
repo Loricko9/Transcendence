@@ -1,11 +1,11 @@
 //Fonction qui permet de ne pas recharger la page (1ère appeler)
-const redirect_to = (url) => {
+function redirect_to(url) {
 	history.pushState(null, null, url);
 	router();
 }
 
 // fonction pour rediriger et obtenir le contenu des pages
-const router = () => {
+function router(){
 	const path = window.location.pathname; //chemin demandé par le user
 	const appDiv = document.getElementById("app"); //selectionne le div 'app' pour ajouter des truc dedans 
 	
