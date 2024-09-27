@@ -1,0 +1,12 @@
+body {
+	background-image: url("../../transcendence_srcs/static/img/Logo.png"),
+                      linear-gradient(rgba(0, 0, 255, 0.5), rgba(0, 0, 0, 0.5));
+    background-repeat: no-repeat; /* Empêche la répétition de l'image */
+    background-size: cover; /* Ajuste la taille de l'image pour couvrir l'élément */
+    background-position: center; /* Centre l'image */
+    background-attachment: fixed;
+}
+
+.container {
+    background-color: white;
+}
