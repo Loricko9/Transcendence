@@ -52,5 +52,13 @@
     </div>
     <script defer src="{% static 'js/main.js' %}"></script>
     
+    {% if messages %}
+    {% for message in messages %}
+    <script>
+        alert('{{ message }}');
+    </script>
+    {% endfor %}
+    {% endif %}
+
 </body>
 </html>

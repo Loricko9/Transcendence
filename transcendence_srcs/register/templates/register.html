@@ -30,24 +30,35 @@
     
     <div class="container rounded col-md-5 py-2 px-3 my-5">
         <h1 class="text-center fw-bold">Nouveau dans le jeux</h1>
-        <form class="mx-1">
+        <form class="mx-1" method="post" action="{% url 'register' %}">
+            {% csrf_token %}
             <div class="form-group my-2">
                 <label for="Email_input">Address Mail</label>
-                <input type="email" class="form-control" id="Email_input" aria-describedby="emailInfo" placeholder="email@exemple.com" required>
+                <input type="email" class="form-control" id="Email_input" aria-describedby="emailInfo" placeholder="email@exemple.com" name="Email" required>
                 <small id="emailInfo" class="form-text text-muted">Votre adresse mail ne sera jamais partager aux autres utilisateurs</small>
             </div>
             <div class="form-group my-2">
                 <label for="Passwd_input">Mot de passe</label>
-                <input type="password" class="form-control" id="Passwd_input" placeholder="mdr123">
+                <input type="password" class="form-control" id="Passwd_input" placeholder="mdr123" name="Password1" required>
+            </div>
+            <div class="form-group my-2">
+                <label for="Passwd_input2">Validation du mot de passe</label>
+                <input type="password" class="form-control" id="Passwd_input2" placeholder="Réécris le mot de passe" name="Password2" required>
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="Checkbox">
                 <label class="form-check-label" for="Checkbox">Ca serait interrésant de la chochée</label>
-              </div>
+            </div>
             <div class="text-center m-2">
                 <button type="submit" class="btn btn-primary">Valider</button>
             </div>
         </form>
     </div>
+
+    {% if err_msg %}
+    <script>
+        alert('{{ err_msg }}');
+    </script>
+    {% endif %}
 </body>
 </html>
