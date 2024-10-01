@@ -33,14 +33,14 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'C:\Users\Lorick\Documents\Transcendence\transcendence_srcs'
+      device: './transcendence_srcs'
   PostgreSQL:
     driver: local
     name: data_PostgreSQL
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: 'C:\Users\Lorick\Documents\Transcendence\database'
+      device: './database'
 
 networks:
   Transcendence:
