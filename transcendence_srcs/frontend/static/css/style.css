@@ -17,5 +17,60 @@
 }
 
 .dropdown-menu {
-	width: 20rem;
+	width: 35rem;
+}
+
+#app {
+	background-color: white;
+	border-radius:2rem;
+}
+
+.img-border {
+	border: 5px solid darkcyan;
+}
+
+.txt-red {
+	color: darkred;
+}
+
+.txt-blue {
+	color: #0d1a65;
+}
+
+#signin_btn_index {
+	background-color: darkred;
+	color: white;
+	border-top-left-radius:1rem;
+	border-bottom-left-radius: 1rem;
+}
+
+#login_btn_index {
+	background-color: #0d1a65;
+	color: white;
+	border-top-right-radius:1rem;
+	border-bottom-right-radius: 1rem;
+}
+
+a {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+p {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+h1 {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+span {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
 }
