@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect # type: ignore
 from api.models import User_tab, User_tabManager
-from django.contrib import messages
+from django.contrib import messages # type: ignore
 
 # Create your views here.
 def register(request):
