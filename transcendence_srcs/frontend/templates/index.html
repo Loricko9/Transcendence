@@ -15,7 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
-    <title>Page d'accueil Transcendence</title>
+    <title>Ft_Transcendence</title>
 
     <style>
         body {
@@ -45,19 +45,19 @@
             </div>
         </div>
         <div class="btn-group me-3" role="toolbar" aria-label="Connexion Inscription">
-            <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">Inscription</a>
-            <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >Connexion</button>
+            <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
+            <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >{{ texts.Log_in }}</button>
             <form class="dropdown-menu dropdown-menu-end p-3" id="dropdown_form">
                 <div class="mb-1">
-                    <label for="Email_input" class="form-label fs-4">Address Mail</label>
+                    <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
                     <input type="email" class="form-control fs-4" id="Email_input" placeholder="email@exemple.com">
                 </div>
                 <div class="mb-1">
-                    <label for="Passwd_input" class="form-label fs-4">Mot de passe</label>
+                    <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
                     <input type="password" class="form-control fs-4" id="Passwd_input" placeholder="123merde">
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary fs-4">Valider</button>
+                    <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
                 </div>
             </form>
         </div>
@@ -81,12 +81,12 @@
     <template id="temp_index">
         <div class="row align-items-center">
             <div class="col p-2 ">
-                <p class="fs-3 fw-bold m-0 txt-blue">Bienvenue sur le futur du Jeux Video Gaming :</p>
+                <p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
                 <p class="fs-1 fw-bolder txt-red text-center">Ft_Transcendence</p>
-                <p class="fs-5 txt-blue">Le jeux Pong classique moderniser sous forme de tournoi en local.</p>
+                <p class="fs-5 txt-blue">{{ texts.Index_2 }}</p>
                 <div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
-                    <a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>Inscris-toi</span></a>
-                    <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>Connecte-toi</span></button>
+                    <a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>{{ texts.Regis_now }}</span></a>
+                    <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>{{ texts.Log_on }}</span></button>
                 </div>
             </div>
             <div class="col p-4">
@@ -105,7 +105,7 @@
     </template>
     <template id="temp_notFound">
         <img src="{% static 'anim/404_err.gif' %}" alt="Err_404 gif" class="img-fluid d-block mx-auto rounded-5 img-border"/>
-        <h1 class="text-center fw-bolder">Erreur 404 : Page non trouvée !!</h1>
+        <h1 class="text-center fw-bolder">{{ texts.404_Err }}</h1>
     </template>
 </body>
 </html>

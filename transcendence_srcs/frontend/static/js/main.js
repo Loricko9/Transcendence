@@ -15,7 +15,8 @@ function router(){
 	const path = window.location.pathname; //chemin demandé par le user
 	const appDiv = document.getElementById("app"); //selectionne le div 'app' pour ajouter des truc dedans 
 	
-	switch (path) {
+	const new_path = path.substring(3);
+	switch (new_path) {
 		case "/":
 			loadTemplate(appDiv, "temp_index");
 			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
@@ -44,7 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
 		link.addEventListener('click', (event) => {
 			event.preventDefault(); //evite le rechargement de la page
 			const target = event.target.getAttribute('href');
-			redirect_to(target); // vers la nouvelle page
+			const lang_path = window.location.pathname.substring(0, 3);
+			redirect_to(lang_path + target); // vers la nouvelle page
 		});
 	});
 	
