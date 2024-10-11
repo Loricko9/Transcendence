@@ -1,6 +1,6 @@
 FROM debian:bookworm
 RUN apt update && \
-	apt install -y postgresql
+	apt install -y postgresql postgresql-contrib
 
 EXPOSE 5432
 
