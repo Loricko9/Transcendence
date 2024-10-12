@@ -6,6 +6,21 @@
 	font-weight: bold;
 }
 
+#btn_lang {
+	color: white;
+}
+
+#dropdown_lang {
+	width: 15rem;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #0d1a65;
+    color: white;
+	border-radius:1rem;
+}
+
 #signin_btn {
 	border-top-left-radius:1rem;
 	border-bottom-left-radius: 1rem;
@@ -16,9 +31,11 @@
 	border-bottom-right-radius: 1rem;
 }
 
-.dropdown-menu {
+#dropdown_form {
 	width: 35rem;
 }
+
+
 
 #app {
 	background-color: white;
