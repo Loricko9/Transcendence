@@ -30,8 +30,8 @@ class User_tabManager(BaseUserManager):
 			username=username,
 			password=password,
 		)
-		super_user.is_superuser = True
 		super_user.is_staff = True
+		super_user.is_connected = True
 		super_user.save(using=self._db)
 		return super_user
 
@@ -42,7 +42,7 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	username = models.CharField(max_length=255, null=True, unique=True)
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
-	is_superuser = models.BooleanField(default=False)
+	is_connected = models.BooleanField(default=False)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
 	#Mais a rajouter pour un hash de mdp manuel
 
