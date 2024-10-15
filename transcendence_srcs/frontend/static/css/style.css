@@ -1,3 +1,12 @@
+body {
+	background-image: url("/static/img/Background.jpeg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-attachment: fixed;
+	background-blend-mode: normal;
+	padding-top: 4rem;
+}
+
 .navbar-dark {
 	background-color: #0d1a65;
 }
@@ -31,11 +40,17 @@
 	border-bottom-right-radius: 1rem;
 }
 
+#little_login {
+	border-color: rgba(128, 128, 128, 0.632);
+}
+
 #dropdown_form {
 	width: 35rem;
 }
 
-
+.offcanvas {
+	background-color: #0d1a65;
+}
 
 #app {
 	background-color: white;
