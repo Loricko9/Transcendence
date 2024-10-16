@@ -30,7 +30,7 @@
             font-size: 0.9em;
         }
     </style>
-    <title>Inscription à Transcendence</title>
+    <title>{{ texts.Title_Register }}</title>
     
 </head>
 
@@ -40,13 +40,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
     
     <div class="container rounded col-md-5 py-2 px-3 my-5">
-        <h1 class="text-center fw-bold">Nouveau dans le jeux</h1>
-        <form class="mx-1" method="post" action="{% url 'register' %}">
+        <h1 class="text-center fw-bold">{{ texts.Register_1 }}</h1>
+        <form class="mx-1" method="post" action="{{ texts.URL_Register }}">
             {% csrf_token %}
             <div class="form-group my-2">
-                <label for="Email_input">Address Mail</label>
+                <label for="Email_input">{{ texts.Email_1 }}</label>
                 <input type="email" class="form-control" id="Email_input" aria-describedby="emailInfo" placeholder="email@exemple.com" name="Email" required>
-                <small id="emailInfo" class="form-text text-muted">Votre adresse mail ne sera jamais partager aux autres utilisateurs</small>
+                <small id="emailInfo" class="form-text text-muted">{{ texts.Email_2 }}</small>
 				{% if err_msg.email %}
 				<div class="error">{{ err_msg.email }}</div>
 				{% endif %}
@@ -59,14 +59,14 @@
 				{% endif %}
             </div>
             <div class="form-group my-2">
-                <label for="Passwd_input">Mot de passe</label>
+                <label for="Passwd_input">{{ texts.Passwd_1 }}</label>
                 <input type="password" class="form-control" id="Passwd_input" placeholder="mDp42" name="Password1" required>
 				{% if err_msg.password %}
 				<div class="error">{{ err_msg.password }}</div>
 				{% endif %}
             </div>
             <div class="form-group my-2">
-                <label for="Passwd_input2">Validation du mot de passe</label>
+                <label for="Passwd_input2">{{ texts.Passwd_2 }}</label>
                 <input type="password" class="form-control" id="Passwd_input2" placeholder="Réécris le mot de passe" name="Password2" required>
 				{% if err_msg.password_confirm %}
 				<div class="error">{{ err_msg.password_confirm }}</div>
@@ -74,13 +74,13 @@
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="Checkbox">
-                <label class="form-check-label" for="Checkbox">Ca serait interrésant de la cocher</label>
+                <label class="form-check-label" for="Checkbox">{{ texts.Click_box }}</label>
             </div>
             <div class="text-center m-2">
 				{% if err_msg.general %}
 				<div class="error">{{ err_msg.general }}</div>
 				{% endif %}
-                <button type="submit" class="btn btn-primary">Valider</button>
+                <button type="submit" class="btn btn-primary">{{ texts.OK_btn }}</button>
             </div>
         </form>
     </div>

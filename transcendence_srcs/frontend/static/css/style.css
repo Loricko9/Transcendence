@@ -1,9 +1,33 @@
+body {
+	background-image: url("/static/img/Background.jpeg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-attachment: fixed;
+	background-blend-mode: normal;
+	padding-top: 4rem;
+}
+
 .navbar-dark {
 	background-color: #0d1a65;
 }
 
 .navbar-link {
 	font-weight: bold;
+}
+
+#btn_lang {
+	color: white;
+}
+
+#dropdown_lang {
+	width: 15rem;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: #0d1a65;
+    color: white;
+	border-radius:1rem;
 }
 
 #signin_btn {
@@ -16,8 +40,21 @@
 	border-bottom-right-radius: 1rem;
 }
 
-.dropdown-menu {
+#little_login {
+	border-color: rgba(128, 128, 128, 0.632);
+}
+
+.log_form {
 	width: 35rem;
+	max-width: 97vw;
+	overflow-x: hidden;
+	position: absolute;
+	top: 100%;
+    transform: translateY(10px);
+}
+
+.offcanvas {
+	background-color: #0d1a65;
 }
 
 #app {
@@ -49,6 +86,10 @@
 	color: white;
 	border-top-right-radius:1rem;
 	border-bottom-right-radius: 1rem;
+}
+
+.img-flex {
+	min-width: 200px;
 }
 
 a {

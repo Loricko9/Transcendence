@@ -2,12 +2,16 @@ from django.shortcuts import render, redirect # type: ignore
 # from api.models import User_tab, User_tabManager
 from django.contrib.auth import get_user_model # type: ignore
 from django.contrib import messages # type: ignore
+from frontend.models import TextTranslation
+from django.utils.translation import get_language # type: ignore
 
 User = get_user_model()
 
-# Create your views here.
-def register(request):
+def register(request, lang=None):
+	lang_cookie = request.COOKIES.get('language', None)
+	lang_accepted = ['fr', 'en', 'es']
 	err_msg = {}
+	
 	if request.method == 'POST':
 		Email = request.POST.get('Email')
 		username = request.POST.get('username')
@@ -30,4 +34,34 @@ def register(request):
 				return redirect('/')
 			except Exception as e:
 				err_msg['general'] = "Une erreur s'est produite lors de la création du compte."
-	return render(request, 'register.html', {'err_msg': err_msg})
+	
+	if lang == None: #Cas avec aucune lang
+		if lang_cookie == None:
+			nav_lang = get_language()
+		else:
+			nav_lang = lang_cookie
+		if nav_lang == "en":
+			return redirect('/en/sign_in')
+		if nav_lang == "es":
+			return redirect('/es/sign_in')
+		else:
+			return redirect('/fr/sign_in')
+
+
+	if lang_cookie != lang and lang in lang_accepted:
+		return redirect('/api/lang/' + lang + "?prev=/sign_in")
+
+	
+	if lang in lang_accepted:
+		translations = TextTranslation.objects.filter(Lang=lang)
+		texts_trans = {trans.Key : trans.Text for trans in translations}
+		return render(request, 'register.html', {'err_msg': err_msg, 'texts': texts_trans})
+
+	if lang_cookie == None:
+		nav_lang = get_language()
+	else:
+		nav_lang = lang_cookie
+
+	new_path = "/" + nav_lang + "/sign_in/"
+	return redirect(new_path)
+	

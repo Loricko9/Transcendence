@@ -16,18 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
-    <title>Page d'accueil Transcendence</title>
-
-    <style>
-        body {
-	    background-image: url("{% static 'img/Background.jpeg' %}");
-        background-repeat: no-repeat;
-        background-position: center;
-        background-attachment: fixed;
-        background-blend-mode: normal;
-    }
-    </style>
-    
+    <title>Ft_Transcendence</title>
 </head>
 
 <body>
@@ -35,37 +24,102 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
     
-    <nav class="navbar navbar-expand navbar-dark p-0">
-        <a class="navbar-brand ms-3" href="/"><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65"/></a>
-        <div class="collapse navbar-collapse">
-            <div class="navbar-nav">
-                <a class="nav-item nav-link fs-5 mx-2" href="/page1/" data-link>Page1</a>
-                <a class="nav-item nav-link fs-5 mx-2" href="/page2/" data-link>Page2</a>
-                <a class="nav-item nav-link fs-5 mx-2" href="/page3/" data-link>Page3</a>
-                <a class="nav-item nav-link fs-5 mx-2" href="/prank/" data-link>Prank</a>
+    <nav class="navbar navbar-expand-md navbar-dark p-0 fixed-top">
+        <button class="navbar-toggler ms-2 px-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#OffcanvasNavBar" aria-controls="OffcanvasNavBar" aria-label="Toggle NavBar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <a class="navbar-brand ms-3" href="/" data-link><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65"/></a>
+        <div class="collapse navbar-collapse" id="NavCollaspe">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page1/" data-link>Page1</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page2/" data-link>Page2</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page3/" data-link>Page3</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/prank/" data-link>Prank</a></li>
+            </ul>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-md-end pe-3" id="dropdown_lang">
+                    <li><button class="dropdown-item px-3 mx-2" id="btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2" id="btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                </ul>
+            </div>
+            <div class="btn-group me-3" role="toolbar" aria-label="Connexion Inscription">
+                <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
+                <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >{{ texts.Log_in }}</button>
+                <form class="dropdown-menu dropdown-menu-end p-3 log_form" id="dropdown_form_big">
+					{% csrf_token %}
+                    <div class="mb-1">
+                        <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
+                        <input type="email" class="form-control fs-4" id="Email_input" placeholder="email@exemple.com" name="email" required>
+                    </div>
+                    <div class="mb-1">
+                        <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
+                        <input type="password" class="form-control fs-4" id="Passwd_input" placeholder="123merde" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <div class="btn-group me-3" role="toolbar" aria-label="Connexion Inscription">
-            <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">Inscription</a>
-            <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >Connexion</button>
-            <form class="dropdown-menu dropdown-menu-end p-3" id="dropdown_form" method="post">
+        <div class="d-md-none me-2 position-relative">
+            <button class="btn btn-outline-light" id="little_login" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="grey" class="bi bi-person" viewBox="0 0 16 16">
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/></svg>
+            </button>
+            <form class="dropdown-menu dropdown-menu-end p-3 log_form" id="dropdown_form_little">
 				{% csrf_token %}
                 <div class="mb-1">
-                    <label for="Email_input" class="form-label fs-4">Address Mail</label>
+                    <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
                     <input type="email" class="form-control fs-4" id="Email_input" placeholder="email@exemple.com" name="email" required>
                 </div>
                 <div class="mb-1">
-                    <label for="Passwd_input" class="form-label fs-4">Mot de passe</label>
-                    <input type="password" class="form-control fs-4" id="Passwd_input" placeholder="123merde", name="password" required>
+                    <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
+                    <input type="password" class="form-control fs-4" id="Passwd_input" placeholder="123merde" name="password" required>
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary fs-4">Valider</button>
+                    <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
                 </div>
             </form>
 			<div id="login-message"></div>
 			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         </div>
     </nav>
+    
+    <!--Offcanva Menu (petit ecran)-->
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="OffcanvasNavBar" aria-labelledby="OffcanvasNavBarLabel">
+        <div class="offcanvas-header">
+            <h1 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column pt-0">
+            <ul class="navbar-nav justify-content-end pe-3">
+                <li class="nav-item"><a class="nav-link fs-5" href="/page1/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 1</a> </li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/page2/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 2</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/page3/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 3</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/prank/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Prank</a></li>
+            </ul>
+            <div class="mt-auto">
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-lg-end pe-3" id="dropdown_lang">
+                        <li><button class="dropdown-item px-3 mx-2" id="btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2" id="btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                    </ul>
+                </div>
+                <a href="/sign_in/" class="btn btn-outline-light mt-2 w-100 rounded-5">{{ texts.Sign_in }}</a>
+            </div>
+        </div>
+    </div>
+    
+
     <div id="app">  
         <!--Sript dynamique-->
     </div>
@@ -85,16 +139,16 @@
     <template id="temp_index">
         <div class="row align-items-center">
             <div class="col p-2 ">
-                <p class="fs-3 fw-bold m-0 txt-blue">Bienvenue sur le futur du Jeux Video Gaming :</p>
+                <p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
                 <p class="fs-1 fw-bolder txt-red text-center">Ft_Transcendence</p>
-                <p class="fs-5 txt-blue">Le jeux Pong classique moderniser sous forme de tournoi en local.</p>
+                <p class="fs-5 txt-blue">{{ texts.Index_2 }}</p>
                 <div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
-                    <a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>Inscris-toi</span></a>
-                    <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>Connecte-toi</span></button>
+                    <a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>{{ texts.Regis_now }}</span></a>
+                    <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>{{ texts.Log_on }}</span></button>
                 </div>
             </div>
             <div class="col p-4">
-                <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border">
+                <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
     </template>
@@ -109,7 +163,7 @@
     </template>
     <template id="temp_notFound">
         <img src="{% static 'anim/404_err.gif' %}" alt="Err_404 gif" class="img-fluid d-block mx-auto rounded-5 img-border"/>
-        <h1 class="text-center fw-bolder">Erreur 404 : Page non trouvée !!</h1>
+        <h1 class="text-center fw-bolder">{{ texts.404_Err }}</h1>
     </template>
 </body>
 </html>
