@@ -30,7 +30,7 @@
         
         <a class="navbar-brand ms-3" href="/" data-link><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65"/></a>
         <div class="collapse navbar-collapse" id="NavCollaspe">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page1/" data-link>Page1</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page2/" data-link>Page2</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page3/" data-link>Page3</a></li>
@@ -40,7 +40,7 @@
                 <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-lg-end pe-3" id="dropdown_lang">
+                <ul class="dropdown-menu dropdown-menu-md-end pe-3" id="dropdown_lang">
                     <li><button class="dropdown-item px-3 mx-2" id="btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
                     <li><button class="dropdown-item px-3 mx-2" id="btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
                     <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
@@ -64,7 +64,7 @@
                 </form>
             </div>
         </div>
-        <div class="d-md-none me-2">
+        <div class="d-md-none me-2 position-relative">
             <button class="btn btn-outline-light" id="little_login" data-bs-toggle="dropdown" aria-expanded="false">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="grey" class="bi bi-person" viewBox="0 0 16 16">
                 <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/></svg>
@@ -82,7 +82,6 @@
                     <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
                 </div>
             </form>
-            
         </div>
     </nav>
     
@@ -94,10 +93,10 @@
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
             <ul class="navbar-nav justify-content-end pe-3">
-                <li class="nav-item"><a class="nav-link fs-5" href="/page1/" data-link>Page 1</a> </li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/page2/" data-link>Page 2</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/page3/" data-link>Page 3</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/prank/" data-link>Prank</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/page1/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 1</a> </li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/page2/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 2</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/page3/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 3</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" href="/prank/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Prank</a></li>
             </ul>
             <div class="mt-auto">
                 <div class="dropdown">
@@ -144,7 +143,7 @@
                 </div>
             </div>
             <div class="col p-4">
-                <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border">
+                <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
     </template>

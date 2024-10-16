@@ -46,6 +46,11 @@ body {
 
 #dropdown_form {
 	width: 35rem;
+	max-width: 97vw;
+	overflow-x: hidden;
+	position: absolute;
+	top: 100%;
+    transform: translateY(10px);
 }
 
 .offcanvas {
@@ -81,6 +86,10 @@ body {
 	color: white;
 	border-top-right-radius:1rem;
 	border-bottom-right-radius: 1rem;
+}
+
+.img-flex {
+	min-width: 200px;
 }
 
 a {
