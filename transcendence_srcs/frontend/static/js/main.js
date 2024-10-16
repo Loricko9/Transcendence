@@ -89,46 +89,27 @@ function Click_login() {
 // });
 
 // fonction pour gerer les connexion avec ajax
-$(document).ready(function(){
-	let csrftoken = $('meta[name=csrf-token]').attr('content');
-    
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
+document.getElementById('dropdown_form').addEventListener('submit', function(event) {
+	event.preventDefault();  // Empêche le rechargement de la page
 
-    $('#dropdown_form').on('submit', function(event){
-        event.preventDefault();
-		console.log('#dropdown_form');  // Log de débogage
+	const inputData = document.getElementById('inputField').value;
 
-        let email = $('#Email_input').val();
-        let password = $('#Passwd_input').val();
-        console.log('Email:', email, 'Mot de passe:', password);  // Vérifiez que les valeurs sont récupérées correctement
-
-		$.ajax({
-            url: 'login/',  // L'URL du backend pour le login
-            method: 'POST',
-            data: {
-                'email': email,
-                'password': password,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Important pour la sécurité
-            },
-            success: function(response){
-                if (response.success) {
-					console.log('Réponse du serveur:', response);  // Log pour afficher la réponse du serveur
-                    // Redirection ou mise à jour de l'interface utilisateur pour un utilisateur connecté
-                    $('#login-message').html('<p>Connexion réussie !</p>');
-                } else {
-                    $('#login-message').html('<p>' + response.error + '</p>');
-                }
-            },
-            error: function(xhr, status, error){
-				console.log('Erreur AJAX:', error);  // Log pour afficher les erreurs AJAX
-                $('#login-message').html('<p>Erreur lors de la connexion. Veuillez réessayer.</p>');
-            }
-        });
-    });
+	fetch('/login/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'X-CSRFToken': document.querySelector('[name=csrf-token]').content
+		},
+		body: new URLSearchParams({
+			'key': inputData
+		})
+	})
+	.then(response => response.json())
+	.then(data => {
+		// Affiche le message de réponse
+		document.getElementById('response').innerText = data.message;
+	})
+	.catch(error => {
+		console.error('Erreur:', error);
+	});
 });
