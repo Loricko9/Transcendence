@@ -60,28 +60,56 @@ function Click_login() {
     dropdown.show();
 }
 
+//Permet d'extraire le token CSRF des cookies. Django stocke le token CSRF dans un cookie nommé csrftoken
+// function getCookie(name) {
+//     let cookieValue = null;
+//     if (document.cookie && document.cookie !== '') {
+//         let cookies = document.cookie.split(';');
+//         for (let i = 0; i < cookies.length; i++) {
+//             let cookie = cookies[i].trim();
+//             // Does this cookie string begin with the name we want?
+//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;
+// }
+
+// const csrftoken = getCookie('csrftoken');
+
+// Configure jQuery pour qu'il envoie automatiquement le token CSRF dans l'en-tête X-CSRFToken pour chaque requête AJAX qui n'est pas de type GET, HEAD, OPTIONS ou TRACE.
+// $.ajaxSetup({
+//     beforeSend: function(xhr, settings) {
+//         if (!(/^GET|HEAD|OPTIONS|TRACE$/.test(settings.type)) && !this.crossDomain) {
+//             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+//         }
+//     }
+// });
+
 // fonction pour gerer les connexion avec ajax
 $(document).ready(function(){
 	let csrftoken = $('meta[name=csrf-token]').attr('content');
-
-	$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-			if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-				xhr.setRequestHeader("X-CSRFToken", csrftoken);
-			}
-		}
-	});
+    
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
 
     $('#dropdown_form').on('submit', function(event){
         event.preventDefault();
-		console.log('Formulaire soumis');  // Log de débogage
+		console.log('#dropdown_form');  // Log de débogage
 
-        let email = $('#email').val();
-        let password = $('#password').val();
+        let email = $('#Email_input').val();
+        let password = $('#Passwd_input').val();
         console.log('Email:', email, 'Mot de passe:', password);  // Vérifiez que les valeurs sont récupérées correctement
 
 		$.ajax({
-            url: '/login/',  // L'URL du backend pour le login
+            url: 'login/',  // L'URL du backend pour le login
             method: 'POST',
             data: {
                 'email': email,

@@ -6,7 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt  # Ajoutez ceci pour autoriser les requêtes sans le token CSRF, mais ce n'est pas recommandé pour les requêtes POST sensibles.
+# @csrf_exempt  # Ajoutez ceci pour autoriser les requêtes sans le token CSRF, mais ce n'est pas recommandé pour les requêtes POST sensibles.
 def login_view(request):
 	if request.method == 'POST':
 		email = request.POST.get('email')
