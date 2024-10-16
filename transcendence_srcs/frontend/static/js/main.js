@@ -74,7 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener('popstate', router);
 
 function Click_login() {
-    const dropdownElement = document.getElementById('dropdown_form');    
+    let dropdownElement
+	const windowWidth = window.innerWidth;
+	if (window.innerWidth >= 768)
+		dropdownElement = document.getElementById('dropdown_form_big');
+	else
+		dropdownElement = document.getElementById('dropdown_form_little');
+
     const dropdown = new bootstrap.Dropdown(dropdownElement);
     dropdown.show();
 }

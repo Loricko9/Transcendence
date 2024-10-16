@@ -44,7 +44,7 @@ body {
 	border-color: rgba(128, 128, 128, 0.632);
 }
 
-#dropdown_form {
+.log_form {
 	width: 35rem;
 	max-width: 97vw;
 	overflow-x: hidden;
