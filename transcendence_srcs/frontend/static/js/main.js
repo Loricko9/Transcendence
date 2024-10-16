@@ -60,39 +60,12 @@ function Click_login() {
     dropdown.show();
 }
 
-//Permet d'extraire le token CSRF des cookies. Django stocke le token CSRF dans un cookie nommé csrftoken
-// function getCookie(name) {
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         let cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             let cookie = cookies[i].trim();
-//             // Does this cookie string begin with the name we want?
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
-
-// const csrftoken = getCookie('csrftoken');
-
-// Configure jQuery pour qu'il envoie automatiquement le token CSRF dans l'en-tête X-CSRFToken pour chaque requête AJAX qui n'est pas de type GET, HEAD, OPTIONS ou TRACE.
-// $.ajaxSetup({
-//     beforeSend: function(xhr, settings) {
-//         if (!(/^GET|HEAD|OPTIONS|TRACE$/.test(settings.type)) && !this.crossDomain) {
-//             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-//         }
-//     }
-// });
-
 // fonction pour gerer les connexion avec ajax
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
 	event.preventDefault();  // Empêche le rechargement de la page
 
-	const inputData = document.getElementById('inputField').value;
+	const inputEmail = document.getElementById('Email_input').value;
+	const inputPwd = document.getElementById('Passwd_input').value;
 
 	fetch('/login/', {
 		method: 'POST',
@@ -101,13 +74,15 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 			'X-CSRFToken': document.querySelector('[name=csrf-token]').content
 		},
 		body: new URLSearchParams({
-			'key': inputData
+			'email': inputEmail,
+			'password': inputPwd
 		})
 	})
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		document.getElementById('response').innerText = data.message;
+		document.getElementById('app').innerHTML = data.message;
+		document.getElementById('app').className = "container-fluid col-md-10 py-2 px-3 my-5";
 	})
 	.catch(error => {
 		console.error('Erreur:', error);

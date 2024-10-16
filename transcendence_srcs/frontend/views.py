@@ -12,17 +12,15 @@ def login_view(request):
 		email = request.POST.get('email')
 		password = request.POST.get('password')
 
-		logger.info(f"Tentative de connexion avec l'email: {email}")  # Log pour voir si la vue est appelée
-
 		user = authenticate(request, Email=email, password=password)
         
 		if user is not None:
 			login(request, user)
-			logger.info(f"Connexion réussie pour: {email}")  # Log pour voir si la connexion a réussi
-			return JsonResponse({'success': True})
+			user.connect()
+			return JsonResponse({'success': True, 'message': '<p>Connexion reussie</p>'})
 		else:
-			logger.info(f"Échec de la connexion pour: {email}")  # Log pour les échecs
-			return JsonResponse({'success': False, 'error': 'Identifiants invalides.'})
+			  # Log pour les échecs
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'})
 	logger.info("Méthode non autorisée")  # Log pour les méthodes autres que POST
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'})
 

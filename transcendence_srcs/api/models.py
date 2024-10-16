@@ -34,6 +34,8 @@ class User_tabManager(BaseUserManager):
 		super_user.is_connected = True
 		super_user.save(using=self._db)
 		return super_user
+	
+		
 
 
 #Class définissant les diférentes valeurs du tableau User_tab
@@ -53,3 +55,11 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 
 	def __str__(self):
 		return self.username
+
+	def connect(self):
+		self.is_connected = True
+		self.save()
+
+	def disconnect(self):
+		self.is_connected = False
+		self.save()
