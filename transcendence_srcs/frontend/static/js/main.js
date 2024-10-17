@@ -74,25 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener('popstate', router);
 
 function Click_login() {
-    let dropdownElement
-	if (window.innerWidth >= 768)
-		dropdownElement = document.getElementById('dropdown_form_big');
-	else
-		dropdownElement = document.getElementById('dropdown_form_little');
-
+    let dropdownElement = document.getElementById('dropdown_form');
     const dropdown = new bootstrap.Dropdown(dropdownElement);
     dropdown.show();
 }
 
 // fonction pour gerer les connexion avec ajax
-document.getElementById('dropdown_form_big').addEventListener('submit', function(event) {login(event, '_big')});
-document.getElementById('dropdown_form_little').addEventListener('submit', function(event) {login(event, '_little')});
+document.getElementById('dropdown_form').addEventListener('submit', function(event) {
+		event.preventDefault();  // Empêche le rechargement de la page
 
-function login(event, str) {
-	event.preventDefault();  // Empêche le rechargement de la page
-
-	const inputEmail = document.getElementById('Email_input' + str).value;
-	const inputPwd = document.getElementById('Passwd_input' + str).value;
+	const inputEmail = document.getElementById('Email_input').value;
+	const inputPwd = document.getElementById('Passwd_input').value;
 
 	fetch('/login/', {
 		method: 'POST',
@@ -114,7 +106,7 @@ function login(event, str) {
 	.catch(error => {
 		console.error('Erreur:', error);
 	});
-}
+});
 
 function Change_lang(lang) {
 	const path = window.location.pathname.substring(3);

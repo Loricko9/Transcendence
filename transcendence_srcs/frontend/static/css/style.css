@@ -35,12 +35,12 @@ body {
 	border-bottom-left-radius: 1rem;
 }
 
-#login_btn {
+#login_btn_large {
 	border-top-right-radius:1rem;
 	border-bottom-right-radius: 1rem;
 }
 
-#little_login {
+#login_btn_small {
 	border-color: rgba(128, 128, 128, 0.632);
 }
 
