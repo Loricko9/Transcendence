@@ -47,24 +47,28 @@
                     <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                 </ul>
             </div>
-            <div class="btn-group me-3" role="toolbar" aria-label="Connexion Inscription">
-                <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
-                <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >{{ texts.Log_in }}</button>
-                <form class="dropdown-menu dropdown-menu-end p-3 log_form" id="dropdown_form_big">
-					{% csrf_token %}
-                    <div class="mb-1">
-                        <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
-                        <input type="email" class="form-control fs-4" id="Email_input_big" placeholder="email@exemple.com" name="email" required>
-                    </div>
-                    <div class="mb-1">
-                        <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
-                        <input type="password" class="form-control fs-4" id="Passwd_input_big" placeholder="123merde" name="password" required>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
-                    </div>
-                </form>
-            </div>
+			{% if user.is_authenticated %}
+				<button class="btn btn-light" id="logout_btn" href="{% url 'logout' %}" type="button">Deconnexion</button>
+			{% else %}
+	            <div class="btn-group me-3" role="toolbar" aria-label="Connexion Inscription">
+	                <a class="btn btn-outline-light" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
+	                <button class="btn btn-light" id="login_btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" >{{ texts.Log_in }}</button>
+	                <form class="dropdown-menu dropdown-menu-end p-3 log_form" id="dropdown_form_big">
+						{% csrf_token %}
+	                    <div class="mb-1">
+	                        <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
+	                        <input type="email" class="form-control fs-4" id="Email_input_big" placeholder="email@exemple.com" name="email" required>
+	                    </div>
+	                    <div class="mb-1">
+	                        <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
+	                        <input type="password" class="form-control fs-4" id="Passwd_input_big" placeholder="123merde" name="password" required>
+	                    </div>
+	                    <div class="text-center">
+	                        <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
+	                    </div>
+	                </form>
+	            </div>
+			{% endif %}
         </div>
         <div class="d-md-none me-2 position-relative">
             <button class="btn btn-outline-light" id="little_login" data-bs-toggle="dropdown" aria-expanded="false">

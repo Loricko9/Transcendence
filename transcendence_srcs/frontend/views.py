@@ -5,6 +5,7 @@ from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
 from .models import TextTranslation
+from django.contrib.auth import logout # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +24,11 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'})
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'})
 
+def logout_view(request):
+	request.user.disconnect()
+	logout(request)
+	return redirect('/')
 
-# Create your views here.
 def index(request):
 	lang_cookie = request.COOKIES.get('language', None)
 	
@@ -41,6 +45,9 @@ def index(request):
 		return redirect('/fr/')
 
 def index_lang(request, lang, any=None):
+	if request.user.is_authenticated:
+		utilisateur = request.user
+	
 	lang_cookie = request.COOKIES.get('language', None)
 	lang_accepted = ['fr', 'en', 'es']
 
@@ -50,7 +57,7 @@ def index_lang(request, lang, any=None):
 	if lang in lang_accepted:
 		translations = TextTranslation.objects.filter(Lang=lang)
 		texts_trans = {trans.Key : trans.Text for trans in translations}
-		return render(request, 'index.html', {"texts": texts_trans})
+		return render(request, 'index.html', {"texts": texts_trans}, {"user": utilisateur})
 	
 	if lang_cookie == None:
 		nav_lang = get_language()

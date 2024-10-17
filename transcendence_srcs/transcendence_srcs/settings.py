@@ -142,3 +142,5 @@ AUTH_USER_MODEL = 'api.User_tab'
 SESSION_COOKIE_SECURE = True # N'envoie le cookie que sur HTTPS
 CSRF_COOKIE_SECURE = True  # N'envoie le cookie CSRF que sur HTTPS
 SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
+
+LOGOUT_REDIRECT_URL = '/'
