@@ -125,6 +125,7 @@
     </div>
     
     <script defer src="{% static 'js/main.js' %}"></script>
+    <script defer src="{% static 'js/pong.js' %}"></script>
     
     {% if messages %}
     {% for message in messages %}
@@ -153,7 +154,25 @@
         </div>
     </template>
     <template id="temp_page1">
-        <h2>C'est la page 1</h2>
+        <div class="box">
+            <div id="main-menu">
+                <button id="player-vs-ia">Player vs IA</button>
+                <button id="player-vs-player">Player vs Player</button>
+            </div>
+            <div id="difficulty-menu" style="display: none;">
+                <button id="easy">Easy</button>
+                <button id="medium">Medium</button>
+                <button id="hard">Hard</button>
+            </div>
+            <div id="score-container">
+                <div id="score-player2">0</div>
+                <div id="score-player1">0</div>
+            </div>
+            <div class="padding1"></div>
+            <div class="padding2"></div>
+            <div class="ball"></div>
+            <div class="delimiter"></div>
+        </div>
     </template>
     <template id="temp_page2">
         <h2>C'est la superbe page 2</h2>

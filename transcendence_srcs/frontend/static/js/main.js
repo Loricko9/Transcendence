@@ -22,7 +22,7 @@ function router(){
 			break;
 		case "/page1/":
 			loadTemplate(appDiv, "temp_page1");
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+			appDiv.className = "NaN";
 			break;
 		case "/page2/":
 			loadTemplate(appDiv, "temp_page2");
