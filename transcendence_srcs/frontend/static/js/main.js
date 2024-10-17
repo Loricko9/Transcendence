@@ -108,8 +108,8 @@ function login(event, str) {
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		document.getElementById('app').innerHTML = data.message;
-		document.getElementById('app').className = "container-fluid col-md-10 py-2 px-3 my-5";
+		document.getElementById('infoco').innerHTML = data.message
+		showSuccessModal()
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
@@ -132,3 +132,15 @@ function Get_Cookie(name) {
 	}
 	return null
 }
+
+// Fonction pour afficher le modal
+function showSuccessModal() {
+	var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+	successModal.show();
+
+	// Disparaît après 3 secondes (3000 ms)
+	setTimeout(function() {
+		successModal.hide();
+	}, 3000); // 3000 ms = 3 secondes
+}
+
