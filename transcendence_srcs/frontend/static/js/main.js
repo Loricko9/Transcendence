@@ -84,10 +84,11 @@ function Click_login() {
     dropdown.show();
 }
 
-// fonction pour gerer les connexion avec ajax
+// Appel de la fonction login en fonction de la taille de la page
 document.getElementById('dropdown_form_big').addEventListener('submit', function(event) {login(event, '_big')});
 document.getElementById('dropdown_form_little').addEventListener('submit', function(event) {login(event, '_little')});
 
+// Fonction pour gestion du login en SPA
 function login(event, str) {
 	event.preventDefault();  // Empêche le rechargement de la page
 
@@ -108,13 +109,36 @@ function login(event, str) {
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		document.getElementById('infoco').innerHTML = data.message
-		showSuccessModal()
+		if (data.success) {
+			document.getElementById('infoco').innerHTML = data.message
+			showSuccessModal()
+			checkAuthentification()
+		}
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
 	});
 }
+
+// Gestion du logout en SPA
+document.getElementById('logout_btn').addEventListener('click', function() {
+    fetch('/logout/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken')
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('infoco').innerHTML = data.message
+			showSuccessModal()
+			checkAuthentification()
+        }
+    })
+    .catch(error => console.error('Erreur:', error));
+});
 
 function Change_lang(lang) {
 	const path = window.location.pathname.substring(3);
@@ -144,3 +168,24 @@ function showSuccessModal() {
 	}, 3000); // 3000 ms = 3 secondes
 }
 
+// Gestion du display en fonction de si l'utilisateur est connecte ou pas
+document.addEventListener('DOMContentLoaded', function() {
+	checkAuthentification()
+});
+
+function checkAuthentification() {
+	fetch('/check-auth/')
+		.then(response => response.json())
+		.then(data => {
+			if (data.is_authenticated) {
+				// Afficher le bouton de déconnexion
+				document.getElementById('logout_btn').style.display = 'block';
+				document.getElementById('bar_sub_login').style.display = 'none';
+			} else {
+				// Afficher le lien de connexion
+				document.getElementById('logout_btn').style.display = 'none';
+				document.getElementById('bar_sub_login').style.display = 'block';
+			}
+		})
+		.catch(error => console.error('Erreur:', error));
+}

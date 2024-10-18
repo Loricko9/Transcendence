@@ -11,6 +11,7 @@ COPY setup.sh /setup.sh
 RUN chmod 755 setup.sh
 
 USER postgres
+
 RUN chmod 700 /var/lib/postgresql/15/main
 
 # Revenir à l'utilisateur root pour continuer l'installation

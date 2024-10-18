@@ -34,8 +34,6 @@ class User_tabManager(BaseUserManager):
 		super_user.is_connected = True
 		super_user.save(using=self._db)
 		return super_user
-	
-		
 
 
 #Class définissant les diférentes valeurs du tableau User_tab

@@ -27,7 +27,13 @@ def login_view(request):
 def logout_view(request):
 	request.user.disconnect()
 	logout(request)
-	return redirect('/')
+	return JsonResponse({'success': True, 'message': 'Déconnexion réussie'})
+
+def check_authentication(request):
+	if request.user.is_authenticated:
+		return JsonResponse({'is_authenticated': True})
+	else:
+		return JsonResponse({'is_authenticated': False})
 
 def index(request):
 	lang_cookie = request.COOKIES.get('language', None)
@@ -45,8 +51,6 @@ def index(request):
 		return redirect('/fr/')
 
 def index_lang(request, lang, any=None):
-	if request.user.is_authenticated:
-		utilisateur = request.user
 	
 	lang_cookie = request.COOKIES.get('language', None)
 	lang_accepted = ['fr', 'en', 'es']
@@ -57,7 +61,7 @@ def index_lang(request, lang, any=None):
 	if lang in lang_accepted:
 		translations = TextTranslation.objects.filter(Lang=lang)
 		texts_trans = {trans.Key : trans.Text for trans in translations}
-		return render(request, 'index.html', {"texts": texts_trans}, {"user": utilisateur})
+		return render(request, 'index.html', {"texts": texts_trans})
 	
 	if lang_cookie == None:
 		nav_lang = get_language()
