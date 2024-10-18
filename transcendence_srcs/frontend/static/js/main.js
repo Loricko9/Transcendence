@@ -170,12 +170,12 @@ function checkAuthentification() {
 		.then(data => {
 			if (data.is_authenticated) {
 				// Afficher le bouton de déconnexion
-				document.getElementById('logout_btn').style.display = 'block';
+				document.getElementById('logout_btn').style.display = 'inline-block';
 				document.getElementById('bar_sub_login').style.display = 'none';
 			} else {
 				// Afficher le lien de connexion
 				document.getElementById('logout_btn').style.display = 'none';
-				document.getElementById('bar_sub_login').style.display = 'block';
+				document.getElementById('bar_sub_login').style.display = 'inline-block';
 			}
 		})
 		.catch(error => console.error('Erreur:', error));
