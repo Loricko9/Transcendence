@@ -22,7 +22,7 @@ function router(){
 			break;
 		case "/page1/":
 			loadTemplate(appDiv, "temp_page1");
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+			appDiv.className = "NaN";
 			break;
 		case "/page2/":
 			loadTemplate(appDiv, "temp_page2");
@@ -74,26 +74,17 @@ document.addEventListener("DOMContentLoaded", () => {
 window.addEventListener('popstate', router);
 
 function Click_login() {
-    let dropdownElement
-	if (window.innerWidth >= 768)
-		dropdownElement = document.getElementById('dropdown_form_big');
-	else
-		dropdownElement = document.getElementById('dropdown_form_little');
-
+    let dropdownElement = document.getElementById('dropdown_form');
     const dropdown = new bootstrap.Dropdown(dropdownElement);
     dropdown.show();
 }
 
-// Appel de la fonction login en fonction de la taille de la page
-document.getElementById('dropdown_form_big').addEventListener('submit', function(event) {login(event, '_big')});
-document.getElementById('dropdown_form_little').addEventListener('submit', function(event) {login(event, '_little')});
+// fonction pour gerer les connexion avec fetch en mode dynamique
+document.getElementById('dropdown_form').addEventListener('submit', function(event) {
+		event.preventDefault();  // Empêche le rechargement de la page
 
-// Fonction pour gestion du login en SPA
-function login(event, str) {
-	event.preventDefault();  // Empêche le rechargement de la page
-
-	const inputEmail = document.getElementById('Email_input' + str).value;
-	const inputPwd = document.getElementById('Passwd_input' + str).value;
+	const inputEmail = document.getElementById('Email_input').value;
+	const inputPwd = document.getElementById('Passwd_input').value;
 
 	fetch('/login/', {
 		method: 'POST',
@@ -118,7 +109,7 @@ function login(event, str) {
 	.catch(error => {
 		console.error('Erreur:', error);
 	});
-}
+});
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
@@ -168,7 +159,7 @@ function showSuccessModal() {
 	}, 3000); // 3000 ms = 3 secondes
 }
 
-// Gestion du display en fonction de si l'utilisateur est connecte ou pas
+// Gestion du display en fonction de si l'utilisateur est connecte ou pas en mode dynamique
 document.addEventListener('DOMContentLoaded', function() {
 	checkAuthentification()
 });
