@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -rf /var/lib/postgresql/15/main/*
 # Fonction pour vérifier si une base de données existe
 database_exists() {
     su - postgres -c "psql -tAc \"SELECT 1 FROM pg_database WHERE datname='$DATABASE_NAME';\"" | grep -q 1
