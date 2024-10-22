@@ -125,7 +125,7 @@
 
     <!--Template injecter par le js dans le div app-->
     <template id="temp_index">
-        <div class="row align-items-center">
+        <div class="row align-items-center" id="sign_log" style="display: flex;">
             <div class="col p-2 ">
                 <p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
                 <p class="fs-1 fw-bolder txt-red text-center">Ft_Transcendence</p>
@@ -139,7 +139,31 @@
                 <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
+		<div class="row align-items-center" id="stats" style="display: flex;">
+			<div class="container mt-5">
+				<p class="fs-3 fw-bold m-0 txt-blue text-center">Stats</p>
+				<table class="table table-bordered">
+					<thead class="thead-dark">
+						<tr>
+							<th class="fs-3 fw-bold m-0 txt-blue text-center" scope="col">Wins</th>
+							<th class="fs-3 fw-bold m-0 txt-red text-center" scope="col">Loses</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="fs-5 txt-blue text-center">5</td>
+							<td class="fs-5 txt-red text-center">1</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
+				<a class="btn btn-dark" href="/page1/"><span>One Player</span></a>
+				<a class="btn btn-dark" href="/page1/"><span>Two Players</span></a>
+			</div>
+        </div>
     </template>
+
     <template id="temp_page1">
         <div class="box">
             <div id="main-menu">

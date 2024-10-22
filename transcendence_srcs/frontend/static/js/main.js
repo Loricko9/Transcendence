@@ -171,20 +171,22 @@ function checkAuthentification() {
 			console.log('Élément bar_sub_login:', document.getElementById('bar_sub_login'));
 			console.log('Élément logout_btn:', document.getElementById('logout_btn'));
 			if (data.is_authenticated) {
-				// Afficher le bouton de déconnexion
+				// Affichage connecte
 				document.getElementById('logout_btn').style.display = 'inline-block';
-				// document.getElementById('bar_sub_login').style.display = 'none !important';
 				document.getElementById('bar_sub_login').classList.add('d-none');
 				document.getElementById('bar_sub_login').classList.remove('d-flex');
 				document.getElementById('user_connected').innerHTML = data.user
 				document.getElementById('user_connected').style.display = 'block';
+				document.getElementById('sign_log').style.display = 'none';
+				document.getElementById('stats').style.display = 'flex';
 			} else {
-				// Afficher le lien de connexion
+				// Affichage deconnecte
 				document.getElementById('logout_btn').style.display = 'none';
-				// document.getElementById('bar_sub_login').style.display = 'block';
 				document.getElementById('bar_sub_login').classList.remove('d-none');
 				document.getElementById('bar_sub_login').classList.add('d-flex');
 				document.getElementById('user_connected').style.display = 'none';
+				document.getElementById('sign_log').style.display = 'flex';
+				document.getElementById('stats').style.display = 'none';
 			}
 		})
 		.catch(error => console.error('Erreur:', error));
