@@ -31,7 +31,7 @@ def logout_view(request):
 
 def check_authentication(request):
 	if request.user.is_authenticated:
-		return JsonResponse({'is_authenticated': True})
+		return JsonResponse({'is_authenticated': True, 'user': f'<p class="user_display">{request.user.username} 🟢</p>'})
 	else:
 		return JsonResponse({'is_authenticated': False})
 

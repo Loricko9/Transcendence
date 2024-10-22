@@ -48,8 +48,11 @@
                 </ul>
             </div>
         </div>
-        <button class="btn btn-light" id="logout_btn" type="button" style=display:none>Deconnexion</button>
-		<div class="btn-group me-3 d-flex align-items-center" role="toolbar" id="bar_sub_login" style=display:none aria-label="Connexion Inscription">
+		<div id="user_connected" style="display: none;">
+			<!-- script dyhnamique -->
+		</div>
+		<button class="btn btn-light" id="logout_btn" type="button" style="display:none; margin-right: 15px;">Deconnexion</button>
+		<div class="btn-group me-3 d-flex align-items-center" id="bar_sub_login" role="toolbar" aria-label="Connexion Inscription" style="display:none;">
             <a class="btn btn-outline-light d-none d-md-block me-2" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
             <button class="btn btn-outline-light d-block d-md-none rounded-2 me-2" id="login_btn_small" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="grey" class="bi bi-person" viewBox="0 0 16 16">

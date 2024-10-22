@@ -168,14 +168,23 @@ function checkAuthentification() {
 	fetch('/check-auth/')
 		.then(response => response.json())
 		.then(data => {
+			console.log('Élément bar_sub_login:', document.getElementById('bar_sub_login'));
+			console.log('Élément logout_btn:', document.getElementById('logout_btn'));
 			if (data.is_authenticated) {
 				// Afficher le bouton de déconnexion
 				document.getElementById('logout_btn').style.display = 'inline-block';
-				document.getElementById('bar_sub_login').style.display = 'none';
+				// document.getElementById('bar_sub_login').style.display = 'none !important';
+				document.getElementById('bar_sub_login').classList.add('d-none');
+				document.getElementById('bar_sub_login').classList.remove('d-flex');
+				document.getElementById('user_connected').innerHTML = data.user
+				document.getElementById('user_connected').style.display = 'block';
 			} else {
 				// Afficher le lien de connexion
 				document.getElementById('logout_btn').style.display = 'none';
-				document.getElementById('bar_sub_login').style.display = 'inline-block';
+				// document.getElementById('bar_sub_login').style.display = 'block';
+				document.getElementById('bar_sub_login').classList.remove('d-none');
+				document.getElementById('bar_sub_login').classList.add('d-flex');
+				document.getElementById('user_connected').style.display = 'none';
 			}
 		})
 		.catch(error => console.error('Erreur:', error));

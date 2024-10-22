@@ -247,3 +247,7 @@ span {
 	position: absolute;
 	z-index: 0;
 }
+
+.user_display {
+	color: white;
+}
