@@ -45,6 +45,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)
 	is_connected = models.BooleanField(default=False)
+	nb_win = models.IntegerField(default=0)
+	nb_lose = models.IntegerField(default=0)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
 	#Mais a rajouter pour un hash de mdp manuel
 

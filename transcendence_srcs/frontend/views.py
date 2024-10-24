@@ -6,6 +6,7 @@ import logging
 from django.utils.translation import get_language # type: ignore
 from .models import TextTranslation
 from django.contrib.auth import logout # type: ignore
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -71,3 +72,17 @@ def index_lang(request, lang, any=None):
 	new_path = "/" + nav_lang + request.path
 	
 	return redirect(new_path)
+
+
+def game_view(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		result = data.get('result', True)
+		if result == True:
+			request.user.nb_win += 1
+			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} win</p>'})
+		else:
+			request.user.nb_lose += 1
+			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} lose</p>'})
+	else:
+		return JsonResponse({'success': False}, status=400)
