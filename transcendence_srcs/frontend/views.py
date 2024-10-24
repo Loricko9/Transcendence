@@ -80,9 +80,11 @@ def game_view(request):
 		result = data.get('result', True)
 		if result == True:
 			request.user.nb_win += 1
+			request.user.save()
 			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} win</p>'})
 		else:
 			request.user.nb_lose += 1
+			request.user.save()
 			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} lose</p>'})
 	else:
 		return JsonResponse({'success': False}, status=400)

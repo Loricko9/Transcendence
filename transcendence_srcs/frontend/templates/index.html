@@ -151,21 +151,14 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td class="fs-5 txt-blue text-center">{{ request.user.nb_win }}</td>
-							<td class="fs-5 txt-red text-center">{{ request.user.nb_lose }}</td>
+							<td class="fs-5 txt-blue text-center" id="nbWin">{{ request.user.nb_win }}</td>
+							<td class="fs-5 txt-red text-center" id="nbLose">{{ request.user.nb_lose }}</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			<div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
-				<a class="btn btn-dark" href="/page1/"><span>One Player</span></a>
-				<a class="btn btn-dark" href="/page1/"><span>Two Players</span></a>
-			</div>
         </div>
-    </template>
-
-    <template id="temp_page1">
-        <div class="box">
+		<div class="box" id="game" style="display: block;">
             <div id="main-menu">
                 <button id="player-vs-ia">Player vs IA</button>
                 <button id="player-vs-player">Player vs Player</button>
@@ -184,6 +177,28 @@
             <div class="ball"></div>
             <div class="delimiter"></div>
         </div>
+    </template>
+
+    <template id="temp_page1">
+        <!-- <div class="box">
+            <div id="main-menu">
+                <button id="player-vs-ia">Player vs IA</button>
+                <button id="player-vs-player">Player vs Player</button>
+            </div>
+            <div id="difficulty-menu" style="display: none;">
+                <button id="easy">Easy</button>
+                <button id="medium">Medium</button>
+                <button id="hard">Hard</button>
+            </div>
+            <div id="score-container">
+                <div id="score-player2">0</div>
+                <div id="score-player1">0</div>
+            </div>
+            <div class="padding1"></div>
+            <div class="padding2"></div>
+            <div class="ball"></div>
+            <div class="delimiter"></div>
+        </div> -->
     </template>
     <template id="temp_page2">
         <h2>C'est la superbe page 2</h2>

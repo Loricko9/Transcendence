@@ -52,7 +52,7 @@ const padding1OriginalTop = parseInt(window.getComputedStyle(padding1).top);
 const padding2OriginalTop = parseInt(window.getComputedStyle(padding2).top);
 let directionX = Math.random() < 0.5 ? 1 : -1;
 let directionY = Math.random() < 0.5 ? 1 : -1;
-let speed = 2000;
+let speed = 2;
 let scorePlayer1 = 0;
 let scorePlayer2 = 0;
 let gameStarted = false;
@@ -296,8 +296,16 @@ function checkWin() {
 		.then(data => {
 			if (data.success) {
 				document.getElementById('infoco').innerHTML = data.message
+
+				const nbWinElement = document.getElementById('nbWin');
+                const nbLoseElement = document.getElementById('nbLose');
+
+				if (result === true) {
+                    nbWinElement.textContent = parseInt(nbWinElement.textContent) + 1;
+                } else {
+                    nbLoseElement.textContent = parseInt(nbLoseElement.textContent) + 1;
+                }
 				showSuccessModal()
-				console.log('Score mis à jour:', data);
 			}
 		})
 		.catch(error => {

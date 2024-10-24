@@ -171,7 +171,7 @@ function checkAuthentification() {
 			console.log('Élément bar_sub_login:', document.getElementById('bar_sub_login'));
 			console.log('Élément logout_btn:', document.getElementById('logout_btn'));
 			if (data.is_authenticated) {
-				// Affichage connecte
+				console.log(document.getElementById('game'));// Affichage connecte
 				document.getElementById('logout_btn').style.display = 'inline-block';
 				document.getElementById('bar_sub_login').classList.add('d-none');
 				document.getElementById('bar_sub_login').classList.remove('d-flex');
@@ -179,6 +179,10 @@ function checkAuthentification() {
 				document.getElementById('user_connected').style.display = 'block';
 				document.getElementById('sign_log').style.display = 'none';
 				document.getElementById('stats').style.display = 'flex';
+				
+				document.getElementById('game').style.display = 'block';
+				
+				// document.getElementById('game').style.display = 'flex
 			} else {
 				// Affichage deconnecte
 				document.getElementById('logout_btn').style.display = 'none';
@@ -187,6 +191,7 @@ function checkAuthentification() {
 				document.getElementById('user_connected').style.display = 'none';
 				document.getElementById('sign_log').style.display = 'flex';
 				document.getElementById('stats').style.display = 'none';
+				document.getElementById('game').style.display = 'none';
 			}
 		})
 		.catch(error => console.error('Erreur:', error));
