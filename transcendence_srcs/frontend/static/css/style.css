@@ -150,8 +150,8 @@ span {
     position: absolute;
     top: 20px;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
     padding: 0 20px;
     font-size: 48px;
     font-family: 'Courier New', Courier, monospace;
@@ -159,6 +159,14 @@ span {
 
 #score-player1, #score-player2 {
     color: white;
+}
+
+#score-player1 {
+	float: left;
+}
+
+#score-player2 {
+	float: right;
 }
 
 #difficulty-menu {

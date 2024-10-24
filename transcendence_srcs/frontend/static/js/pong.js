@@ -149,11 +149,11 @@ function moveBall() {
         directionY *= -1;
     }
     if (ballLeft <= 0) {
-        scorePlayer1 += 1; // Player 2 scores
+        scorePlayer2 += 1; // Player 2 scores
         resetBall(); // Reset ball position
     }
     if (ballLeft >= 700 - ball.offsetWidth) {
-        scorePlayer2 += 1; // Player 1 scores
+        scorePlayer1 += 1; // Player 1 scores
         resetBall(); // Reset ball position
     }
 
@@ -270,7 +270,7 @@ function updateScore() {
 function checkWin() {
     if (scorePlayer1 >= 3 || scorePlayer2 >= 3) {
 		let result = false;
-        if (scorePlayer2 >= 3) {
+        if (scorePlayer1 >= 3) {
 			result = true;
             scorePlayer1Element.textContent = "Win";
             scorePlayer2Element.textContent = "Lose";
