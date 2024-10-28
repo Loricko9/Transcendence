@@ -1,5 +1,5 @@
 all:
-	@docker-compose -f Docker-compose.yml up --build
+	@docker-compose -f Docker-compose.yml up -d --build
 stop:
 	@docker-compose -f Docker-compose.yml stop
 down:
