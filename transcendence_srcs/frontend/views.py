@@ -20,7 +20,9 @@ def login_view(request):
 		if user is not None:
 			login(request, user)
 			user.connect()
-			return JsonResponse({'success': True, 'message': '<p>Connexion reussie</p>'})
+			return JsonResponse({'success': True,
+								'message': '<p>Connexion reussie</p>',
+			})
 		else:
 			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'})
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'})
@@ -32,7 +34,11 @@ def logout_view(request):
 
 def check_authentication(request):
 	if request.user.is_authenticated:
-		return JsonResponse({'is_authenticated': True, 'user': f'<p class="user_display">{request.user.username} 🟢</p>'})
+		return JsonResponse({'is_authenticated': True,
+					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
+							'nb_win': request.user.nb_win,
+            				'nb_lose': request.user.nb_lose
+		})
 	else:
 		return JsonResponse({'is_authenticated': False})
 
@@ -80,11 +86,13 @@ def game_view(request):
 		result = data.get('result', True)
 		if result == True:
 			request.user.nb_win += 1
-			request.user.save()
-			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} win</p>'})
 		else:
 			request.user.nb_lose += 1
-			request.user.save()
-			return JsonResponse({'success': True, 'message': f'<p>{request.user.username} lose</p>'})
+		request.user.save()
+		return JsonResponse({'success': True,
+					   		'message': '<p>Stats mises à jour</p>',
+							'nb_win': request.user.nb_win,
+							'nb_lose': request.user.nb_lose
+		})
 	else:
 		return JsonResponse({'success': False}, status=400)

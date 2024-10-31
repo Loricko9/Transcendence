@@ -184,6 +184,12 @@ function checkAuthentification() {
 				document.getElementById('user_connected').innerHTML = data.user
 				document.getElementById('user_connected').style.display = 'block';
 				document.getElementById('sign_log').style.display = 'none';
+				const nbWinElement = document.getElementById('nbWin');
+				const nbLoseElement = document.getElementById('nbLose');
+				if (nbWinElement && nbLoseElement) {
+					nbWinElement.textContent = data.nb_win;
+					nbLoseElement.textContent = data.nb_lose;
+				}
 				document.getElementById('stats').style.display = 'flex';
 				document.getElementById('game').style.display = 'block';
 			} else {

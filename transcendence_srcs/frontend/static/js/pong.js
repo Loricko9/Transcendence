@@ -300,11 +300,8 @@ function checkWin() {
 				const nbWinElement = document.getElementById('nbWin');
                 const nbLoseElement = document.getElementById('nbLose');
 
-				if (result === true) {
-                    nbWinElement.textContent = parseInt(nbWinElement.textContent) + 1;
-                } else {
-                    nbLoseElement.textContent = parseInt(nbLoseElement.textContent) + 1;
-                }
+				nbWinElement.textContent = data.nb_win;
+        		nbLoseElement.textContent = data.nb_lose;
 				showSuccessModal()
 			}
 		})
