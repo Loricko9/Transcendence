@@ -7,11 +7,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Créer les répertoires nécessaires
-RUN mkdir -p /etc/nginx/certs
+RUN mkdir -p /etc/nginx/ssl
 
-# Copier le certificat et la clé dans le container
-COPY ./certs/selfsigned.crt /etc/nginx/certs/selfsigned.crt
-COPY ./certs/selfsigned.key /etc/nginx/certs/selfsigned.key
+# Générer les certificats auto-signés
+RUN openssl req -x509 -nodes -out /etc/nginx/ssl/transcendence.crt -keyout /etc/nginx/ssl/transcendence.key -subj "/C=FR/ST=O/L=Perpignan/O=42/OU=42/CN=localhost/UID=gpeyre"
 
 # Copier la configuration Nginx
 COPY ./default.conf /etc/nginx/conf.d/default.conf
