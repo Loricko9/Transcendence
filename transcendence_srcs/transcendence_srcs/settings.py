@@ -128,8 +128,6 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
-	# os.path.join(BASE_DIR, 'transcendence_srcs/static/img'),
-	# os.path.join(BASE_DIR, 'transcendence_srcs/static/img/flags'),
 	os.path.join(BASE_DIR, 'frontend/static/css'),
 	os.path.join(BASE_DIR, 'frontend/static/js'),
 ]
@@ -156,7 +154,7 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 
 LOGOUT_REDIRECT_URL = '/'
 
-SECURE_SSL_REDIRECT = True
+# SECURE_SSL_REDIRECT = True
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 3600  # Durée de vie d'une heure
