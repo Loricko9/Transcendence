@@ -159,6 +159,11 @@ function showSuccessModal() {
 	}, 3000); // 3000 ms = 3 secondes
 }
 
+// gestion du display au moment du click sur le logo
+document.getElementById('logo').addEventListener('click', function() {
+	checkAuthentification()
+});
+
 // Gestion du display en fonction de si l'utilisateur est connecte ou pas en mode dynamique
 document.addEventListener('DOMContentLoaded', function() {
 	checkAuthentification()
@@ -171,7 +176,8 @@ function checkAuthentification() {
 			console.log('Élément bar_sub_login:', document.getElementById('bar_sub_login'));
 			console.log('Élément logout_btn:', document.getElementById('logout_btn'));
 			if (data.is_authenticated) {
-				console.log(document.getElementById('game'));// Affichage connecte
+				// Affichage connecte
+				console.log(document.getElementById('game'));
 				document.getElementById('logout_btn').style.display = 'inline-block';
 				document.getElementById('bar_sub_login').classList.add('d-none');
 				document.getElementById('bar_sub_login').classList.remove('d-flex');
@@ -179,10 +185,7 @@ function checkAuthentification() {
 				document.getElementById('user_connected').style.display = 'block';
 				document.getElementById('sign_log').style.display = 'none';
 				document.getElementById('stats').style.display = 'flex';
-				
 				document.getElementById('game').style.display = 'block';
-				
-				// document.getElementById('game').style.display = 'flex
 			} else {
 				// Affichage deconnecte
 				document.getElementById('logout_btn').style.display = 'none';
