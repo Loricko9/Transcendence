@@ -1,6 +1,6 @@
 from django.db import models # type: ignore
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager # type: ignore
-
+import uuid # permet de générer des identifiants uniques appelés UUIDs (Universally Unique Identifiers, ou identifiants universellement uniques).
 # Create your models here.
 
 #Class permetant de gérer le tableau User_tab (fonctions ajout, modif et suppr User)
@@ -45,6 +45,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)
 	is_connected = models.BooleanField(default=False)
+	is_email_verified = models.BooleanField(default=False)
+	verification_token = models.UUIDField(default=uuid.uuid4, editable=False) # génère un UUID de type 4 aleatoire
 	nb_win = models.IntegerField(default=0)
 	nb_lose = models.IntegerField(default=0)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
