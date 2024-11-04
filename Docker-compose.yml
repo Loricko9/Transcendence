@@ -8,8 +8,6 @@ services:
     volumes:
       - Django:/transcendence
       - staticfiles:/app/staticfiles # Volume pour les fichiers statiques
-    ports:
-      - "8000:8000"
     networks:
       - Transcendence
     depends_on:
@@ -33,6 +31,7 @@ services:
     ports:
       - "443:443"
       - "80:80"  # Optionnel si tu veux rediriger HTTP vers HTTPS
+      - "8000:8000"
     volumes:
       - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
     networks:
