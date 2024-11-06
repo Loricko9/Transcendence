@@ -20,26 +20,30 @@ def login_view(request):
 		if user is not None:
 			login(request, user)
 			user.connect()
-			return JsonResponse({'success': True,
-								'message': '<p>Connexion reussie</p>',
-			})
+			data = {'success': True, 'message': '<p>Connexion reussie</p>'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
 		else:
-			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'})
-	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'})
+			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, content_type='application/json; charset=utf-8')
 
 def logout_view(request):
 	request.user.disconnect()
 	logout(request)
-	return JsonResponse({'success': True, 'message': 'Déconnexion réussie'})
+	response =  JsonResponse({'success': True, 'message': 'Déconnexion réussie'})
+	response['Content-Type'] = 'application/json; charset=utf-8'
+	return response
 
 def check_authentication(request):
 	if request.user.is_authenticated:
-		return JsonResponse({'is_authenticated': True,
+		response = JsonResponse({'is_authenticated': True,
 					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
 							'nb_win': request.user.nb_win,
-            				'nb_lose': request.user.nb_lose,
-							'is_active': request.user.is_active,
+            				'nb_lose': request.user.nb_lose
 		})
+		response['Content-Type'] = 'application/json; charset=utf-8'
+		return response
 	else:
 		return JsonResponse({'is_authenticated': False})
 
@@ -90,10 +94,12 @@ def game_view(request):
 		else:
 			request.user.nb_lose += 1
 		request.user.save()
-		return JsonResponse({'success': True,
+		response = JsonResponse({'success': True,
 					   		'message': '<p>Stats mises à jour</p>',
 							'nb_win': request.user.nb_win,
 							'nb_lose': request.user.nb_lose
 		})
+		response['Content-Type'] = 'application/json; charset=utf-8'
+		return response
 	else:
 		return JsonResponse({'success': False}, status=400)

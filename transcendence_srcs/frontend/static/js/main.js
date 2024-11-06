@@ -100,11 +100,9 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		if (data.success) {
-			document.getElementById('infoco').innerHTML = data.message
-			showSuccessModal()
-			checkAuthentification()
-		}
+		document.getElementById('infoco').innerHTML = data.message
+		showSuccessModal()
+		checkAuthentification()
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
@@ -122,11 +120,9 @@ document.getElementById('logout_btn').addEventListener('click', function() {
     })
     .then(response => response.json())
     .then(data => {
-        if (data.success) {
-            document.getElementById('infoco').innerHTML = data.message
-			showSuccessModal()
-			checkAuthentification()
-        }
+        document.getElementById('infoco').innerHTML = data.message
+		showSuccessModal()
+		checkAuthentification()
     })
     .catch(error => console.error('Erreur:', error));
 });
@@ -173,11 +169,8 @@ function checkAuthentification() {
 	fetch('/check-auth/')
 		.then(response => response.json())
 		.then(data => {
-			console.log('Élément bar_sub_login:', document.getElementById('bar_sub_login'));
-			console.log('Élément logout_btn:', document.getElementById('logout_btn'));
 			if (data.is_authenticated) {
 				// Affichage connecte
-				console.log(document.getElementById('game'));
 				document.getElementById('logout_btn').style.display = 'inline-block';
 				document.getElementById('bar_sub_login').classList.add('d-none');
 				document.getElementById('bar_sub_login').classList.remove('d-flex');
@@ -190,6 +183,9 @@ function checkAuthentification() {
 					nbWinElement.textContent = data.nb_win;
 					nbLoseElement.textContent = data.nb_lose;
 				}
+				document.getElementById('stats').style.display = 'flex';
+				document.getElementById('game').style.display = 'block';
+				
 			} else {
 				// Affichage deconnecte
 				document.getElementById('logout_btn').style.display = 'none';

@@ -196,3 +196,7 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL')
 SITE_URL = 'https://localhost'
+
+
+DEFAULT_CHARSET = 'utf-8'
+DEFAULT_CONTENT_TYPE = 'text/html'
