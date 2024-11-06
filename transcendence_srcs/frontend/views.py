@@ -37,7 +37,8 @@ def check_authentication(request):
 		return JsonResponse({'is_authenticated': True,
 					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
 							'nb_win': request.user.nb_win,
-            				'nb_lose': request.user.nb_lose
+            				'nb_lose': request.user.nb_lose,
+							'is_active': request.user.is_active,
 		})
 	else:
 		return JsonResponse({'is_authenticated': False})

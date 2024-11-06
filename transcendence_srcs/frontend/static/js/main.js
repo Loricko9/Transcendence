@@ -190,8 +190,6 @@ function checkAuthentification() {
 					nbWinElement.textContent = data.nb_win;
 					nbLoseElement.textContent = data.nb_lose;
 				}
-				document.getElementById('stats').style.display = 'flex';
-				document.getElementById('game').style.display = 'block';
 			} else {
 				// Affichage deconnecte
 				document.getElementById('logout_btn').style.display = 'none';

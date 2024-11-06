@@ -156,13 +156,15 @@ MEDIA_URL = 'media/'
 AUTH_USER_MODEL = 'api.User_tab'
 
 SESSION_COOKIE_SECURE = True # N'envoie le cookie que sur HTTPS
-CSRF_COOKIE_SECURE = True  # N'envoie le cookie CSRF que sur HTTPS
+CSRF_COOKIE_SECURE = False  # N'envoie le cookie CSRF que sur HTTPS
 SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
 SESSION_COOKIE_HTTPONLY = True
 
 # Utilisez la politique SameSite pour les cookies
-SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
+
 
 LOGIN_REDIRECT_URL = '/'
 # LOGOUT_REDIRECT_URL = '/'
@@ -192,5 +194,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER')
-SITE_URL = 'https://localhost:8000'  # Adresse de base du site, à adapter en production)
+DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL')
+SITE_URL = 'https://localhost'

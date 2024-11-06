@@ -125,6 +125,13 @@
 
     <!--Template injecter par le js dans le div app-->
     <template id="temp_index">
+		{% if messages %}
+			{% for message in messages %}
+			<div class="alert alert-info">
+				{{ message }}
+			</div>
+			{% endfor %}
+		{% endif %}
         <div class="row align-items-center" id="sign_log" style="display: flex;">
             <div class="col p-2 ">
                 <p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
@@ -139,6 +146,7 @@
                 <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
+		<!-- <script defer src="{% static 'register.js' %}"></script> -->
 		<div class="row align-items-center" id="stats" style="display: flex;">
 			<div class="container mt-5">
 				<p class="fs-3 fw-bold m-0 txt-blue text-center">Stats</p>

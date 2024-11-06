@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 # from api.models import User_tab, User_tabManager
-from django.contrib.auth import get_user_model # type: ignore
+from django.contrib.auth import get_user_model, login # type: ignore# type: ignore
 from django.contrib import messages # type: ignore
 from frontend.models import TextTranslation
 from django.utils.translation import get_language # type: ignore
@@ -9,6 +9,7 @@ from django.utils.crypto import get_random_string # type: ignore
 from django.urls import reverse # type: ignore
 from django.conf import settings # type: ignore
 from django.http import HttpResponse # type: ignore
+from django.http import JsonResponse # type: ignore
 
 User = get_user_model()
 
@@ -23,19 +24,16 @@ def send_verification_email(user):
     )
 
 def verify_email(request):
-    token = request.GET.get('token')
-    username = request.GET.get('username')
-    user = get_object_or_404(User, username=username)
-
-    # Vérification du token
-    if str(user.verification_token) == token:
-        user.is_email_verified = True
-        user.is_active = True  # Activez le compte de l'utilisateur
-        user.save()
-        messages.success(request, "Votre adresse email a été vérifiée avec succès.")
-        return redirect('/')
-    else:
-        return HttpResponse("Le lien de vérification est invalide ou a expiré.")
+	token = request.GET.get('token')
+	username = request.GET.get('username')
+	user = get_object_or_404(User, username=username)
+	# Vérification du token
+	if str(user.verification_token) == token:
+		user.is_email_verified = True
+		user.is_active = True  # Activez le compte de l'utilisateur
+		user.save()
+		login(request, user)
+		return redirect('/')
 
 
 def register(request, lang=None):
@@ -64,7 +62,7 @@ def register(request, lang=None):
 				New_user.is_active = False  # Désactivez l'utilisateur jusqu'à la vérification de l'email
 				New_user.save()
 				send_verification_email(New_user)
-				messages.success(request, "Compte créé avec succès")
+				messages.info(request, "Votre compte a été créé. Veuillez vérifier votre email pour activer votre compte.")
 				return redirect('/')
 			except Exception as e:
 				err_msg['general'] = "Une erreur s'est produite lors de la création du compte."
