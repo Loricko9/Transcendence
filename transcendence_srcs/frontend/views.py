@@ -7,6 +7,7 @@ from django.utils.translation import get_language # type: ignore
 from .models import TextTranslation
 from django.contrib.auth import logout # type: ignore
 import json
+from django.middleware.csrf import get_token # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -103,3 +104,8 @@ def game_view(request):
 		return response
 	else:
 		return JsonResponse({'success': False}, status=400)
+	
+def get_csrf_token(request):
+    # Génère un nouveau token CSRF et le renvoie
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})

@@ -85,12 +85,13 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
+	const csrfToken = document.querySelector('[name=csrf-token]').content
 
 	fetch('/login/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'X-CSRFToken': document.querySelector('[name=csrf-token]').content
+			'X-CSRFToken': csrfToken
 		},
 		body: new URLSearchParams({
 			'email': inputEmail,
@@ -101,6 +102,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(data => {
 		// Affiche le message de réponse
 		document.getElementById('infoco').innerHTML = data.message
+		document.getElementById('dropdown_form').reset(); // reinitialise le form
 		showSuccessModal()
 		checkAuthentification()
 	})
@@ -121,6 +123,8 @@ document.getElementById('logout_btn').addEventListener('click', function() {
     .then(response => response.json())
     .then(data => {
         document.getElementById('infoco').innerHTML = data.message
+		clearFormFields()
+		refreshCSRFToken()
 		showSuccessModal()
 		checkAuthentification()
     })
@@ -198,4 +202,20 @@ function checkAuthentification() {
 			}
 		})
 		.catch(error => console.error('Erreur:', error));
+}
+
+// Fonction pour rafraîchir le token CSR
+function refreshCSRFToken() {
+    fetch('/get-csrf-token/')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('[name=csrf-token]').content = data.csrfToken;
+        })
+        .catch(error => console.error('Erreur lors du rafraîchissement du CSRF token:', error));
+}
+
+// Fonction pour vider les champs de connexion
+function clearFormFields() {
+    document.getElementById('Email_input').value = '';
+    document.getElementById('Passwd_input').value = '';
 }
