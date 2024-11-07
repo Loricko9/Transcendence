@@ -48,10 +48,18 @@
                 </ul>
             </div>
         </div>
+
+		<!-- client name connected -->
 		<div id="user_connected" style="display: none;">
 			<!-- script dyhnamique -->
 		</div>
-		<button class="btn btn-light" id="logout_btn" type="button" style="display:none; margin-right: 15px;">Deconnexion</button>
+
+		<!-- options button when connected-->
+		<button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: 'none';">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<!-- sign-in / login buttons -->
 		<div class="btn-group me-3 d-flex align-items-center" id="bar_sub_login" role="toolbar" aria-label="Connexion Inscription" style="display:none;">
             <a class="btn btn-outline-light d-none d-md-block me-2" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
             <button class="btn btn-outline-light d-block d-md-none rounded-2 me-2" id="login_btn_small" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
@@ -226,6 +234,19 @@
 					<h5 class="modal-title" id="infoco"><!--script dynamique--></h5>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<!-- options when client is connected -->
+	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+		<div class="offcanvas-header">
+		  <h1 class="offcanvas-title" id="offcanvasRightLabel">Options</h1>
+		  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="offcanvas-body">
+		  <!-- Contenu de la fenêtre coulissante -->
+		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">Deconnexion</button>
+		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">Supprimer mon compte</button>
 		</div>
 	</div>
 

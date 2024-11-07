@@ -5,6 +5,7 @@ urlpatterns = [
 	path('', views.index, name='index'),
 	path('login/', views.login_view, name='login'),
 	path('logout/', views.logout_view, name='custom-logout'),
+	path('delete-account/', views.delete_account, name='delete_account'),
 	path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
 	path('game/', views.game_view, name='game'),
 	path('check-auth/', views.check_authentication, name='check_authentication'),

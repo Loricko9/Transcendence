@@ -175,7 +175,7 @@ function checkAuthentification() {
 		.then(data => {
 			if (data.is_authenticated) {
 				// Affichage connecte
-				document.getElementById('logout_btn').style.display = 'inline-block';
+				document.getElementById('option').style.display = 'inline-block';
 				document.getElementById('bar_sub_login').classList.add('d-none');
 				document.getElementById('bar_sub_login').classList.remove('d-flex');
 				document.getElementById('user_connected').innerHTML = data.user
@@ -192,7 +192,7 @@ function checkAuthentification() {
 				
 			} else {
 				// Affichage deconnecte
-				document.getElementById('logout_btn').style.display = 'none';
+				document.getElementById('option').style.display = 'none';
 				document.getElementById('bar_sub_login').classList.remove('d-none');
 				document.getElementById('bar_sub_login').classList.add('d-flex');
 				document.getElementById('user_connected').style.display = 'none';
@@ -219,3 +219,27 @@ function clearFormFields() {
     document.getElementById('Email_input').value = '';
     document.getElementById('Passwd_input').value = '';
 }
+
+// delete account
+document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
+        fetch('/delete-account/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            	'X-CSRFToken': Get_Cookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('infoco').innerHTML = data.message
+				showSuccessModal()
+				checkAuthentification()
+            } else {
+                alert("Erreur lors de la suppression du compte: " + data.message);
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+});

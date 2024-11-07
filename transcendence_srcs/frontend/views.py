@@ -109,3 +109,13 @@ def get_csrf_token(request):
     # Génère un nouveau token CSRF et le renvoie
     csrf_token = get_token(request)
     return JsonResponse({'csrfToken': csrf_token})
+
+def delete_account(request):
+	if request.method == 'POST':
+        # Supprime l'utilisateur authentifié
+		user = request.user
+		user.disconnect()
+		logout(request)
+		user.delete()
+		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
+	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)

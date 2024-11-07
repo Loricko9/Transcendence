@@ -261,3 +261,13 @@ span {
 .user_display {
 	color: white;
 }
+
+#offcanvasRightLabel {
+	color: white;
+}
+
+#deleteAccountBtn:hover {
+    background-color: #dc3545;  /* Rouge */
+    border-color: #dc3545;      /* Bordure rouge */
+    color: white;               /* Texte en blanc */
+}
