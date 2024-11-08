@@ -7,8 +7,7 @@ services:
     restart: on-failure
     volumes:
       - Django:/transcendence
-    ports:
-      - "8000:8000"
+      - staticfiles:/app/staticfiles # Volume pour les fichiers statiques
     networks:
       - Transcendence
     depends_on:
@@ -25,6 +24,21 @@ services:
       - "5432"
     networks:
       - Transcendence
+  nginx:
+    build: Containers/Nginx
+    image: transcendence-nginx
+    container_name: Nginx
+    ports:
+      - "443:443"
+      - "80:80"  # Optionnel si tu veux rediriger HTTP vers HTTPS
+      - "8000:8000"
+    volumes:
+      - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
+    networks:
+      - Transcendence
+    depends_on:
+      - django
+
 
 volumes:
   Django:
@@ -41,6 +55,8 @@ volumes:
       type: 'none'
       o: 'bind'
       device: './database'
+  staticfiles:
+    driver: local  # Volume pour partager les fichiers statiques entre Django et Ngin
 
 networks:
   Transcendence:

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# rm -rf /var/lib/postgresql/15/main/*
 # Fonction pour vérifier si une base de données existe
 database_exists() {
     su - postgres -c "psql -tAc \"SELECT 1 FROM pg_database WHERE datname='$DATABASE_NAME';\"" | grep -q 1
@@ -10,9 +11,15 @@ user_exists() {
     su - postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='$DATABASE_USER';\"" | grep -q 1
 }
 
-# 1ere commande pour verifier si les fichier de base sont present dans la database et les crée sinon met une err (normal)
-su - postgres -c "/usr/lib/postgresql/15/bin/pg_ctl initdb -D /var/lib/postgresql/15/main"
+if [ ! -d "/var/lib/postgresql/15/main" ] || [ -z "$(ls -A /var/lib/postgresql/15/main)" ]; then
+	echo "Initialisation des fichiers de base de la base de données..."
+	# 1ere commande pour verifier si les fichier de base sont present dans la database et les crée sinon met une err (normal)
+	su - postgres -c "/usr/lib/postgresql/15/bin/pg_ctl initdb -D /var/lib/postgresql/15/main"
+else
+	echo "Les fichiers de base de la base de données existent déjà."
+fi
 echo "-----------------------------------------------------"
+
 
 # Démarrage de postgre (process secondaire) pour la configuration
 service postgresql start

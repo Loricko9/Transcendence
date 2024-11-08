@@ -1,3 +1,5 @@
+// import Get_Cookie from "./main.js"
+
 document.addEventListener("DOMContentLoaded", function() {
 const padding1 = document.querySelector('.padding1');
 const padding2 = document.querySelector('.padding2');
@@ -147,11 +149,11 @@ function moveBall() {
         directionY *= -1;
     }
     if (ballLeft <= 0) {
-        scorePlayer1 += 1; // Player 2 scores
+        scorePlayer2 += 1; // Player 2 scores
         resetBall(); // Reset ball position
     }
     if (ballLeft >= 700 - ball.offsetWidth) {
-        scorePlayer2 += 1; // Player 1 scores
+        scorePlayer1 += 1; // Player 1 scores
         resetBall(); // Reset ball position
     }
 
@@ -267,14 +269,45 @@ function updateScore() {
 
 function checkWin() {
     if (scorePlayer1 >= 3 || scorePlayer2 >= 3) {
+		let result = false;
         if (scorePlayer1 >= 3) {
+			result = true;
             scorePlayer1Element.textContent = "Win";
             scorePlayer2Element.textContent = "Lose";
+			console.log('Normalement true:', result);
         } else {
+			result = false;
             scorePlayer1Element.textContent = "Lose";
             scorePlayer2Element.textContent = "Win";
+			console.log('Normalement false:', result);
         }
         gameStarted = false;
+		fetch('/game/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+			body: JSON.stringify({
+				'result': result
+			})
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				document.getElementById('infoco').innerHTML = data.message
+
+				const nbWinElement = document.getElementById('nbWin');
+                const nbLoseElement = document.getElementById('nbLose');
+
+				nbWinElement.textContent = data.nb_win;
+        		nbLoseElement.textContent = data.nb_lose;
+				showSuccessModal()
+			}
+		})
+		.catch(error => {
+			console.error('Erreur:', error);
+		});
 		setTimeout(resetGame, 3000);
     }
 }

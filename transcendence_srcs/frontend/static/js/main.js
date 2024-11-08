@@ -79,18 +79,19 @@ function Click_login() {
     dropdown.show();
 }
 
-// fonction pour gerer les connexion avec ajax
+// fonction pour gerer les connexion avec fetch en mode dynamique
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
 		event.preventDefault();  // Empêche le rechargement de la page
 
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
+	const csrfToken = document.querySelector('[name=csrf-token]').content
 
 	fetch('/login/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
-			'X-CSRFToken': document.querySelector('[name=csrf-token]').content
+			'X-CSRFToken': csrfToken
 		},
 		body: new URLSearchParams({
 			'email': inputEmail,
@@ -100,12 +101,34 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		document.getElementById('app').innerHTML = data.message;
-		document.getElementById('app').className = "container-fluid col-md-10 py-2 px-3 my-5";
+		document.getElementById('infoco').innerHTML = data.message
+		document.getElementById('dropdown_form').reset(); // reinitialise le form
+		showSuccessModal()
+		checkAuthentification()
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
 	});
+});
+
+// Gestion du logout en SPA
+document.getElementById('logout_btn').addEventListener('click', function() {
+    fetch('/logout/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken')
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('infoco').innerHTML = data.message
+		clearFormFields()
+		refreshCSRFToken()
+		showSuccessModal()
+		checkAuthentification()
+    })
+    .catch(error => console.error('Erreur:', error));
 });
 
 function Change_lang(lang) {
@@ -124,3 +147,99 @@ function Get_Cookie(name) {
 	}
 	return null
 }
+
+// Fonction pour afficher le modal
+function showSuccessModal() {
+	var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+	successModal.show();
+
+	// Disparaît après 3 secondes (3000 ms)
+	setTimeout(function() {
+		successModal.hide();
+	}, 3000); // 3000 ms = 3 secondes
+}
+
+// gestion du display au moment du click sur le logo
+document.getElementById('logo').addEventListener('click', function() {
+	checkAuthentification()
+});
+
+// Gestion du display en fonction de si l'utilisateur est connecte ou pas en mode dynamique
+document.addEventListener('DOMContentLoaded', function() {
+	checkAuthentification()
+});
+
+function checkAuthentification() {
+	fetch('/check-auth/')
+		.then(response => response.json())
+		.then(data => {
+			if (data.is_authenticated) {
+				// Affichage connecte
+				document.getElementById('option').style.display = 'inline-block';
+				document.getElementById('bar_sub_login').classList.add('d-none');
+				document.getElementById('bar_sub_login').classList.remove('d-flex');
+				document.getElementById('user_connected').innerHTML = data.user
+				document.getElementById('user_connected').style.display = 'block';
+				document.getElementById('sign_log').style.display = 'none';
+				const nbWinElement = document.getElementById('nbWin');
+				const nbLoseElement = document.getElementById('nbLose');
+				if (nbWinElement && nbLoseElement) {
+					nbWinElement.textContent = data.nb_win;
+					nbLoseElement.textContent = data.nb_lose;
+				}
+				document.getElementById('stats').style.display = 'flex';
+				document.getElementById('game').style.display = 'block';
+				
+			} else {
+				// Affichage deconnecte
+				document.getElementById('option').style.display = 'none';
+				document.getElementById('bar_sub_login').classList.remove('d-none');
+				document.getElementById('bar_sub_login').classList.add('d-flex');
+				document.getElementById('user_connected').style.display = 'none';
+				document.getElementById('sign_log').style.display = 'flex';
+				document.getElementById('stats').style.display = 'none';
+				document.getElementById('game').style.display = 'none';
+			}
+		})
+		.catch(error => console.error('Erreur:', error));
+}
+
+// Fonction pour rafraîchir le token CSR
+function refreshCSRFToken() {
+    fetch('/get-csrf-token/')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('[name=csrf-token]').content = data.csrfToken;
+        })
+        .catch(error => console.error('Erreur lors du rafraîchissement du CSRF token:', error));
+}
+
+// Fonction pour vider les champs de connexion
+function clearFormFields() {
+    document.getElementById('Email_input').value = '';
+    document.getElementById('Passwd_input').value = '';
+}
+
+// delete account
+document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
+        fetch('/delete-account/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            	'X-CSRFToken': Get_Cookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('infoco').innerHTML = data.message
+				showSuccessModal()
+				checkAuthentification()
+            } else {
+                alert("Erreur lors de la suppression du compte: " + data.message);
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
+    }
+});

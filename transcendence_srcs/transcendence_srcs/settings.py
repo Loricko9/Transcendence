@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +35,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+	# 'django.contrib.sites',
+	# 'allauth',
+	# 'allauth.account',
+	# 'allauth.socialaccount',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -108,6 +115,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',  # Pour l'authentification standard
+#     'allauth.account.auth_backends.AuthenticationBackend',  # Pour allauth
+# ]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -124,11 +136,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-	os.path.join(BASE_DIR, 'transcendence_srcs/static')
+	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
+	os.path.join(BASE_DIR, 'frontend/static/css'),
+	os.path.join(BASE_DIR, 'frontend/static/js'),
 ]
+
+STATIC_ROOT = '/app/staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -140,5 +156,47 @@ MEDIA_URL = 'media/'
 AUTH_USER_MODEL = 'api.User_tab'
 
 SESSION_COOKIE_SECURE = True # N'envoie le cookie que sur HTTPS
-CSRF_COOKIE_SECURE = True  # N'envoie le cookie CSRF que sur HTTPS
+CSRF_COOKIE_SECURE = False  # N'envoie le cookie CSRF que sur HTTPS
 SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
+SESSION_COOKIE_HTTPONLY = True
+
+# Utilisez la politique SameSite pour les cookies
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_TRUSTED_ORIGINS = ['https://localhost']
+
+
+LOGIN_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = '/'
+# ACCOUNT_UNIQUE_EMAIL = True
+# # Exiger la validation par email
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"  # Exige la vérification par email
+# # Utiliser l'email comme identifiant
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# SECURE_SSL_REDIRECT = True
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 3600  # Durée de vie d'une heure
+
+# Activez HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # 1 an
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL')
+SITE_URL = 'https://localhost'
+
+
+DEFAULT_CHARSET = 'utf-8'
+DEFAULT_CONTENT_TYPE = 'text/html'

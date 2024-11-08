@@ -150,8 +150,8 @@ span {
     position: absolute;
     top: 20px;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
     padding: 0 20px;
     font-size: 48px;
     font-family: 'Courier New', Courier, monospace;
@@ -159,6 +159,14 @@ span {
 
 #score-player1, #score-player2 {
     color: white;
+}
+
+#score-player1 {
+	float: left;
+}
+
+#score-player2 {
+	float: right;
 }
 
 #difficulty-menu {
@@ -221,10 +229,12 @@ span {
 }
 
 .box {
-    top: 50%;
+    top: 100%;
     left: 50%;
     border-radius: 10px;
     transform: translate(-50%, -50%);
+	bottom: 0;
+	margin-bottom: 20px;
 
     height: 600px;
 	width: 700px;
@@ -232,7 +242,7 @@ span {
     border : 5px solid white;
 	position: absolute;
 	transition: 0.3s ease;
-	z-index: -1;
+	/* z-index: -1; */
 	/* box-sizing: border-box; */
 
 }
@@ -246,4 +256,18 @@ span {
 	transform: translateX(-50%);
 	position: absolute;
 	z-index: 0;
+}
+
+.user_display {
+	color: white;
+}
+
+#offcanvasRightLabel {
+	color: white;
+}
+
+#deleteAccountBtn:hover {
+    background-color: #dc3545;  /* Rouge */
+    border-color: #dc3545;      /* Bordure rouge */
+    color: white;               /* Texte en blanc */
 }
