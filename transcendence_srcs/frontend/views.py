@@ -120,31 +120,3 @@ def delete_account(request):
 		user.delete()
 		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
 	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
-
-
-# Change password
-def change_password(request):
-	if request.method == 'POST':
-		old_password = request.POST.get('old_password')
-		new_password = request.POST.get('new_password')
-		confirm_password = request.POST.get('confirm_password')
-
-		if new_password != confirm_password:
-			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
-
-		user = request.user
-
-		# Vérifie si l'ancien mot de passe est correct
-		if not user.check_password(old_password):
-			return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
-
-		# Change le mot de passe et sauvegarde l'utilisateur
-		user.set_password(new_password)
-		user.save()
-
-		# Authentifie à nouveau l'utilisateur avec son nouveau mot de passe
-		login(request, user)
-
-		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
-
-	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
