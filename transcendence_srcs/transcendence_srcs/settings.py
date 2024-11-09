@@ -29,8 +29,11 @@ SECRET_KEY = 'django-insecure-p137f&8iautjsybygl)_3kc0(r)(+smeu3_v^r%13csbdg--&^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+	"transcendence-42.fr",
+	"www.transcendence-42.fr"
+	"localhost",
+]
 
 # Application definition
 

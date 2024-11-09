@@ -18,5 +18,7 @@ COPY ./default.conf /etc/nginx/conf.d/default.conf
 # Exposer le port 443
 EXPOSE 443
 
+RUN rm /etc/nginx/sites-enabled/default
+
 # Démarrer Nginx au démarrage du container
 CMD ["nginx", "-g", "daemon off;"]
