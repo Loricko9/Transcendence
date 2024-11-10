@@ -175,20 +175,25 @@
         </div>
 		<div class="box" id="game" style="display: block;">
             <div id="main-menu">
-                <button id="player-vs-ia">Player vs IA</button>
-                <button id="player-vs-player">Player vs Player</button>
+                <button id="player-vs-ia">{{ texts.Player_vs_AI }}</button>
+                <button id="player-vs-player">{{ texts.Player_vs_Player }}</button>
             </div>
             <div id="difficulty-menu" style="display: none;">
-                <button id="easy">Easy</button>
-                <button id="medium">Medium</button>
-                <button id="hard">Hard</button>
+                <button id="easy">{{ texts.Difficulty_easy }}</button>
+                <button id="medium">{{ texts.Difficulty_medium }}</button>
+                <button id="hard">{{ texts.Difficulty_hard }}</button>
+            </div>
+            <div id="pvp-menu" style="display: none">
+                <button id="pvp_1v1">1 vs 1</button>
+                <button id="pvp_2v2">2 vs 2</button>
+                <button id="tournament">{{ texts.PVP_tournament }}</button>
             </div>
             <div id="score-container">
-                <div id="score-player2">0</div>
-                <div id="score-player1">0</div>
+                <div id="score-player-right">0</div>
+                <div id="score-player-left">0</div>
             </div>
-            <div class="padding1"></div>
-            <div class="padding2"></div>
+            <div class="padding-left"></div>
+            <div class="padding-right"></div>
             <div class="ball"></div>
             <div class="delimiter"></div>
         </div>
