@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
 	"transcendence-42.fr",
-	"www.transcendence-42.fr"
+	"www.transcendence-42.fr",
 	"localhost",
 ]
 

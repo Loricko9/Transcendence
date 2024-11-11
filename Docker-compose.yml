@@ -1,19 +1,23 @@
 services:
   django:
-    build: Containers/Django
+    build: 
+      context: Containers/Django
+      dockerfile: Dockerfile
     image: transcendence-django
     container_name: Django
     env_file: .env
     restart: on-failure
     volumes:
       - Django:/transcendence
-      - staticfiles:/app/staticfiles # Volume pour les fichiers statiques
+      - staticfiles:/app/staticfiles
     networks:
       - Transcendence
     depends_on:
       - postgreSQL
   postgreSQL:
-    build: Containers/PostgreSQL
+    build: 
+      context: Containers/PostgreSQL
+      dockerfile: Dockerfile
     image: transcendence-postgresql
     container_name: PostgreSQL
     env_file: .env
@@ -25,14 +29,16 @@ services:
     networks:
       - Transcendence
   nginx:
-    build: Containers/Nginx
+    build: 
+      context: Containers/Nginx
+      dockerfile: Dockerfile
     image: transcendence-nginx
     container_name: Nginx
     ports:
       - "443:443"
       - "80:80"
     volumes:
-      - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
+      - staticfiles:/app/staticfiles
     networks:
       - Transcendence
     depends_on:
@@ -55,7 +61,7 @@ volumes:
       o: 'bind'
       device: './database'
   staticfiles:
-    driver: local  # Volume pour partager les fichiers statiques entre Django et Ngin
+    driver: local
 
 networks:
   Transcendence:
