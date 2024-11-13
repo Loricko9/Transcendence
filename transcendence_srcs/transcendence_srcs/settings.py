@@ -156,13 +156,13 @@ MEDIA_URL = 'media/'
 AUTH_USER_MODEL = 'api.User_tab'
 
 SESSION_COOKIE_SECURE = True # N'envoie le cookie que sur HTTPS
-CSRF_COOKIE_SECURE = False  # N'envoie le cookie CSRF que sur HTTPS
+CSRF_COOKIE_SECURE = True  # N'envoie le cookie CSRF que sur HTTPS
 SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
 SESSION_COOKIE_HTTPONLY = True
 
 # Utilisez la politique SameSite pour les cookies
 SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None'
 CSRF_TRUSTED_ORIGINS = ['https://localhost']
 
 

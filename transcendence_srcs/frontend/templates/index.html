@@ -31,12 +31,12 @@
         
         <a class="navbar-brand ms-3" href="/" data-link><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65" id="logo"/></a>
         <div class="collapse navbar-collapse" id="NavCollaspe">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <!-- <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page1/" data-link>Page1</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page2/" data-link>Page2</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page3/" data-link>Page3</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/prank/" data-link>Prank</a></li>
-            </ul>
+            </ul> -->
             <div class="dropdown">
                 <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
@@ -92,12 +92,12 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
-            <ul class="navbar-nav justify-content-end pe-3">
+            <!-- <ul class="navbar-nav justify-content-end pe-3">
                 <li class="nav-item"><a class="nav-link fs-5" href="/page1/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 1</a> </li>
                 <li class="nav-item"><a class="nav-link fs-5" href="/page2/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 2</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" href="/page3/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 3</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" href="/prank/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Prank</a></li>
-            </ul>
+            </ul> -->
             <div class="mt-auto">
                 <div class="dropdown">
                     <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -118,9 +118,6 @@
     <div id="app">  
         <!--Sript dynamique-->
     </div>
-    
-    <script defer src="{% static 'js/main.js' %}"></script>
-    <script defer src="{% static 'js/pong.js' %}"></script>
     
     {% if messages %}
     {% for message in messages %}
@@ -154,6 +151,11 @@
                 <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
+	</template>
+
+	<!-- temp connected -->
+    <template id="temp_login">
+		<!-- stats -->
 		<div class="row align-items-center" id="stats" style="display: flex;">
 			<div class="container mt-5">
 				<p class="fs-3 fw-bold m-0 txt-blue text-center">Stats</p>
@@ -172,55 +174,59 @@
 					</tbody>
 				</table>
 			</div>
-        </div>
+		</div>
+		<!-- game -->
 		<div class="box" id="game" style="display: block;">
-            <div id="main-menu">
-                <button id="player-vs-ia">Player vs IA</button>
-                <button id="player-vs-player">Player vs Player</button>
-            </div>
-            <div id="difficulty-menu" style="display: none;">
-                <button id="easy">Easy</button>
-                <button id="medium">Medium</button>
-                <button id="hard">Hard</button>
-            </div>
-            <div id="score-container">
-                <div id="score-player2">0</div>
-                <div id="score-player1">0</div>
-            </div>
-            <div class="padding1"></div>
-            <div class="padding2"></div>
-            <div class="ball"></div>
-            <div class="delimiter"></div>
-        </div>
+			<div id="main-menu">
+				<button id="player-vs-ia">Player vs IA</button>
+				<button id="player-vs-player">Player vs Player</button>
+			</div>
+			<div id="difficulty-menu" style="display: none;">
+				<button id="easy">Easy</button>
+				<button id="medium">Medium</button>
+				<button id="hard">Hard</button>
+			</div>
+			<div id="score-container">
+				<div id="score-player2">0</div>
+				<div id="score-player1">0</div>
+			</div>
+			<div class="padding1"></div>
+			<div class="padding2"></div>
+			<div class="ball"></div>
+			<div class="delimiter"></div>
+		</div>
     </template>
 
-    <template id="temp_page1">
-        <!-- <div class="box">
-            <div id="main-menu">
-                <button id="player-vs-ia">Player vs IA</button>
-                <button id="player-vs-player">Player vs Player</button>
-            </div>
-            <div id="difficulty-menu" style="display: none;">
-                <button id="easy">Easy</button>
-                <button id="medium">Medium</button>
-                <button id="hard">Hard</button>
-            </div>
-            <div id="score-container">
-                <div id="score-player2">0</div>
-                <div id="score-player1">0</div>
-            </div>
-            <div class="padding1"></div>
-            <div class="padding2"></div>
-            <div class="ball"></div>
-            <div class="delimiter"></div>
-        </div> -->
-    </template>
     <template id="temp_page2">
         <h2>C'est la superbe page 2</h2>
     </template>
-    <template id="temp_page3">
-        <h2>C'est la magnifique et dernière page</h2>
+
+    <template id="temp_change_password">
+		<!-- change password -->
+		<div class="container rounded col-md-5 py-2 px-3 my-5" id="change_password">
+			<h1 class="text-center fw-bold">Changement de mot de passe</h1>
+			<form class="mx-1" method="post" id="change-password-form">
+				{% csrf_token %}
+				<div class="form-group my-2">
+					<label for="oldPassword">Ancien mot de passe :</label>
+					<input type="password" id="oldPassword" name="oldPassword" class="form-control" required>
+				</div>
+				<div class="form-group my-2">
+					<label for="newPassword">Nouveau mot de passe :</label>
+					<input type="password" id="newPassword" name="newPassword" class="form-control" required>
+				</div>
+				<div class="form-group my-2">
+					<label for="confirmPassword">Confirmer le nouveau mot de passe :</label>
+					<input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
+				</div>
+				<div class="text-center m-2">
+					<button type="submit" class="btn btn-primary">Changer le mot de passe</button>
+				</div>
+			</form>
+		</div>
     </template>
+
+
     <template id="temp_notFound">
         <img src="{% static 'anim/404_err.gif' %}" alt="Err_404 gif" class="img-fluid d-block mx-auto rounded-5 img-border"/>
         <h1 class="text-center fw-bolder">{{ texts.404_Err }}</h1>
@@ -245,31 +251,12 @@
 		</div>
 		<div class="offcanvas-body">
 		  <!-- Contenu de la fenêtre coulissante -->
+		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-link>Changer le mot de passe</a>
 		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">Deconnexion</button>
 		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">Supprimer mon compte</button>
 		</div>
 	</div>
-
-	<div class="container rounded col-md-5 py-2 px-3 my-5">
-        <h1 class="text-center fw-bold">Changement de mot de passe</h1>
-        <form class="mx-1" method="post" id="changePasswordForm">
-			<div class="form-group my-2">
-				<label for="oldPassword">Ancien mot de passe :</label>
-				<input type="password" id="oldPassword" required>
-			</div>
-			<div class="form-group my-2">
-				<label for="newPassword">Nouveau mot de passe :</label>
-				<input type="password" id="newPassword" required>
-			</div>
-			<div class="form-group my-2">
-				<label for="confirmPassword">Confirmer le nouveau mot de passe :</label>
-				<input type="password" id="confirmPassword" required>
-			</div>
-			<div class="text-center m-2">
-				<button type="submit">Changer le mot de passe</button>
-			</div>
-		</form>
-    </div>
-
+	<script defer src="{% static 'js/main.js' %}"></script>
+	<script defer src="{% static 'js/pong.js' %}"></script>
 </body>
 </html>

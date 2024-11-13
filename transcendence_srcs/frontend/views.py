@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.contrib.auth import authenticate, login # type: ignore
-from django.views.decorators.csrf import csrf_exempt # type: ignore
+from django.views.decorators.csrf import csrf_protect # type: ignore
 from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
@@ -8,6 +8,7 @@ from .models import TextTranslation
 from django.contrib.auth import logout # type: ignore
 import json
 from django.middleware.csrf import get_token # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, content_type='application/json; charset=utf-8')
 
+@login_required
 def logout_view(request):
 	request.user.disconnect()
 	logout(request)
@@ -112,6 +114,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': csrf_token})
 
 # Supprime l'utilisateur authentifié
+@login_required
 def delete_account(request):
 	if request.method == 'POST':
 		user = request.user
@@ -123,6 +126,8 @@ def delete_account(request):
 
 
 # Change password
+@login_required
+@csrf_protect
 def change_password(request):
 	if request.method == 'POST':
 		old_password = request.POST.get('old_password')
