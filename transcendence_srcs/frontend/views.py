@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.contrib.auth import authenticate, login # type: ignore
-from django.views.decorators.csrf import csrf_protect # type: ignore
+from django.views.decorators.csrf import csrf_protect, csrf_exempt # type: ignore
 from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
@@ -127,12 +127,15 @@ def delete_account(request):
 
 # Change password
 @login_required
-@csrf_protect
+# @csrf_protect
+# @csrf_exempt
 def change_password(request):
 	if request.method == 'POST':
 		old_password = request.POST.get('old_password')
 		new_password = request.POST.get('new_password')
 		confirm_password = request.POST.get('confirm_password')
+
+		print("cookies: ", request.COOKIES)
 
 		if new_password != confirm_password:
 			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
