@@ -105,18 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	// Attendre le chargement du formulaire avant d'appeller le js
-	document.addEventListener('DOMContentLoaded', function() {
-		const form = document.getElementById('change-password-form');
-		if (form) {
-			form.addEventListener('submit', function(event) {
-				event.preventDefault();
-				addCSRFTokenToForm();
-				handleFormChangePassword();
-			});
-		}
-	});
-
 	// fermeture auto de la fenetre de droite
 	const offcanvasElement = document.getElementById('offcanvasRight');
 	const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
@@ -160,6 +148,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
 	const csrfToken = document.querySelector('[name=csrf-token]').content
+	console.log(inputEmail)
 
 	fetch('/login/', {
 		method: 'POST',
@@ -241,9 +230,11 @@ function showSuccessModal() {
 document.getElementById('logo').addEventListener('click', function() {
 	checkAuthentification().then(isAuthenticated => {
 		if (isAuthenticated) {
+			const appDiv = document.getElementById("app");
 			loadTemplate(appDiv, "temp_login");
 			console.log("connect");
 		} else {
+			const appDiv = document.getElementById("app");
 			loadTemplate(appDiv, "temp_index");
 			console.log("disconnect");
 		}
@@ -293,35 +284,34 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
     }
 });
 
-function getCSRFTokenFromCookie() {
-    let csrfToken = null;
-    document.cookie.split(';').forEach(cookie => {
-        const [name, value] = cookie.trim().split('=');
-        if (name === 'csrftoken') csrfToken = value;
-    });
-    return csrfToken;
-}
-
-function addCSRFTokenToForm() {
-    const csrfToken = getCSRFTokenFromCookie();
-    let csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
-    if (!csrfInput) {
-        csrfInput = document.createElement("input");
-        csrfInput.setAttribute("type", "hidden");
-        csrfInput.setAttribute("name", "csrfmiddlewaretoken");
-        csrfInput.setAttribute("value", csrfToken);
-        document.getElementById('change-password-form').appendChild(csrfInput);
-    }
-}
-
 // change password
+document.getElementById('change_password_btn').addEventListener('click', function() {
+	const appDiv = document.getElementById("app");
+	loadTemplate(appDiv, "temp_change_password");
+	console.log("template load")
+	refreshCSRFToken()
+	console.log("csrfToken refresh")
+	const form = document.getElementById('change-password-form');
+	if (form) {
+		console.log("form trouve")
+		form.addEventListener('submit', function(event) {
+			event.preventDefault();
+			handleFormChangePassword();
+		});
+	}
+	else
+		console.log("form pas trouve")
+});
+
 function handleFormChangePassword() {
 
 	const oldPassword = document.getElementById('oldPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
-	const csrfToken = getCSRFTokenFromCookie();
-	// document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+	console.log(csrfToken);
+	console.log("old-passWord: ", oldPassword)
+	console.log("new-passWord: ", newPassword)
 
     fetch('/change-password/', {
         method: 'POST',
@@ -344,4 +334,4 @@ function handleFormChangePassword() {
 		loadTemplate(appDiv, "temp_login");
     })
     .catch(error => console.error('Erreur:', error));
-};
+}
