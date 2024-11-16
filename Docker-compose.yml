@@ -14,6 +14,16 @@ services:
       - Transcendence
     depends_on:
       - postgreSQL
+  django-exporter:
+    build:
+      context: Containers/Django-exporter
+      dockerfile: Dockerfile
+    image: transcendence-django-exporter
+    container_name: Django-exporter
+    networks:
+      - Transcendence
+    depends_on:
+      - django
   postgreSQL:
     build: 
       context: Containers/PostgreSQL
@@ -24,8 +34,15 @@ services:
     restart: unless-stopped
     volumes :
       - PostgreSQL:/var/lib/postgresql/15/main
-    expose:
-      - "5432"
+    networks:
+      - Transcendence
+  postgreSQL-exporter:
+    build: 
+      context: Containers/PostgreSQL-exporter
+      dockerfile: Dockerfile
+    image: transcendence-postgresql-exporter
+    container_name: PostgreSQL-exporter
+    env_file: .env
     networks:
       - Transcendence
   nginx:
@@ -43,6 +60,30 @@ services:
       - Transcendence
     depends_on:
       - django
+  nginx-exporter:
+    build:
+      context: Containers/Nginx-exporter
+      dockerfile: Dockerfile
+    image: transcendence-nginx-exporter
+    container_name: Nginx-exporter
+    networks:
+      - Transcendence
+    depends_on:
+      - nginx
+  prometheus:
+    build:
+      context: Containers/Prometheus
+      dockerfile: Dockerfile
+    image: transcendence-prometheus
+    container_name: Prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - Transcendence
+    depends_on:
+      - nginx-exporter
+      - django-exporter
+      - postgreSQL-exporter
 
 
 volumes:

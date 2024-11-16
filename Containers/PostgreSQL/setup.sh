@@ -3,12 +3,14 @@
 # rm -rf /var/lib/postgresql/15/main/*
 # Fonction pour vérifier si une base de données existe
 database_exists() {
-    su - postgres -c "psql -tAc \"SELECT 1 FROM pg_database WHERE datname='$DATABASE_NAME';\"" | grep -q 1
+    local database="$1"
+    su - postgres -c "psql -tAc \"SELECT 1 FROM pg_database WHERE datname='$database';\"" | grep -q 1
 }
 
 # Fonction pour vérifier si un utilisateur existe
 user_exists() {
-    su - postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='$DATABASE_USER';\"" | grep -q 1
+    local user="$1"
+    su - postgres -c "psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='$user';\"" | grep -q 1
 }
 
 if [ ! -d "/var/lib/postgresql/15/main" ] || [ -z "$(ls -A /var/lib/postgresql/15/main)" ]; then
@@ -46,6 +48,23 @@ else
     su - postgres -c "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE $DATABASE_NAME TO $DATABASE_USER;\""
 	service postgresql restart
 fi
+
+# Vérifier si l'utilisateur pour l'exporter existe déjà
+if user_exists "$DATABASE_USER_EXPORT"; then
+    echo "L'utilisateur $DATABASE_USER_EXPORT existe déjà."
+else
+    # Créer l'utilisateur si non existant
+    echo "Création de l'utilisateur $DATABASE_USER_EXPORT..."
+    su - postgres -c "psql -c \"CREATE USER $DATABASE_USER_EXPORT WITH PASSWORD '$DATABASE_PASSWORD_EXPORT';\""
+    su - postgres -c "psql -c \"GRANT CONNECT ON DATABASE $DATABASE_NAME TO $DATABASE_USER_EXPORT;\""
+    su - postgres -c "psql -c \"GRANT USAGE ON SCHEMA public TO $DATABASE_USER_EXPORT;\""
+    su - postgres -c "psql -c \"GRANT SELECT ON ALL TABLES IN SCHEMA public TO $DATABASE_USER_EXPORT;\""
+    su - postgres -c "psql -c \"GRANT pg_monitor TO $DATABASE_USER_EXPORT;\""
+    su - postgres -c "psql -c \"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO $DATABASE_USER_EXPORT;\""
+    service postgresql restart
+fi
+
+# Vérifier si la fonction de monitoring pour l'exporter exist
 
 echo "Configuration terminée."
 

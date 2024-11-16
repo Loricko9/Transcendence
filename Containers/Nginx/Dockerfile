@@ -11,6 +11,7 @@ COPY ./fullchain1.pem /etc/nginx/ssl/fullchain1.pem
 COPY ./privkey1.pem /etc/nginx/ssl/privkey1.pem
 
 EXPOSE 443
+EXPOSE 80
 RUN rm /etc/nginx/sites-enabled/default
 
 CMD ["nginx", "-g", "daemon off;"]
