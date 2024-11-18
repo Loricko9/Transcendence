@@ -8,6 +8,8 @@ async function checkAuthentification() {
 			document.getElementById('option').style.display = 'inline-block';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
+			document.getElementById('user_avatar').innerHTML = data.avatar;
+			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
 			const nbWinElement = document.getElementById('nbWin');
@@ -25,6 +27,7 @@ async function checkAuthentification() {
 			document.getElementById('option').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
 			document.getElementById('bar_sub_login').classList.add('d-flex');
+			document.getElementById('user_avatar').style.display = 'none';
 			document.getElementById('user_connected').style.display = 'none';
 			return false;
 		}

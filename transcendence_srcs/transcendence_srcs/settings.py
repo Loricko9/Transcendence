@@ -142,6 +142,7 @@ STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
 	os.path.join(BASE_DIR, 'frontend/static/css'),
 	os.path.join(BASE_DIR, 'frontend/static/js'),
+	os.path.join(BASE_DIR, 'api/static/avatars'),
 ]
 
 STATIC_ROOT = '/app/staticfiles'

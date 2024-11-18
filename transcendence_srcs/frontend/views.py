@@ -41,6 +41,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True,
+						   	'avatar': '<img src="{{ request.user.avatar }}" alt="Avatar">',
 					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
