@@ -19,7 +19,7 @@ class User_tabManager(BaseUserManager):
 			Email = self.normalize_email(Email),
 			username = username
 		)
-		New_user.set_password(password) #hash automatiquement le mdp A verifier
+		New_user.set_password(password) #hash automatiquement le mdp
 		New_user.save(using=self._db)
 		
 		return New_user
