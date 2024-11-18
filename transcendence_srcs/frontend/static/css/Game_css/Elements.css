@@ -1,0 +1,312 @@
+/*////////////////////////////////////////////////////////////
+ //                   Containers Elements                  //
+////////////////////////////////////////////////////////////*/
+
+#game-container {
+    display: flex;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+    height: 615px;
+    width: 700px;
+    z-index: 0;
+	/* border: solid 5px white; */
+	overflow: hidden;
+}
+
+#game-area {
+	background-color: black;
+	position: absolute;
+	bottom: 98px;
+	height: 400px;
+	width: 700px;
+	border: solid 3px white;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	z-index: 0;
+}
+
+/*////////////////////////////////////////////////////////////
+ //                   LeftPlayer Elements                  //
+////////////////////////////////////////////////////////////*/
+
+#LeftPlayer {
+    color: white;
+    left: 0%;
+	top: 8px;
+    position: absolute;
+    height: 120px;
+    width: 200px;
+    background-color: black;
+
+
+    border: solid 3px white;
+    transform: translate(0px, -8px);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+#LeftPlayerName {
+	position: absolute;
+	top : 85px;
+	left: 9px;
+	width: 90px;
+	text-align: center;
+	border : solid 1px white;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#LeftPlayerScore {
+	margin: 10;
+	position: absolute;
+	top: 50px;
+	right: 45px;
+	transform: translate(50%, -50%);
+	text-align: center;
+    font-size: 100px;
+}
+
+#leftUserIcon {
+	position: absolute;
+	width: 80px;
+	height: 80px;
+	left: 15px;
+	top :6px;
+    border : solid 1px white;
+
+}
+
+/*////////////////////////////////////////////////////////////
+ //                   RightPlayer Elements                 //
+////////////////////////////////////////////////////////////*/
+
+#RightPlayer {
+    color: white;
+    right: 0px;
+	top: 8px;
+    position: absolute;
+    height: 120px;
+    width: 200px;
+    background-color: black;
+    border: solid 3px white;
+    transform: translate(0px, -8px);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+
+#RightPlayerName {
+	position: absolute;
+    top: 85px;
+    right: 9px;
+    width: 90px;
+    text-align: center;
+    border : solid 1px white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+	z-index: 1;
+}
+
+#RightPlayerScore {
+	margin: 10;
+	position: absolute;
+	top: 50px;
+	left: 45px;
+	transform: translate(-50%, -50%);
+	text-align: center;
+    font-size: 100px;
+}
+
+#rightUserIcon {
+	position: absolute;
+    width: 80px;
+    height: 80px;
+    right: 15px;
+    top :6px;
+    border : solid 1px white;
+}
+
+/*////////////////////////////////////////////////////////////
+//                         Elements                       //
+////////////////////////////////////////////////////////////*/
+
+#left-paddle, #right-paddle {
+	top: 50%;
+	position: absolute;
+	background: white;
+	height: 150px;
+	width: 15px;
+	border-radius: 50px;
+	transform: translateY(-50%);
+	transition: 0.06s linear;
+}
+
+#left-paddle {
+	left: 5px;
+}
+
+#right-paddle {
+	right: 5px;
+}
+
+#ball {
+	height: 20px;
+	width: 20px;
+	background : white;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	z-index: 1;
+}
+
+#delimiter {
+    height: 99%;
+    top: 0;
+    left: 50%;
+	border: 2px dashed white;
+	transform: translateX(-50%);
+	position: absolute;
+	z-index: 0;
+}
+
+#GameTypeHeader {
+    font-size: 52px;
+    position: absolute;
+    display: flex;
+    top: 60px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border: solid 3px white;
+    border-radius: 10px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+#tips1, #tips2 {
+	color: white;
+    width: 400px;
+	/* border: solid 3px white; */
+    position: absolute;
+    font-size: 35px;
+    left: -190px;
+    transform: translate(50%, -50%);
+}
+
+#tips1 {
+    bottom: -18px;
+}
+
+#tips2 {
+    bottom: -60px;
+}
+
+#DarkModeText {
+	color: white;
+	position: absolute;
+	font-size: 25px;
+	left: 80px;
+	width: 200px;
+	height: 30px;
+	top: -10px;
+	/* justify-content: center; */
+	/* border: solid 3px white; */
+	text-align: center;
+	transform: translate(-50%, -50%);
+	bottom: -70px;
+}
+
+/*////////////////////////////////////////////////////////////
+ //                        Users info                      //
+////////////////////////////////////////////////////////////*/
+
+#UsersInformation {
+    display: flex;
+    flex-direction: row;
+    background-color: transparent;
+    width: 600px;
+    height: 200px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+}
+#Host, #User1, #User2, #User3 {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: 150px;
+    height: 150px;
+    position: relative;
+    border-radius: 40px;
+    border : solid 3px white;
+    background-color: lightgrey;
+    z-index: 1;
+}
+#User1SearchBox, #User2SearchBox, #User3SearchBox {
+    width: 100px;
+    height: 30px;
+    position: absolute;
+    border-radius: 10px;
+    bottom: -40px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#hostUserIcon, #user1Icon, #user2Icon, #user3Icon {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 30px;
+    transform: translate(-50%, -50%);
+    border : solid 1px white;
+}
+#HostName, #User1Name, #User2Name, #User3Name {
+    position: absolute;
+    color: white;
+    text-align: center;
+    bottom: 10px;
+    width: 100px;
+    border-radius: 10px;
+    background-color: rgba(128, 128, 128, 0.8);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border : solid 1px white;
+    z-index: 2;
+}
+
+#EndGameLeftPlayer, #EndGameRightPlayer {
+    color: white;
+    position: absolute;
+    margin: 15px;
+}
+#EndGameRightPlayer {right: 0%;}
+
+#counter {
+	position: absolute;
+	/* top: 140px; */
+	top: 50%;
+	width: 140px;
+	border-radius: 50%;
+	background-color: black;
+	/* height: 100px; */
+	text-align: center;
+	border: solid 3px white;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 120px;
+	z-index: 3;
+	color: red;
+}

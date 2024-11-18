@@ -65,9 +65,9 @@ function router(){
 			});
 			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
-		case "/page2/":
-			loadTemplate(appDiv, "temp_page2");
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+		case "/Game/":
+			loadTemplate(appDiv, "Game");
+			// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
 		case "/change-password/":
 			checkAuthentification().then(isAuthenticated => {
