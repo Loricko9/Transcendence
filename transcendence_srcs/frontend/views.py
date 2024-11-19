@@ -161,14 +161,9 @@ def change_password(request):
 # Change avatar
 @login_required
 def change_avatar(request):
-	avatars_dir = os.path.join(settings.MEDIA_ROOT, 'avatars/')
-	avatars = [f"avatars/{filename}" for filename in os.listdir(avatars_dir) if filename.endswith(('png'))]
-
 	if request.method == "POST":
 		selected_avatar = request.POST.get("avatar")
 		if selected_avatar:
 			request.user.avatar = selected_avatar  # Enregistre le nouvel avatar
 			request.user.save()
 			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
-
-	return render(request, 'change-avatar', {'avatars': avatars, 'MEDIA_URL': settings.MEDIA_URL})

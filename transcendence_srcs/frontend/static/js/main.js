@@ -348,30 +348,50 @@ function handleFormChangePassword() {
 
 // change avatar
 document.getElementById('change_avatar_btn').addEventListener('click', function() {
-	const appDiv = document.getElementById("app");
-	loadTemplate(appDiv, "temp_change_avatar");
-	refreshCSRFToken()
-	const form = document.getElementById('change-avatar-form');
-	if (form) {
-		console.log("form trouve")
-		form.addEventListener('submit', function(event) {
-			event.preventDefault();
-			handleFormChangeAvatar();
-		});
-	}
-	else
-		console.log("form pas trouve")
+    const appDiv = document.getElementById("app");
+    loadTemplate(appDiv, "temp_change_avatar");
+    refreshCSRFToken();
+
+    // Charger dynamiquement les avatars
+    fetch('/media/avatars/')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
+            const avatarContainer = document.getElementById('avatar-container');
+
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
+                    // Ajouter chaque image dans le conteneur
+                    const img = document.createElement('img');
+                    img.src = `/media/avatars/${href}`;
+                    img.width = 120;
+                    img.height = 120;
+                    img.style.cursor = 'pointer';
+                    img.addEventListener('click', function() {
+                        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                        img.classList.add('selected');
+                        img.dataset.selected = true;
+                    });
+                    avatarContainer.appendChild(img);
+                }
+            });
+        })
+        .catch(error => console.error('Erreur:', error));
 });
 
+// Fonction pour récupérer l'avatar sélectionné
 function handleFormChangeAvatar() {
-
-	const newAvatarInput = document.querySelector('input[name="avatar"]:checked');
-    if (!newAvatarInput) {
+    const selectedImg = document.querySelector('img.selected');
+    if (!selectedImg) {
         alert("Veuillez sélectionner un avatar.");
         return;
     }
-    const newAvatar = newAvatarInput.value;
-	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    const newAvatar = selectedImg.src.replace(window.location.origin, ''); // Obtenir le chemin relatif
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     fetch('/change-avatar/', {
         method: 'POST',
@@ -385,11 +405,15 @@ function handleFormChangeAvatar() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('infoco').innerHTML = data.message
-		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_login");
+        document.getElementById('infoco').innerHTML = data.message;
+        if (data.success) {
+            showSuccessModal();
+            checkAuthentification();
+            const appDiv = document.getElementById("app");
+            loadTemplate(appDiv, "temp_login");
+        } else {
+            alert(data.message);
+        }
     })
     .catch(error => console.error('Erreur:', error));
 }
