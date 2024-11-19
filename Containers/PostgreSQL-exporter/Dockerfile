@@ -10,4 +10,4 @@ RUN tar -xvzf /postgres_exporter-0.16.0.linux-amd64.tar.gz -C / && \
 
 EXPOSE 9187
 
-CMD ["postgres_exporter"]
+ENTRYPOINT ["postgres_exporter"]
