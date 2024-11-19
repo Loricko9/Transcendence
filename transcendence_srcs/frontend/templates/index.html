@@ -202,8 +202,23 @@
 		</div>
     </template>
 
-    <template id="temp_page2">
-        <h2>C'est la superbe page 2</h2>
+	<!-- temp change avatar -->
+    <template id="temp_change_avatar">
+        <div class="container rounded col-md-5 py-2 px-3 my-5" id="change_avatar">
+			<h1 class="text-center fw-bold">Change ton avatar</h1>
+			<form method="post" id="change-avatar-form">
+				{% csrf_token %}
+				<div>
+					{% for avatar in avatars %}
+					<label>
+						<input type="radio" id="avatar" name="avatar" value="{{ avatar }}" style="display: none;">
+						<img src="{{ MEDIA_URL }}{{ avatar }}" width="100" height="100" style="cursor: pointer;" onclick="this.previousElementSibling.checked=true;">
+					</label>
+					{% endfor %}
+				</div>
+				<button type="submit" class="btn btn-primary">Enregistrer</button>
+			</form>
+		</div>
     </template>
 
     <template id="temp_change_password">
@@ -256,6 +271,7 @@
 		</div>
 		<div class="offcanvas-body">
 		  <!-- Contenu de la fenêtre coulissante -->
+		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn">Changer mon avatar</a>
 		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn">Changer le mot de passe</a>
 		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">Deconnexion</button>
 		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">Supprimer mon compte</button>

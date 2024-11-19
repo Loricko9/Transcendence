@@ -68,14 +68,21 @@ function router(){
 			});
 			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
-		case "/page2/":
-			loadTemplate(appDiv, "temp_page2");
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-			break;
 		case "/change-password/":
 			checkAuthentification().then(isAuthenticated => {
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_change_password");
+					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				} else {
+					const lang_path = window.location.pathname.substring(0, 3);
+					redirect_to(lang_path + "/");
+				}
+			});
+			break;
+		case "/change-avatar/":
+			checkAuthentification().then(isAuthenticated => {
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 				} else {
 					const lang_path = window.location.pathname.substring(0, 3);
@@ -326,6 +333,54 @@ function handleFormChangePassword() {
             'old_password': oldPassword,
             'new_password': newPassword,
             'confirm_password': confirmPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('infoco').innerHTML = data.message
+		showSuccessModal()
+		checkAuthentification()
+		const appDiv = document.getElementById("app");
+		loadTemplate(appDiv, "temp_login");
+    })
+    .catch(error => console.error('Erreur:', error));
+}
+
+// change avatar
+document.getElementById('change_avatar_btn').addEventListener('click', function() {
+	const appDiv = document.getElementById("app");
+	loadTemplate(appDiv, "temp_change_avatar");
+	refreshCSRFToken()
+	const form = document.getElementById('change-avatar-form');
+	if (form) {
+		console.log("form trouve")
+		form.addEventListener('submit', function(event) {
+			event.preventDefault();
+			handleFormChangeAvatar();
+		});
+	}
+	else
+		console.log("form pas trouve")
+});
+
+function handleFormChangeAvatar() {
+
+	const newAvatarInput = document.querySelector('input[name="avatar"]:checked');
+    if (!newAvatarInput) {
+        alert("Veuillez sélectionner un avatar.");
+        return;
+    }
+    const newAvatar = newAvatarInput.value;
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch('/change-avatar/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'avatar': newAvatar,
         })
     })
     .then(response => response.json())
