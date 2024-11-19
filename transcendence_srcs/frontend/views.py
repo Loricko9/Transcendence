@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
-from django.contrib.auth import authenticate, login # type: ignore
-from django.views.decorators.csrf import csrf_exempt # type: ignore
+from django.contrib.auth import authenticate, login, update_session_auth_hash # type: ignore
+from django.views.decorators.csrf import csrf_protect, csrf_exempt # type: ignore
 from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
@@ -8,6 +8,7 @@ from .models import TextTranslation
 from django.contrib.auth import logout # type: ignore
 import json
 from django.middleware.csrf import get_token # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, content_type='application/json; charset=utf-8')
 
+@login_required
 def logout_view(request):
 	request.user.disconnect()
 	logout(request)
@@ -39,6 +41,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True,
+						   	'avatar': '<img src="{{ request.user.avatar }}" alt="Avatar">',
 					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -112,6 +115,7 @@ def get_csrf_token(request):
     return JsonResponse({'csrfToken': csrf_token})
 
 # Supprime l'utilisateur authentifié
+@login_required
 def delete_account(request):
 	if request.method == 'POST':
 		user = request.user
@@ -119,4 +123,35 @@ def delete_account(request):
 		logout(request)
 		user.delete()
 		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
+	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
+
+
+# Change password
+@login_required
+@csrf_protect
+def change_password(request):
+	if request.method == 'POST':
+		old_password = request.POST.get('old_password')
+		new_password = request.POST.get('new_password')
+		confirm_password = request.POST.get('confirm_password')
+
+		if new_password != confirm_password:
+			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
+
+		user = request.user
+
+		# Vérifie si l'ancien mot de passe est correct
+		if not user.check_password(old_password):
+			return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
+
+		# Change le mot de passe et sauvegarde l'utilisateur
+		user.set_password(new_password)
+		user.save()
+
+		update_session_auth_hash(request, user)
+		# Authentifie à nouveau l'utilisateur avec son nouveau mot de passe
+		login(request, user)
+
+		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
+
 	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)

@@ -19,7 +19,7 @@ class User_tabManager(BaseUserManager):
 			Email = self.normalize_email(Email),
 			username = username
 		)
-		New_user.set_password(password) #hash automatiquement le mdp A verifier
+		New_user.set_password(password) #hash automatiquement le mdp
 		New_user.save(using=self._db)
 		
 		return New_user
@@ -41,6 +41,7 @@ class User_tabManager(BaseUserManager):
 class User_tab(AbstractBaseUser, PermissionsMixin):
 	Email = models.EmailField(unique=True)
 	username = models.CharField(max_length=255, null=True, unique=True)
+	avatar = models.ImageField(upload_to='static/avatars/', default='static/avatars/avatar_1.jpeg')
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)
