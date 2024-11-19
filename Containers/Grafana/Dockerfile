@@ -9,5 +9,7 @@ RUN dpkg -i grafana_11.3.0+security~01_amd64.deb && \
 COPY ./grafana.ini /etc/grafana/grafana.ini
 COPY ./datasources.yaml /etc/grafana/provisioning/datasources/datasources.yaml
 COPY ./start.sh /start.sh
+COPY ./dashboards.yaml /etc/grafana/provisioning/dashboards.yaml
+COPY ./dashboards /etc/grafana/provisioning/dashboards
 
 ENTRYPOINT [ "/start.sh" ]
