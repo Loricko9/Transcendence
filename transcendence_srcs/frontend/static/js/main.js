@@ -8,6 +8,8 @@ async function checkAuthentification() {
 			document.getElementById('option').style.display = 'inline-block';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
+			document.getElementById('user_avatar').innerHTML = data.avatar;
+			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
 			const nbWinElement = document.getElementById('nbWin');
@@ -25,6 +27,7 @@ async function checkAuthentification() {
 			document.getElementById('option').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
 			document.getElementById('bar_sub_login').classList.add('d-flex');
+			document.getElementById('user_avatar').style.display = 'none';
 			document.getElementById('user_connected').style.display = 'none';
 			return false;
 		}
@@ -80,6 +83,17 @@ function router(){
 				}
 			});
 			break;
+		case "/change-avatar/":
+			checkAuthentification().then(isAuthenticated => {
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "temp_change_avatar");
+					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				} else {
+					const lang_path = window.location.pathname.substring(0, 3);
+					redirect_to(lang_path + "/");
+				}
+			});
+			break;
 		default:
 			loadTemplate(appDiv, "temp_notFound");
 			appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
@@ -116,6 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		offcanvasInstance.hide();
 	});
 	document.getElementById('change_password_btn').addEventListener('click', function () {
+		offcanvasInstance.hide();
+	});
+	document.getElementById('change_avatar_btn').addEventListener('click', function () {
 		offcanvasInstance.hide();
 	});
 	
@@ -332,6 +349,79 @@ function handleFormChangePassword() {
 		checkAuthentification()
 		const appDiv = document.getElementById("app");
 		loadTemplate(appDiv, "temp_login");
+    })
+    .catch(error => console.error('Erreur:', error));
+}
+
+// change avatar
+document.getElementById('change_avatar_btn').addEventListener('click', function() {
+    const appDiv = document.getElementById("app");
+    loadTemplate(appDiv, "temp_change_avatar");
+    refreshCSRFToken();
+
+    // Charger dynamiquement les avatars
+    fetch('/media/avatars/')
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
+            const avatarContainer = document.getElementById('avatar-container');
+
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
+                    // Ajouter chaque image dans le conteneur
+                    const img = document.createElement('img');
+                    img.src = `/media/avatars/${href}`;
+                    img.width = 120;
+                    img.height = 120;
+                    img.style.cursor = 'pointer';
+					img.classList.add('avatar-img');
+                    img.addEventListener('click', function() {
+                        document.querySelectorAll('.avatar-img.selected').forEach(el => el.classList.remove('selected'));
+                        img.classList.add('selected');
+                        img.dataset.selected = true;
+                    });
+                    avatarContainer.appendChild(img);
+                }
+            });
+        })
+        .catch(error => console.error('Erreur:', error));
+});
+
+// Fonction pour récupérer l'avatar sélectionné
+function handleFormChangeAvatar() {
+    const selectedImg = document.querySelector('img.selected');
+    if (!selectedImg) {
+        alert("Veuillez sélectionner un avatar.");
+        return;
+    }
+
+    const newAvatar = selectedImg.src.replace(window.location.origin, '').replace('/media/', ''); // Obtenir le chemin relatif
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch('/change-avatar/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'avatar': newAvatar,
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('infoco').innerHTML = data.message;
+        if (data.success) {
+            showSuccessModal();
+            checkAuthentification();
+            const appDiv = document.getElementById("app");
+            loadTemplate(appDiv, "temp_login");
+        } else {
+            alert(data.message);
+        }
     })
     .catch(error => console.error('Erreur:', error));
 }

@@ -52,7 +52,12 @@
             </div>
         </div>
 
-		<!-- client name connected -->
+		<!-- connected client's avatar -->
+		<div id="user_avatar" style="display: none;">
+			<!-- script dyhnamique -->
+		</div>
+
+		<!-- connected client's name -->
 		<div id="user_connected" style="display: none;">
 			<!-- script dyhnamique -->
 		</div>
@@ -271,6 +276,16 @@
             <h4 id="GameTypeHeader">none</h4>
         </div>
     </template>
+	<!-- temp change avatar -->
+	<template id="temp_change_avatar">
+		<div class="container rounded col-md-5 py-2 px-3 my-5" id="change_avatar">
+			<h1 class="text-center fw-bold">Change ton avatar</h1>
+			<form method="post" id="change-avatar-form">
+				<div id="avatar-container" class="d-flex flex-wrap gap-2"></div>
+				<button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">Enregistrer</button>
+			</form>
+		</div>
+	</template>
 
     <template id="temp_change_password">
 		<!-- change password -->
@@ -322,6 +337,7 @@
 		</div>
 		<div class="offcanvas-body">
 		  <!-- Contenu de la fenêtre coulissante -->
+		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn">Changer mon avatar</a>
 		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn">Changer le mot de passe</a>
 		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">Deconnexion</button>
 		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">Supprimer mon compte</button>
@@ -330,5 +346,7 @@
 	<script defer src="{% static 'js/main.js' %}"></script>
 	<script type="module" defer src="{% static 'js/Game_JS/Gamemain.js' %}"></script>
 
+	<!-- <script defer src="{% static 'js/pong.js' %}"></script> -->
+	<script defer src="{% static 'css/style.css' %}"></script>
 </body>
 </html>

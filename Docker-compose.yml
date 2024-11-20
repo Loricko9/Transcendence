@@ -34,6 +34,7 @@ services:
       - "8000:8000"
     volumes:
       - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
+      - mediafiles:/app/mediafiles
     networks:
       - Transcendence
     depends_on:
@@ -56,7 +57,15 @@ volumes:
       o: 'bind'
       device: './database'
   staticfiles:
-    driver: local  # Volume pour partager les fichiers statiques entre Django et Ngin
+    driver: local  # Volume pour partager les fichiers statiques entre Django et Nginx
+  mediafiles:
+    driver: local
+    name: mediafiles
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './transcendence_srcs/media'
+
 
 networks:
   Transcendence:

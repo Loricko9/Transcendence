@@ -9,6 +9,8 @@ from django.contrib.auth import logout # type: ignore
 import json
 from django.middleware.csrf import get_token # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
+from django.conf import settings # type: ignore
+import os # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True,
+						   	'avatar': f'<img src="{ request.user.avatar.url }" width="75" height="65" alt="Avatar">',
 					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -154,3 +157,17 @@ def change_password(request):
 		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
 
 	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
+
+# Change avatar
+@login_required
+def change_avatar(request):
+	if request.method == "POST":
+		selected_avatar = request.POST.get("avatar")
+		if selected_avatar:
+			avatar_path = os.path.join(settings.MEDIA_ROOT, selected_avatar)
+			if os.path.exists(avatar_path):
+				request.user.avatar = selected_avatar  # Enregistre le nouvel avatar
+				request.user.save()
+				return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
+			return JsonResponse({'success': False, 'message': 'Avatar invalide.'})
+		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné.'})
