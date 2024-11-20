@@ -287,12 +287,11 @@
     z-index: 2;
 }
 
-#EndGameLeftPlayer, #EndGameRightPlayer {
+#EndGameLeftPlayer {
     color: white;
     position: absolute;
     margin: 15px;
 }
-#EndGameRightPlayer {right: 0%;}
 
 #counter {
 	position: absolute;

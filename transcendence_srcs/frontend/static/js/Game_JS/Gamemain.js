@@ -41,6 +41,8 @@ const RoomHostName = document.getElementById('HostName');
 const RoomUser1Name = document.getElementById('User1Name');
 const RoomUser2Name = document.getElementById('User2Name');
 const RoomUser3Name = document.getElementById('User3Name');
+const WinnerImage = document.getElementById('WinnerName');
+const WinnerName = document.getElementById('WinnerName');
 	
 const keyPressed = {};
 	
