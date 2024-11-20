@@ -7,7 +7,7 @@ const ScorePlayerLeftElement = document.getElementById('LeftPlayerScore');
 const ScorePlayerRightElement = document.getElementById('RightPlayerScore');
 const LeftPlayerUserNameContent = document.getElementById('LeftPlayerName');
 const RightPlayerUserNameContent = document.getElementById('RightPlayerName');
-const GameTypeHeader = document.getElementById('GameTypeHeader');
+// const GameTypeHeader = document.getElementById('GameTypeHeader');
 const Ltips = document.getElementById('tips1');
 const Rtips = document.getElementById('tips2');
 	
@@ -57,6 +57,9 @@ let fight = [null, null]; // [left_user, right_user]
 let ballSpeed = 5;
 let ballDirectionX = Math.random() < 0.5 ? -1 : 1; // Random initial direction
 let ballDirectionY = Math.random() < 0.5 ? -1 : 1; // Random initial direction
+
+let scoreleftplayer = 0;
+let scorerightplayer = 0;
 
 function setHostUserName(value) {
 	HostUserNameVar = value;
@@ -111,10 +114,10 @@ function resetFight() {
 	fight = [null, null];
 }
 
-function ChangeGameModeHeader(mode) {if (mode === 'none') {GameTypeHeader.textContent = 'none';GameTypeHeader.style.display = 'none';} else {
-	GameTypeHeader.textContent = `{{ texts.` + mode + `Mode }}`;
-	// GameTypeHeader.textContent = mode;
-	GameTypeHeader.style.display = 'block';}}
+// function ChangeGameModeHeader(mode) {if (mode === 'none') {GameTypeHeader.textContent = 'none';GameTypeHeader.style.display = 'none';} else {
+// 	GameTypeHeader.textContent = `{{ texts.` + mode + `Mode }}`;
+// 	// GameTypeHeader.textContent = mode;
+// 	GameTypeHeader.style.display = 'block';}}
 function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
 function ToggleOptnMenu() {
 	if (OptnMenu.style.bottom === '-650px') {
@@ -127,6 +130,8 @@ function ToggleOptnMenu() {
 
 function changeMenu(menu) {
 	if (menu === 'MainMenu') {
+		document.getElementById('EndGameMenu').style.display = 'none';
+
 		Rtips.style.display = 'none';
 		Ltips.style.display = 'none';
 		Ball.style.display = 'none';
@@ -144,6 +149,8 @@ function changeMenu(menu) {
 
 		resetAllData();
 	} else if (menu === 'AIMenu') {
+		document.getElementById('EndGameMenu').style.display = 'none';
+
 		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
 		Ltips.style.display = 'none';
 		Rtips.style.display = 'none';
@@ -160,6 +167,8 @@ function changeMenu(menu) {
 		hideOptnMenu();
 
 	} else if (menu === 'RoomMenu') {
+		document.getElementById('EndGameMenu').style.display = 'none';
+
 		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
 
 		Ltips.style.display = 'none';
@@ -206,6 +215,8 @@ function changeMenu(menu) {
 			RoomUser3Info.style.backgroundColor = 'lightgrey';
 		} 
 	} else if (menu === 'Game') {
+		document.getElementById('EndGameMenu').style.display = 'none';
+
 		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
 		Ltips.style.display = 'none';
 		Rtips.style.display = 'none';
@@ -228,8 +239,14 @@ function changeMenu(menu) {
 
 		// AnimationGameMenu('out');
 
-	} else if (menu === 'End') {
-		
+	} else if (menu === 'endGameMenu') {
+		document.getElementById('EndGameMenu').style.display = 'block';
+		Ball.style.display = 'none';
+		PaddingLeft.style.display = 'none';
+		PaddingRight.style.display = 'none';
+		Delimiter.style.display = 'none';
+		ReadyButton.style.display = 'none';
+		counterElement.style.display = 'none';
 	} else
 		console.error('Menu not found');
 }
@@ -290,8 +307,8 @@ function resetAllData() {
 	round = 0;
 	resetFight();
 	ballSpeed = 5;
-	GameTypeHeader.style.display = 'none';
-	GameTypeHeader.textContent = 'none';
+	// GameTypeHeader.style.display = 'none';
+	// GameTypeHeader.textContent = 'none';
 	OptnMenu.style.bottom = '-650px';
 	PaddingLeft.style.top = '50%';
 	PaddingRight.style.top = '50%';
@@ -304,6 +321,8 @@ function softReset() {
 	PaddingRight.style.top = '50%';
 	Ball.style.left = '50%';
 	Ball.style.top = '50%';
+	ballDirectionX = Math.random() < 0.5 ? -1 : 1; // Random initial direction
+	ballDirectionY = Math.random() < 0.5 ? -1 : 1;
 }
 
 function counter(callback) {
@@ -339,11 +358,19 @@ function startGame() {
 	});
 }
 
+function checkWin() {
+	if (scoreleftplayer === 3 || scorerightplayer === 3) {
+		changeMenu("endGameMenu");
+	}
+
+}
+
 function gameLoop() {
 	if (gameStarted === true) {	
 		movePaddings();
 		moveBall();
 		defineWhoFight();
+		checkWin();
 		requestAnimationFrame(gameLoop);
 	}
 }
@@ -381,7 +408,7 @@ function movePaddings() {
 			PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) - 30) + "px";
 		else
 			PaddingLeft.style.top = 80 + "px";
-	} if (PVPMode === 'none') { ////////////////////////
+	} if (PVPMode !== 'none') { ////////////////////////
 		if (keyPressed['ArrowDown']) {
 			if (parseInt(window.getComputedStyle(PaddingRight).top) + 30 < 314)
 				PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) + 30) + "px";
@@ -397,27 +424,100 @@ function movePaddings() {
 		// else {AI();}
 }
 
-function moveBall() {
+function addPoint(side) {
+	if (side === 'left') {
+		scoreleftplayer++;
+		ScorePlayerRightElement.textContent = scoreleftplayer;
+	} else if (side === 'right') {
+		scorerightplayer++;
+		ScorePlayerLeftElement.textContent = scorerightplayer;
+	}
+}
 
+function moveBall() {
+	let ballTop = parseInt(window.getComputedStyle(Ball).top);
+	let ballLeft = parseInt(window.getComputedStyle(Ball).left);
+	
+	ballTop += ballSpeed * ballDirectionY;
+	ballLeft += ballSpeed * ballDirectionX;
+	
+	if (ballTop <= Ball.offsetHeight / 2) {
+		ballDirectionY = 1;
+	} else if (ballTop >= 400 - Ball.offsetHeight) {
+		ballDirectionY = -1;
+	} if (ballLeft <= 0) {
+		ScorePlayerRightElement.textContent = parseInt(ScorePlayerRightElement.textContent) + 1;
+		softReset();
+		addPoint("left");
+		return;
+	} else if (ballLeft >= 700 - Ball.offsetWidth) {
+		ScorePlayerLeftElement.textContent = parseInt(ScorePlayerLeftElement.textContent) + 1;
+		softReset();
+		addPoint("right");
+		return;
+	}
+	
+	const paddingLeftRect = PaddingLeft.getBoundingClientRect();
+	const paddingRightRect = PaddingRight.getBoundingClientRect();
+	const ballRect = Ball.getBoundingClientRect();
+
+	if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left && ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) {
+		ballDirectionX = 1;
+	}
+
+	if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right && ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) {
+		ballDirectionX = -1;
+	}
+	
+	// const currentPaddingLeftTop = parseInt(window.getComputedStyle(PaddingLeft).top);
+	// const currentPaddingRightTop = parseInt(window.getComputedStyle(PaddingRight).top);
+	
+	// const paddingLeftMovingUp = currentPaddingLeftTop < lastPaddingLeftTop;
+	// const paddingLeftMovingDown = currentPaddingLeftTop > lastPaddingLeftTop;
+	// const paddingRightMovingUp = currentPaddingRightTop < lastPaddingRightTop;
+	// const paddingRightMovingDown = currentPaddingRightTop > lastPaddingRightTop;
+	
+	// if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left && ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) {
+	// 	ballDirectionX = 1;
+	// 	if (paddingLeftMovingUp && ballDirectionY > 0) {
+	// 		ballDirectionY *= -1;
+	// 		ballSpeed = Math.max(ballSpeed - 1, 2);
+	// 	} else if (paddingLeftMovingDown && ballDirectionY < 0) {
+	// 		if (ballSpeed < 10)
+	// 			ballSpeed += 1;
+	// 		if (ballSpeed > 10)
+	// 			ballSpeed = 10;
+	// 	}
+	// 	if (ballSpeed < 10) {
+	// 		ballSpeed += 0.1;
+	// 	}
+	// }
+	
+	// if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right && ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) {
+	// 	ballDirectionX = -1;
+	// 	if (paddingRightMovingUp && ballDirectionY > 0) {
+	// 		b
+	Ball.style.top = ballTop + 'px';
+	Ball.style.left = ballLeft + 'px';
 }
 
 // ------------------------------- PVP events -------------------------------
 
 PVP1v1Button.addEventListener('click', () => {
 	PVPMode = '1vs1';
-	ChangeGameModeHeader(PVPMode);
+	// ChangeGameModeHeader(PVPMode);
 	changeMenu('RoomMenu');
 });
 
 PVP2v2Button.addEventListener('click', () => {
 	PVPMode = '2vs2';
-	ChangeGameModeHeader(PVPMode);
+	// ChangeGameModeHeader(PVPMode);
 	changeMenu('RoomMenu');
 });
 
 TournamentButton.addEventListener('click', () => {
 	PVPMode = 'Tournament';
-	ChangeGameModeHeader(PVPMode);
+	// ChangeGameModeHeader(PVPMode);
 	changeMenu('RoomMenu');
 });
 
@@ -428,21 +528,21 @@ PVAButton.addEventListener('click', () => {
 
 PvAIeasyButton.addEventListener('click', () => {
 	AIDifficulty = 'Easy';
-	ChangeGameModeHeader(AIDifficulty);
+	// ChangeGameModeHeader(AIDifficulty);
 	changeMenu('Game');
 	// startGame()
 });
 
 PvAImediumButton.addEventListener('click', () => {
 	AIDifficulty = 'Medium';
-	ChangeGameModeHeader(AIDifficulty);
+	// ChangeGameModeHeader(AIDifficulty);
 	changeMenu('Game');
 	// startGame()
 });
 
 PvAIhardButton.addEventListener('click', () => {
 	AIDifficulty = 'Hard';
-	ChangeGameModeHeader(AIDifficulty);
+	// ChangeGameModeHeader(AIDifficulty);
 	changeMenu('Game');
 	// startGame()
 });
