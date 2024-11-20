@@ -128,6 +128,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	document.getElementById('change_password_btn').addEventListener('click', function () {
 		offcanvasInstance.hide();
 	});
+	document.getElementById('change_avatar_btn').addEventListener('click', function () {
+		offcanvasInstance.hide();
+	});
 	
 	// partie pour gerer empecher les <a data-link> de recharger la page
 	document.querySelectorAll('a[data-link]').forEach(link => {
@@ -370,8 +373,9 @@ document.getElementById('change_avatar_btn').addEventListener('click', function(
                     img.width = 120;
                     img.height = 120;
                     img.style.cursor = 'pointer';
+					img.classList.add('avatar-img');
                     img.addEventListener('click', function() {
-                        document.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                        document.querySelectorAll('.avatar-img.selected').forEach(el => el.classList.remove('selected'));
                         img.classList.add('selected');
                         img.dataset.selected = true;
                     });
@@ -390,7 +394,7 @@ function handleFormChangeAvatar() {
         return;
     }
 
-    const newAvatar = selectedImg.src.replace(window.location.origin, ''); // Obtenir le chemin relatif
+    const newAvatar = selectedImg.src.replace(window.location.origin, '').replace('/media/', ''); // Obtenir le chemin relatif
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     fetch('/change-avatar/', {

@@ -271,3 +271,17 @@ span {
     border-color: #dc3545;      /* Bordure rouge */
     color: white;               /* Texte en blanc */
 }
+
+.avatar-img {
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.avatar-img:hover {
+    border-color: #007bff;
+}
+
+.avatar-img.selected {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
