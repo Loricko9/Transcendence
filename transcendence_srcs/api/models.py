@@ -50,6 +50,7 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	verification_token = models.UUIDField(default=uuid.uuid4, editable=False) # génère un UUID de type 4 aleatoire
 	nb_win = models.IntegerField(default=0)
 	nb_lose = models.IntegerField(default=0)
+	friends = models.ManyToManyField('self', blank=True, symmetrical=True)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
 	#Mais a rajouter pour un hash de mdp manuel
 
@@ -68,3 +69,31 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	def disconnect(self):
 		self.is_connected = False
 		self.save()
+	
+	def add_friend(self, friend):
+		self.friends.add(friend)
+		self.save()
+
+	def remove_friend(self, friend):
+		self.friends.remove(friend)
+		self.save()
+
+	def is_friend(self, friend):
+		return self.friends.filter(pk=friend.pk).exists()
+
+
+class Friendship(models.Model):
+    sender = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='sent_friend_requests')
+    receiver = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='received_friend_requests')
+    status = models.CharField(
+        max_length=10,
+        choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+        default='pending'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender.username} to {self.receiver.username} - Status: {self.status}"
+	
+class Meta:
+	unique_together = ('sender', 'receiver')
