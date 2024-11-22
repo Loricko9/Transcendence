@@ -73,5 +73,4 @@ class Command(BaseCommand):
 			
 			if created:
 				self.stdout.write('CREATION DE : ' + trans_enter['Key'] + ' (' + trans_enter['Lang'] + ')')
-			else:
-				self.stdout.write('ENTREE DEJA EXISTANTE : ' + trans_enter['Key'] + ' (' + trans_enter['Lang'] + ')')
+		self.stdout.write('------- All Text Translation Add -------')

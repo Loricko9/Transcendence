@@ -128,7 +128,6 @@ AUTH_PASSWORD_VALIDATORS = [
 #     'allauth.account.auth_backends.AuthenticationBackend',  # Pour allauth
 # ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
