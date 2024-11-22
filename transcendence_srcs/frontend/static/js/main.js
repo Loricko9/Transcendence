@@ -6,13 +6,14 @@ async function checkAuthentification() {
 		if (data.is_authenticated) {
 			// Affichage connecte
 			fetchFriendList();
+			fetchFriendRequests();
 			document.getElementById('option').style.display = 'inline-block';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
 			document.getElementById('user_avatar').innerHTML = data.avatar;
 			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
-			document.getElementById('user_connected').style.display = 'block';
+			document.getElementById('user_connected').style.display = 'block'; 
 			const nbWinElement = document.getElementById('nbWin');
 			const nbLoseElement = document.getElementById('nbLose');
 			if (nbWinElement && nbLoseElement) {
@@ -438,29 +439,18 @@ function fetchFriendList() {
         list.innerHTML = '';
         data.forEach(friendship => {
             const li = document.createElement('li');
-            li.textContent = `${friendship.user1_username} & ${friendship.user2_username}`;
+            li.textContent = `${friendship.sender_username} & ${friendship.receiver_username}`;
             list.appendChild(li);
         });
     })
     .catch(error => console.error('Error fetching friend list:', error));
 }
 
-// // Afficher la list d'amis
-// function displayFriends(friends) {
-//     const friendList = document.getElementById('friend-list');
-//     friendList.innerHTML = ''; // Vide la liste existante
-//     friends.forEach(friend => {
-//         const friendItem = document.createElement('li');
-//         friendItem.textContent = friend.username;
-//         friendList.appendChild(friendItem);
-//     });
-// }
-
 
 // Envoyer une demande d'amis
 function sendFriendRequest() {
     const username = document.getElementById('username').value;
-
+	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
         headers: {
@@ -471,6 +461,7 @@ function sendFriendRequest() {
     })
     .then(response => response.json())
     .then(data => {
+		console.log('Response data:', data);
         alert(data.message || data.error);
         fetchFriendList(); // Rafraîchir la liste des amis
     })
@@ -478,68 +469,55 @@ function sendFriendRequest() {
 }
 
 
-// Reponse a demande d'ami
-function respondToFriendRequest(senderUsername, action) {
-    fetch(`/api/friend-requests/$senderUsername}/`, {
+// Récupérer la liste des demandes d'amis
+function fetchFriendRequests() {
+    fetch('/api/friend-requests/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const list = document.getElementById('friend-request-list');
+        list.innerHTML = '';  // Vide la liste avant de la remplir
+        data.forEach(request => {
+            const li = document.createElement('li');
+            li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
+
+            // Bouton pour accepter
+            const acceptButton = document.createElement('button');
+            acceptButton.textContent = 'Accepter';
+            acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
+
+            // Bouton pour refuser
+            const rejectButton = document.createElement('button');
+            rejectButton.textContent = 'Refuser';
+            rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
+
+            li.appendChild(acceptButton);
+            li.appendChild(rejectButton);
+            list.appendChild(li);
+        });
+    })
+    .catch(error => console.error('Error fetching friend requests:', error));
+}
+
+// Accepter ou refuser une demande
+function respondToRequest(username, action) {
+    fetch(`/api/friend-request/${username}/`, {
         method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken')
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
         },
-        body: JSON.stringify({ action: action }) // 'accepted' ou 'rejected'
+        body: JSON.stringify({ action: action })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to respond to friend request.');
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Friend request response:', data);
-        alert(`Friend request ${action}!`);
-		fetchFriendRequests();
+        alert(data.message || data.error);
+        fetchFriendRequests();  // Rafraîchir la liste des demandes
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => console.error('Error responding to friend request:', error));
 }
-
-
-// // Récupérer et afficher les demandes d'amis
-// function fetchFriendRequests() {
-//     fetch('/api/friend-requests/', {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             'X-CSRFToken': Get_Cookie('csrftoken')
-//         }
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to fetch friend requests');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         const list = document.getElementById('friend-requests-list');
-//         list.innerHTML = ''; // Vider la liste existante
-//         data.forEach(request => {
-//             const li = document.createElement('li');
-//             li.textContent = `${request.sender_username} vous a envoyé une demande.`;
-
-//             // Bouton Accepter
-//             const acceptButton = document.createElement('button');
-//             acceptButton.textContent = 'Accepter';
-//             acceptButton.onclick = () => respondToFriendRequest(request.sender_username, 'accepted');
-
-//             // Bouton Refuser
-//             const rejectButton = document.createElement('button');
-//             rejectButton.textContent = 'Refuser';
-//             rejectButton.onclick = () => respondToFriendRequest(request.sender_username, 'rejected');
-
-//             li.appendChild(acceptButton);
-//             li.appendChild(rejectButton);
-//             list.appendChild(li);
-//         });
-//     })
-//     .catch(error => console.error('Error:', error));
-// }
-

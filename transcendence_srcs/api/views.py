@@ -60,11 +60,11 @@ def send_friend_request(request):
         return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Vérifier si une amitié existe déjà
-    if Friendship.objects.filter(user1=request.user, user2=receiver).exists() or Friendship.objects.filter(user1=receiver, user2=request.user).exists():
+    if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
         return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
 
     # Créer une relation d'amitié
-    Friendship.objects.create(user1=request.user, user2=receiver)
+    Friendship.objects.create(sender=request.user, receiver=receiver)
     return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
 
 # afficher la liste des demandes d'amis
@@ -73,7 +73,7 @@ class FriendRequestListView(APIView):
 
     def get(self, request):
         # Récupérer toutes les demandes d'ami en attente (status = 'pending')
-        pending_requests = Friendship.objects.filter(user2=request.user, status='pending')
+        pending_requests = Friendship.objects.filter(sender=request.user, status='pending')
         serializer = FriendshipSerializer(pending_requests, many=True)
         return Response(serializer.data)
 
@@ -87,7 +87,7 @@ def respond_to_friend_request(request, username):
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     # Vérifier s'il y a une demande d'ami en attente
-    friendship = Friendship.objects.filter(user1=sender, user2=request.user, status='pending').first()
+    friendship = Friendship.objects.filter(sender=sender, receiver=request.user, status='pending').first()
     if not friendship:
         return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
 

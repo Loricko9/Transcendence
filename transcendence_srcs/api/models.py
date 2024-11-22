@@ -83,8 +83,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 
 
 class Friendship(models.Model):
-    sender = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='sent_friend_requests')
-    receiver = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='received_friend_requests')
+    sender = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='sent_requests')
+    receiver = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='received_requests')
     status = models.CharField(
         max_length=10,
         choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
