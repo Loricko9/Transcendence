@@ -5,13 +5,14 @@ async function checkAuthentification(user42_check) {
 		const data = await response.json();
 		if (data.is_authenticated) {
 			// Affichage connecte
-			document.getElementById('option').style.display = 'inline-block';
+			document.getElementById('option').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
 			document.getElementById('user_avatar').innerHTML = data.avatar;
 			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
+			document.getElementById('signin_btn_little').style.display = 'none';
 			const nbWinElement = document.getElementById('nbWin');
 			const nbLoseElement = document.getElementById('nbLose');
 			if (nbWinElement && nbLoseElement) {
@@ -31,6 +32,7 @@ async function checkAuthentification(user42_check) {
 			document.getElementById('bar_sub_login').classList.add('d-flex');
 			document.getElementById('user_avatar').style.display = 'none';
 			document.getElementById('user_connected').style.display = 'none';
+			document.getElementById('signin_btn_little').style.display = 'block';
 			return false;
 		}
 	}

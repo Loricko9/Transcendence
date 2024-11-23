@@ -48,20 +48,15 @@
                 </ul>
             </div>
         </div>
-
-		<!-- connected client's avatar -->
-		<div id="user_avatar" style="display: none;">
-			<!-- script dyhnamique -->
-		</div>
-
-		<!-- connected client's name -->
-		<div id="user_connected" style="display: none;">
-			<!-- script dyhnamique -->
-		</div>
-
+        
 		<!-- options button when connected-->
-		<button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: 'none';">
-			<span class="navbar-toggler-icon"></span>
+		<button class="btn btn-outline-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: none;">
+            <div id="user_avatar" style="display: none;">
+                <!-- script dyhnamique -->
+            </div>
+            <span id="user_connected" style="display: none;">
+                <!-- script dyhnamique -->
+            </span>
 		</button>
 
 		<!-- sign-in / login buttons -->
@@ -119,7 +114,7 @@
                         <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                     </ul>
                 </div>
-                <a href="/sign_in/" class="btn btn-outline-light mt-2 w-100 rounded-5">{{ texts.Sign_in }}</a>
+                <a href="/sign_in/" id="signin_btn_little" class="btn btn-outline-light mt-2 w-100 rounded-5" style="display: block;">{{ texts.Sign_in }}</a>
             </div>
         </div>
     </div>
@@ -243,7 +238,7 @@
     </template>
 
 	<!-- Modal Bootstrap pour connexion -->
-	<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal" id="successModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
