@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from api.models import User_tab
@@ -69,3 +71,33 @@ def log_42(request):
 
 	except Exception as e:
 		return HttpResponse("Error log machine: " + str(e), status=500)
+
+# Change password
+@login_required
+@csrf_protect
+def change_password(request):
+	if request.method == 'POST':
+		old_password = request.POST.get('old_password')
+		new_password = request.POST.get('new_password')
+		confirm_password = request.POST.get('confirm_password')
+
+		if new_password != confirm_password:
+			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
+
+		user = request.user
+
+		# Vérifie si l'ancien mot de passe est correct
+		if not user.check_password(old_password):
+			return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
+
+		# Change le mot de passe et sauvegarde l'utilisateur
+		user.set_password(new_password)
+		user.save()
+
+		update_session_auth_hash(request, user)
+		# Authentifie à nouveau l'utilisateur avec son nouveau mot de passe
+		login(request, user)
+
+		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
+
+	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)

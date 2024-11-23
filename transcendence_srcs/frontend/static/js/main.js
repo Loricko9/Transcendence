@@ -1,5 +1,5 @@
 // fonction pour gerer l'affichage en fonction de si un client est connecte
-async function checkAuthentification() {
+async function checkAuthentification(user42_check) {
 	try{
 		const response = await fetch('/check-auth/');
 		const data = await response.json();
@@ -18,6 +18,8 @@ async function checkAuthentification() {
 				nbWinElement.textContent = data.nb_win;
 				nbLoseElement.textContent = data.nb_lose;
 			}
+			if (data.is_user_42 && user42_check)
+				return false;
 			return true;
 		}
 		else {
@@ -40,7 +42,9 @@ async function checkAuthentification() {
 
 // Fonction qui permet de ne pas recharger la page (1ère appeler)
 function redirect_to(url) {
-	history.pushState(null, null, url);
+	const lang_path = window.location.pathname.substring(0, 3);
+	let new_url = lang_path + url
+	history.pushState(null, null, new_url);
 	router();
 }
 
@@ -73,14 +77,14 @@ function router(){
 			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
 		case "/change-password/":
-			checkAuthentification().then(isAuthenticated => {
+			checkAuthentification(true).then(isAuthenticated => {
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_change_password");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-				} else {
-					const lang_path = window.location.pathname.substring(0, 3);
-					redirect_to(lang_path + "/");
+					loadChangePassword();
 				}
+				else
+					redirect_to("/");
 			});
 			break;
 		default:
@@ -127,8 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		link.addEventListener('click', (event) => {
 			event.preventDefault(); // evite le rechargement de la page
 			const target = event.currentTarget.getAttribute('href');
-			const lang_path = window.location.pathname.substring(0, 3);
-			redirect_to(lang_path + target); // vers la nouvelle page
+			redirect_to(target); // vers la nouvelle page
 		});
 	});
 	
@@ -288,35 +291,28 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
 });
 
 // change password
-document.getElementById('change_password_btn').addEventListener('click', function() {
-	const appDiv = document.getElementById("app");
-	loadTemplate(appDiv, "temp_change_password");
-	console.log("template load")
+function loadChangePassword() {
 	refreshCSRFToken()
-	console.log("csrfToken refresh")
 	const form = document.getElementById('change-password-form');
 	if (form) {
-		console.log("form trouve")
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
 			handleFormChangePassword();
 		});
 	}
-	else
-		console.log("form pas trouve")
-});
+	else {
+		console.error("Form error");
+		redirect_to("/error/")
+	}
+}
 
 function handleFormChangePassword() {
-
 	const oldPassword = document.getElementById('oldPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-	console.log(csrfToken);
-	console.log("old-passWord: ", oldPassword)
-	console.log("new-passWord: ", newPassword)
 
-    fetch('/change-password/', {
+    fetch('/api/change-password/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -330,11 +326,10 @@ function handleFormChangePassword() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('infoco').innerHTML = data.message
+		document.getElementById('infoco').innerHTML = data.message
 		showSuccessModal()
 		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_login");
+		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
 }
