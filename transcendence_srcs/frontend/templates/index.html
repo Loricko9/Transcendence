@@ -83,7 +83,7 @@
                 </div>
                 <div class="text-center">   
                     <a class="btn btn-light fs-4" href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-74c5a74b9bae831aafaf85e15f96bdfc8fbf92c9cea3732e1a449c956a41b6ba&redirect_uri=https%3A%2F%2Flocalhost%2Fapi%2Flog-42%2F&response_type=code">
-                        Log_with  <img src="{% static 'img/42_Logo.svg.ico' %}" alt="logo" width="40" height="40" id="42-logo"/>
+                        {{ texts.Log_42 }}  <img src="{% static 'img/42_Logo.svg.ico' %}" alt="logo" width="40" height="40" id="42-logo"/>
                     </a>
                 </div>
             </form>
@@ -209,23 +209,23 @@
     <template id="temp_change_password">
 		<!-- change password -->
 		<div class="container rounded col-md-5 py-2 px-3 my-5" id="change_password">
-			<h1 class="text-center fw-bold">Changement de mot de passe</h1>
+			<h1 class="text-center fw-bold">{{ texts.Change_Passwd_1 }}</h1>
 			<form class="mx-1" method="post" id="change-password-form">
 				{% csrf_token %}
 				<div class="form-group my-2">
-					<label for="oldPassword">Ancien mot de passe :</label>
+					<label for="oldPassword">{{ texts.Change_Passwd_2 }}</label>
 					<input type="password" id="oldPassword" name="oldPassword" class="form-control" required>
 				</div>
 				<div class="form-group my-2">
-					<label for="newPassword">Nouveau mot de passe :</label>
+					<label for="newPassword">{{ texts.Change_Passwd_3 }}</label>
 					<input type="password" id="newPassword" name="newPassword" class="form-control" required>
 				</div>
 				<div class="form-group my-2">
-					<label for="confirmPassword">Confirmer le nouveau mot de passe :</label>
+					<label for="confirmPassword">{{ texts.Change_Passwd_4 }}</label>
 					<input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required>
 				</div>
 				<div class="text-center m-2">
-					<button type="submit" class="btn btn-primary">Changer le mot de passe</button>
+					<button type="submit" class="btn btn-primary">{{ texts.Change_Passwd_5 }}</button>
 				</div>
 			</form>
 		</div>
@@ -251,14 +251,14 @@
 	<!-- options when client is connected -->
 	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
 		<div class="offcanvas-header">
-		  <h1 class="offcanvas-title" id="offcanvasRightLabel">Options</h1>
+		  <h1 class="offcanvas-title" id="offcanvasRightLabel">{{ texts.Options }}</h1>
 		  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 		<div class="offcanvas-body">
 		  <!-- Contenu de la fenêtre coulissante -->
-		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-link>Changer le mot de passe</a>
-		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">Deconnexion</button>
-		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">Supprimer mon compte</button>
+		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-link>{{ texts.Change_Passwd_5 }}</a>
+		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">{{ texts.Log_out }}</button>
+		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">{{ texts.Del_account }}</button>
 		</div>
 	</div>
 	<script defer src="{% static 'js/main.js' %}"></script>
