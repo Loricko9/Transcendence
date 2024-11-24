@@ -189,13 +189,13 @@
         <div id="game-container">
             <!-- players information area -->
             <div id="LeftPlayer">
-                <div id="LeftPlayerName">...</div>
-                <div id="LeftPlayerScore">0</div>
+                <p id="LeftPlayerName">...</p>
+                <p id="LeftPlayerScore">0</p>
                 <img src="icons/DefaultIcon.png" alt="LeftUserIcon" id="leftUserIcon">
             </div>
             <div id="RightPlayer">
-                <div id="RightPlayerName">...</div>
-                <div id="RightPlayerScore">0</div>
+                <p id="RightPlayerName">...</p>
+                <p id="RightPlayerScore">0</p>
                 <img src="icons/DefaultIcon.png" alt="RightUserIcon" id="rightUserIcon">
             </div>
     
@@ -216,23 +216,23 @@
             <div id="Room" style="display: none">
                 <div id="UsersInformation">
                     <div id="Host">
-                        <div id="HostName">Host</div>
+                        <p id="HostName">Host</p>
                         <img src="icons/DefaultIcon.png" alt="HostUserIcon" id="hostUserIcon">
                     </div>
                     <div id="User1">
-                        <div id="User1Name">...</div>
+                        <p id="User1Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User1Icon" id="user1Icon">
                         <input id="User1SearchBox" type="SearchBox">
                         <button onclick="clearInput('User1SearchBox')" id="User1Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User2">
-                        <div id="User2Name">...</div>
+                        <p id="User2Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User2Icon" id="user2Icon">
                         <input id="User2SearchBox" type="SearchBox">
                         <button onclick="clearInput('User2SearchBox')" id="User2Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User3">
-                        <div id="User3Name">...</div>
+                        <p id="User3Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User3Icon" id="user3Icon">
                         <input id="User3SearchBox" type="SearchBox">
                         <button onclick="clearInput('User3SearchBox')" id="User3Search">{{ texts.GameUserSearch }}</button>
@@ -244,13 +244,16 @@
             </div> 
             
             <div id="EndGameMenu">
-                <!-- <h1 id="EndGameLeftPlayer">{{ texts.Winner }}</h1> -->
-                <h1 id="Winner">{{ texts.Winner }}</h1>
-                <button id="PlayAgain">Play Again</button>
+                <p id="Winner">{{ texts.Winner }}</p>
+                <img src="icons/DefaultIcon.png" alt="WinnerIcon" id="WinnerIcon">
+                <p id="WinnerName">username</p>
+                <p id="Draw">{{ texts.GameDraw }}</p>
+                <button id="PlayAgain">{{ texts.PlayAgain }}</button>
+                <button id="NextButton">{{ texts.NextButton }}</button>
             </div>
     
             <div id="OptnMenu">
-                <h4 id="DarkModeText">Dark Mode:</h4>
+                <p id="DarkModeText">Dark Mode:</p>
                 <label class="switch" id="DarkModeSwitch">
                     <input type="checkbox">
                     <span class="slider round"></span>
@@ -265,12 +268,12 @@
                 <div id="right-paddle"></div>
                 <div id="delimiter"></div>
                 <button id="ready">{{ texts.Ready }}</button>
-                <h4 id="counter">3</h4>
+                <p id="counter">3</p>
             </div>
     
             <!-- Others elements -->
-            <h4 id="tips1" style="display: none">tips</h4>
-            <h4 id="tips2" style="display: none">tips</h4>
+            <p id="tips1" style="display: none">tips</p>
+            <p id="tips2" style="display: none">tips</p>
             <button id="BackMainMenuButton">{{ texts.MainMenu }}</button>
             <button id="OptnButton">⚙</button>
             <!-- <h4 id="GameTypeHeader">none</h4> -->

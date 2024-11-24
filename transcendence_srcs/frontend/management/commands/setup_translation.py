@@ -117,6 +117,15 @@ class Command(BaseCommand):
 			{'Key': 'TournamentMode', 'Lang': 'fr', 'Text': 'Tournois'},
 			{'Key': 'TournamentMode', 'Lang': 'en', 'Text': 'Tournaments'},
 			{'Key': 'TournamentMode', 'Lang': 'es', 'Text': 'Torneos'},
+			{'Key': 'PlayAgain', 'Lang': 'fr', 'Text': 'Rejouer'},
+			{'Key': 'PlayAgain', 'Lang': 'en', 'Text': 'Play Again'},
+			{'Key': 'PlayAgain', 'Lang': 'es', 'Text': 'Jugar de nuevo'},
+			{'Key': 'NextButton', 'Lang': 'fr', 'Text': 'Suivant'},
+			{'Key': 'NextButton', 'Lang': 'en', 'Text': 'Next'},
+			{'Key': 'NextButton', 'Lang': 'es', 'Text': 'Siguiente'},
+			{'Key': 'GameDraw', 'Lang': 'fr', 'Text': 'Egalité'},
+			{'Key': 'GameDraw', 'Lang': 'en', 'Text': 'Draw'},
+			{'Key': 'GameDraw', 'Lang': 'es', 'Text': 'Empate'},
 		]
 
 

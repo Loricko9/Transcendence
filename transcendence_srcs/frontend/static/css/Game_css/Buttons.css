@@ -31,6 +31,14 @@
 }
 
 #PlayAgain {
+	/* border: solid 5px white; */
+	position: absolute;
+    display: flex;
+    flex-direction: center;
+    top: 70%
+}
+
+#NextButton {
 	position: absolute;
     display: flex;
     flex-direction: center;

@@ -43,6 +43,8 @@ const RoomUser2Name = document.getElementById('User2Name');
 const RoomUser3Name = document.getElementById('User3Name');
 const WinnerImage = document.getElementById('WinnerName');
 const WinnerName = document.getElementById('WinnerName');
+const NextButton = document.getElementById('NextButton');
+const PlayAgainButton = document.getElementById('PlayAgain');
 	
 const keyPressed = {};
 	
@@ -56,266 +58,117 @@ let User2UserNameVar = null;
 let User3UserNameVar = null;
 let round = null;
 let fight = [null, null]; // [left_user, right_user]
-let ballSpeed = 5;
 let ballDirectionX = Math.random() < 0.5 ? -1 : 1; // Random initial direction
 let ballDirectionY = Math.random() < 0.5 ? -1 : 1; // Random initial direction
+let ballSpeed = 6;
 
-let scoreleftplayer = 0;
-let scorerightplayer = 0;
+let scoreleftplayer = 0, scorerightplayer = 0, redTeamScore = 0, blueTeamScore = 0;
+let player1score = 0, player2score = 0, player3score = 0, player4score = 0;
 
-function setHostUserName(value) {
-	HostUserNameVar = value;
-	if (value === null) {
-		RoomHostName.textContent = '...';
-	} else {
-		RoomHostName.textContent = value;
-	}
-}
+let tournamentWinnerRound1 = null;
+let tournamentWinnerRound2 = null;
 
-function setUser1UserName(value) {
-	User1UserNameVar = value;
-	if (value === null) {
-		RoomUser1Name.textContent = '...';
-	} else {
-		RoomUser1Name.textContent = value;
-	}
-}
-function setUser2UserName(value) {
-	User2UserNameVar = value;
-	if (value === null) {
-		RoomUser2Name.textContent = '...';
-	} else {
-		RoomUser2Name.textContent = value;
-	}
-}
-function setUser3UserName(value) {
-	User3UserNameVar = value;
-	if (value === null) {
-		RoomUser3Name.textContent = '...';
-	} else {
-		RoomUser3Name.textContent = value;
-	}
-}
+function setHostUserName(value) {HostUserNameVar = value;if (value === null) {RoomHostName.textContent = '...';} else {RoomHostName.textContent = value;}}
+function setUser1UserName(value) {User1UserNameVar = value;if (value === null) {RoomUser1Name.textContent = '...';} else {RoomUser1Name.textContent = value;}}
+function setUser2UserName(value) {User2UserNameVar = value;if (value === null) {RoomUser2Name.textContent = '...';} else {RoomUser2Name.textContent = value;}}
+function setUser3UserName(value) {User3UserNameVar = value;if (value === null) {RoomUser3Name.textContent = '...';} else {RoomUser3Name.textContent = value;}}
+function resetFight() {fight = [null, null];}
+function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
+function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
 
 function setFight(value1, value2) {
-	fight[0] = value1;
-	fight[1] = value2;
+	fight[0] = value1;fight[1] = value2;
 	if (value1 === null || value2 === null) {
-		console.error('Fatal Error: player not initialised!');
-		changeMenu('MainMenu');
-		resetAllData();
-		console.log(value1, value2);
-		return ;
-	}
-	console.log(value1, value2);
+		console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 	LeftPlayerUserNameContent.textContent = value1;
-	RightPlayerUserNameContent.textContent = value2;
-}
+	RightPlayerUserNameContent.textContent = value2;}
 
-function resetFight() {
-	fight = [null, null];
-}
+function AnimationMainMenu(mode) {
+	if (mode === 'in') {PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';}
+	else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}}
 
-// function ChangeGameModeHeader(mode) {if (mode === 'none') {GameTypeHeader.textContent = 'none';GameTypeHeader.style.display = 'none';} else {
-// 	GameTypeHeader.textContent = `{{ texts.` + mode + `Mode }}`;
-// 	// GameTypeHeader.textContent = mode;
-// 	GameTypeHeader.style.display = 'block';}}
-function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
-function ToggleOptnMenu() {
-	if (OptnMenu.style.bottom === '-650px') {
-		OptnMenu.style.bottom = '-200px';
-	} else {
-		OptnMenu.style.bottom = '-650px';
-	}
-	console.log(OptnMenu.style.bottom);
-}
+function AnimationAIMenu(mode) {
+	if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';}
+	else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}}
 
 function changeMenu(menu) {
-	if (menu === 'MainMenu') {
-		document.getElementById('EndGameMenu').style.display = 'none';
-
-		Rtips.style.display = 'none';
-		Ltips.style.display = 'none';
-		Ball.style.display = 'none';
-		PaddingLeft.style.display = 'none';
-		PaddingRight.style.display = 'none';
-		Delimiter.style.display = 'none';
-		RoomMenu.style.display = 'none';
-		ReadyButton.style.display = 'none';
-		counterElement.style.display = 'none';
-
-
-		AnimationGameMainMenu('in');
-		AnimationAIMenu('out');
-		hideOptnMenu();
-
-		resetAllData();
-	} else if (menu === 'AIMenu') {
-		document.getElementById('EndGameMenu').style.display = 'none';
-
-		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
-		Ltips.style.display = 'none';
-		Rtips.style.display = 'none';
-		Ball.style.display = 'none';
-		PaddingLeft.style.display = 'none';
-		PaddingRight.style.display = 'none';
-		Delimiter.style.display = 'none';
-		RoomMenu.style.display = 'none';
-		ReadyButton.style.display = 'none';
-		counterElement.style.display = 'none';
-		
-		AnimationGameMainMenu('out');
-		AnimationAIMenu('in');
-		hideOptnMenu();
-
+	hideOptnMenu();
+	AnimationAIMenu('out');
+	AnimationMainMenu('out');
+	document.getElementById('EndGameMenu').style.display = 'none';
+	Rtips.style.display = 'none';
+	Ltips.style.display = 'none';
+	Ball.style.display = 'none';
+	PaddingLeft.style.display = 'none';
+	PaddingRight.style.display = 'none';
+	Delimiter.style.display = 'none';
+	RoomMenu.style.display = 'none';
+	ReadyButton.style.display = 'none';
+	counterElement.style.display = 'none';
+	if (menu === 'MainMenu') {AnimationMainMenu('in');resetAllData();
+	} else if (menu === 'AIMenu') {document.getElementById('EndGameMenu').style.display = 'none';AnimationAIMenu('in');
 	} else if (menu === 'RoomMenu') {
-		document.getElementById('EndGameMenu').style.display = 'none';
-
-		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
-
-		Ltips.style.display = 'none';
-		Rtips.style.display = 'none';
-		// MainMenu.style.display = 'none'; ////////////////
-		// AIMenu.style.display = 'none';
+		RoomHostInfo.style.backgroundColor = 'lightgrey';
+		RoomUser1Info.style.backgroundColor = 'lightgrey';
+		RoomUser2Info.style.backgroundColor = 'lightgrey';
+		RoomUser3Info.style.backgroundColor = 'lightgrey';
+		RoomHostInfo.style.display = 'block';
+		RoomUser1Info.style.display = 'block';
+		RoomUser2Info.style.display = 'block';
+		RoomUser3Info.style.display = 'block';
 		RoomMenu.style.display = 'flex';
-		Ball.style.display = 'none';
-		PaddingLeft.style.display = 'none';
-		PaddingRight.style.display = 'none';
-		Delimiter.style.display = 'none';
-		ReadyButton.style.display = 'none';
-		counterElement.style.display = 'none';
-		AnimationGameMainMenu('out');
 		if (PVPMode === '1vs1') {
-			RoomHostInfo.style.display = 'block';
-			RoomUser1Info.style.display = 'block';
 			RoomUser2Info.style.display = 'none';
 			RoomUser3Info.style.display = 'none';
-
-			RoomHostInfo.style.backgroundColor = 'lightgrey';
-			RoomUser1Info.style.backgroundColor = 'lightgrey';
-			RoomUser2Info.style.backgroundColor = 'lightgrey';
-			RoomUser3Info.style.backgroundColor = 'lightgrey';
 		} else if (PVPMode === '2vs2') {
-			RoomHostInfo.style.display = 'block';
-			RoomUser1Info.style.display = 'block';
-			RoomUser2Info.style.display = 'block';
-			RoomUser3Info.style.display = 'block';
-			
 			RoomHostInfo.style.backgroundColor = 'red';
 			RoomUser1Info.style.backgroundColor = 'red';
 			RoomUser2Info.style.backgroundColor = 'blue';
 			RoomUser3Info.style.backgroundColor = 'blue';
-		} else if (PVPMode === 'Tournament') {
-			RoomHostInfo.style.display = 'block';
-			RoomUser1Info.style.display = 'block';
-			RoomUser2Info.style.display = 'block';
-			RoomUser3Info.style.display = 'block';
-
-			RoomHostInfo.style.backgroundColor = 'lightgrey';
-			RoomUser1Info.style.backgroundColor = 'lightgrey';
-			RoomUser2Info.style.backgroundColor = 'lightgrey';
-			RoomUser3Info.style.backgroundColor = 'lightgrey';
-		} 
+		} else if (PVPMode === 'Tournament') {} 
 	} else if (menu === 'Game') {
-		document.getElementById('EndGameMenu').style.display = 'none';
-
-		// PVAButton.style.left = '300%'; /////////////////////////////////////////////////////////
-		Ltips.style.display = 'none';
-		Rtips.style.display = 'none';
-		// MainMenu.style.display = 'none'; ///////////////
-		// AIMenu.style.display = 'none';
-		RoomMenu.style.display = 'none';
 		Ball.style.display = 'block';
 		PaddingLeft.style.display = 'block';
 		PaddingRight.style.display = 'block';
 		Delimiter.style.display = 'block';
 		ReadyButton.style.display = 'block';
-		counterElement.style.display = 'none';
-
-		
-		AnimationGameMainMenu('out');
-		AnimationAIMenu('out');
-		hideOptnMenu();
 		defineWhoFight();
-
-
-		// AnimationGameMenu('out');
-
-	} else if (menu === 'endGameMenu') {
-		document.getElementById('EndGameMenu').style.display = 'block';
-		Ball.style.display = 'none';
-		PaddingLeft.style.display = 'none';
-		PaddingRight.style.display = 'none';
-		Delimiter.style.display = 'none';
-		ReadyButton.style.display = 'none';
-		counterElement.style.display = 'none';
-	} else
+	} else if (menu === 'endGameMenu') {document.getElementById('EndGameMenu').style.display = 'block';}
+	else
 		console.error('Menu not found');
 }
 
-function AnimationGameMainMenu(mode) {
-	if (mode === 'in') {
-		PVAButton.style.left = '0%';
-		PVP1v1Button.style.right = '0%';
-		PVP2v2Button.style.left = '0%';
-		TournamentButton.style.right = '0%';
-	} else {
-		PVAButton.style.left = '100%';
-		PVP1v1Button.style.right = '100%';
-		PVP2v2Button.style.left = '100%';
-		TournamentButton.style.right = '100%';
-	}
-	console.log(mode);
-}
-
-function AnimationAIMenu(mode) {
-	if (mode === 'in') {
-		PvAIeasyButton.style.left = '0%';
-		PvAImediumButton.style.right = '0%';
-		PvAIhardButton.style.left = '0%';
-		AIMenu.style.pointerEvents = 'auto';
-		// AIMenu.style.display = 'flex';
-	} else {
-		PvAIeasyButton.style.left = '100%';
-		PvAImediumButton.style.right = '100%';
-		PvAIhardButton.style.left = '100%';
-		AIMenu.style.pointerEvents = 'none';
-		// AIMenu.style.display = 'none';
-	}
-}
-/*
-let gameStarted = false;
-let darkMode = false;
-let AIDifficulty = "none"; // none, easy, medium, hard
-let PVPMode = "none"; // none, 1vs1, 2vs2, Tournament
-let HostUserName = null;
-let User1UserName = null;
-let User2UserName = null;
-let User3UserName = null;
-let round = null;
-let fight = [null, null]; // [left_user, right_user];
-*/
 
 function resetAllData() {
 	gameStarted = false;
 	AIDifficulty = "none";
 	PVPMode = "none";
-	setHostUserName("hostname"); ///////////////////////
-	setUser1UserName(null);
-	setUser2UserName(null);
-	setUser3UserName(null);
-	LeftPlayerUserNameContent.textContent = '...';
-	RightPlayerUserNameContent.textContent = '...';
-	round = 0;
-	resetFight();
-	ballSpeed = 5;
-	// GameTypeHeader.style.display = 'none';
-	// GameTypeHeader.textContent = 'none';
+	ballSpeed = 6;
 	OptnMenu.style.bottom = '-650px';
 	PaddingLeft.style.top = '50%';
 	PaddingRight.style.top = '50%';
 	Ball.style.left = '50%';
 	Ball.style.top = '50%';
+	scoreleftplayer = 0;
+	scorerightplayer = 0;
+	ScorePlayerLeftElement.textContent = scoreleftplayer;
+	ScorePlayerRightElement.textContent = scorerightplayer;
+	redTeamScore = 0;
+	blueTeamScore = 0;
+	player1score = 0;
+	player2score = 0;
+	player3score = 0;
+	player4score = 0;
+	tournamentWinnerRound1 = null;
+	tournamentWinnerRound2 = null;
+	LeftPlayerUserNameContent.textContent = '...';
+	RightPlayerUserNameContent.textContent = '...';
+	round = 0;
+	setHostUserName("hostname"); ///////////////////////
+	setUser1UserName("test1"); ////////////
+	setUser2UserName("test2"); ////////////
+	setUser3UserName("test3"); ////////////
+	resetFight();
 }
 
 function softReset() {
@@ -323,7 +176,8 @@ function softReset() {
 	PaddingRight.style.top = '50%';
 	Ball.style.left = '50%';
 	Ball.style.top = '50%';
-	ballDirectionX = Math.random() < 0.5 ? -1 : 1; // Random initial direction
+	ballSpeed = 6;
+	ballDirectionX = Math.random() < 0.5 ? -1 : 1;
 	ballDirectionY = Math.random() < 0.5 ? -1 : 1;
 }
 
@@ -337,9 +191,7 @@ function counter(callback) {
 		if (counter === 0) {
 			clearInterval(interval);
 			counterElement.style.display = 'none';
-			if (callback) {
-				callback();
-			}
+			if (callback) {callback();}
 		}
 	}, 1000);
 }
@@ -347,25 +199,139 @@ function counter(callback) {
 function startGame() {
 	counter(() => {
 		gameStarted = true;
-		// changeMenu('Game');
-	
-		if (PVPMode === 'none') {
-			Rtips.style.display = 'none';
-			Ltips.style.display = 'block';
-		} else {
-			Ltips.style.display = 'block';
-			Rtips.style.display = 'block';
-		}
+		if (PVPMode === 'none') {Rtips.style.display = 'none';Ltips.style.display = 'block';} else {Ltips.style.display = 'block';Rtips.style.display = 'block';}
 		gameLoop();
 	});
 }
 
-function checkWin() {
-	if (scoreleftplayer === 3 || scorerightplayer === 3) {
-		changeMenu("endGameMenu");
-	}
-
+function playAgain() {
+	scoreleftplayer = 0;
+	scorerightplayer = 0;
+	player1score = 0;
+	player2score = 0;
+	player3score = 0;
+	player4score = 0;
+	ScorePlayerLeftElement.textContent = scoreleftplayer;
+	ScorePlayerRightElement.textContent = scorerightplayer;
+	round = 0;
+	softReset();
 }
+
+// fetch('/game/', {
+// 			method: 'POST',
+// 			headers: {
+// 				'Content-Type': 'application/json',
+// 				'X-CSRFToken': Get_Cookie('csrftoken')
+// 			},
+// 			body: JSON.stringify({
+// 				'result': result
+// 			})
+// 		})
+// 		.then(response => response.json())
+// 		.then(data => {
+// 			if (data.success) {
+// 				document.getElementById('infoco').innerHTML = data.message
+// 				const nbWinElement = document.getElementById('nbWin');
+//              const nbLoseElement = document.getElementById('nbLose');
+// 				nbWinElement.textContent = data.nb_win;
+//         		nbLoseElement.textContent = data.nb_lose;
+// 				showSuccessModal()
+// 			}
+// 		})
+// 		.catch(error => {
+// 			console.error('Erreur:', error);
+// 		});
+
+function checkWin() {
+	document.getElementById("Draw").style.display = "none";
+	document.getElementById("WinnerName").style.display = "block";
+	if (scoreleftplayer === 3 || scorerightplayer === 3) {
+		softReset();
+		gameStarted = false;
+		if (PVPMode === 'none' || PVPMode === '1vs1') {
+			changeMenu("endGameMenu");
+			if (scoreleftplayer === 3) {document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
+			else if (scorerightplayer === 3){document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
+		}
+		else if (PVPMode === '2vs2') {
+			changeMenu("endGameMenu");
+			if (round === 0) {
+				NextButton.style.display = 'block';
+				PlayAgainButton.style.display = 'none';
+				if (scoreleftplayer === 3) {redTeamScore++;document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
+				else if (scorerightplayer === 3) {blueTeamScore++;document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
+			} else if (round === 1) {
+				if (scoreleftplayer === 3) {
+					redTeamScore++;
+					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+				}
+				else if (scorerightplayer === 3) {
+					blueTeamScore++;
+					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+				}
+				if (redTeamScore > blueTeamScore)
+					document.getElementById("WinnerName").textContent = HostUserNameVar + " " + User1UserNameVar;
+				else if (redTeamScore < blueTeamScore)
+					document.getElementById("WinnerName").textContent = User2UserNameVar + " " + User3UserNameVar;
+				else {
+					document.getElementById("WinnerName").style.display = "none";
+					document.getElementById("Draw").style.display = "block";
+				}
+
+				NextButton.style.display = 'none';
+				PlayAgainButton.style.display = 'block';
+			}
+		} else if (PVPMode === 'Tournament') {
+			changeMenu("endGameMenu");
+			if (round === 0) {
+				NextButton.style.display = 'block';
+				PlayAgainButton.style.display = 'none';
+				if (scoreleftplayer === 3) {
+					player1score++;
+					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					tournamentWinnerRound1 = LeftPlayerUserNameContent.textContent;
+				} else if (scorerightplayer === 3) {
+					player2score++;
+					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					tournamentWinnerRound1 = RightPlayerUserNameContent.textContent;
+				}
+			} else if (round === 1) {
+				NextButton.style.display = 'block';
+				PlayAgainButton.style.display = 'none';
+				if (scoreleftplayer === 3) {
+					player3score++;
+					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
+				}
+				else if (scorerightplayer === 3) {
+					player4score++;
+					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
+				}
+			} else if (round === 2) {
+				if (player1score > player2score && player1score > player3score && player1score > player4score) {
+					document.getElementById("WinnerName").textContent = User1UserNameVar;
+					NextButton.style.display = 'none';
+					PlayAgainButton.style.display = 'block';
+				} else if (player2score > player1score && player2score > player3score && player2score > player4score) {
+					document.getElementById("WinnerName").textContent = User2UserNameVar;
+					NextButton.style.display = 'none';
+					PlayAgainButton.style.display = 'block';
+				} else if (player3score > player1score && player3score > player2score && player3score > player4score) {
+					document.getElementById("WinnerName").textContent = User3UserNameVar;
+					NextButton.style.display = 'none';
+					PlayAgainButton.style.display = 'block';
+				} else if (player4score > player1score && player4score > player2score && player4score > player3score) {
+					document.getElementById("WinnerName").textContent = "round 1 winner";
+				}
+				NextButton.style.display = 'none';
+				PlayAgainButton.style.display = 'block';
+			}
+		}
+	}
+}
+
+function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
 
 function gameLoop() {
 	if (gameStarted === true) {	
@@ -378,205 +344,88 @@ function gameLoop() {
 }
 
 function defineWhoFight() {
-	if (PVPMode === 'none') {
-		setFight(HostUserNameVar, 'AI');
-	} else if (PVPMode === '1vs1') {
-		setFight(HostUserNameVar, User1UserNameVar);
-	} else if (PVPMode === '2vs2') {
-		if (round === 0) {
-			setFight(HostUserNameVar, User2UserNameVar);
-		} else if (round === 1) {
-			setFight(User1UserNameVar, User3UserNameVar);
-		}
+	if (PVPMode === 'none') {setFight(HostUserNameVar, 'AI');}
+	else if (PVPMode === '1vs1') {setFight(HostUserNameVar, User1UserNameVar);}
+	else if (PVPMode === '2vs2') {
+		if (round === 0) {setFight(HostUserNameVar, User2UserNameVar);}
+		else if (round === 1) {setFight(User1UserNameVar, User3UserNameVar);}
 	} else if (PVPMode === 'Tournament') {
-		if (round === 0) {
-			setFight(HostUserNameVar, User1UserNameVar);
-		} else if (round === 1) {
-			setFight(User2UserNameVar, User3UserNameVar);
-		} else if (round === 2) {
-			setFight('round 0 winner', ' round 1 winner'); ////////////////////////////////////////////////////////
-		}
+		if (round === 0) {setFight(HostUserNameVar, User1UserNameVar);}
+		else if (round === 1) {setFight(User2UserNameVar, User3UserNameVar);}
+		else if (round === 2) {setFight(tournamentWinnerRound1, tournamentWinnerRound2);}
 	}
 }
 
 function movePaddings() {
 	if (keyPressed['s']) {
-		if (parseInt(window.getComputedStyle(PaddingLeft).top) + 30 < 314)
-			PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) + 30) + "px";
-		else
-			PaddingLeft.style.top = 314 + "px";
+		if (parseInt(window.getComputedStyle(PaddingLeft).top) + 30 < 314) {PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) + 30) + "px";}
+		else {PaddingLeft.style.top = 314 + "px";}
 	} if (keyPressed['w']) {
-		if (parseInt(window.getComputedStyle(PaddingLeft).top) - 30 > 80)
-			PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) - 30) + "px";
-		else
-			PaddingLeft.style.top = 80 + "px";
-	} if (PVPMode !== 'none') { ////////////////////////
+		if (parseInt(window.getComputedStyle(PaddingLeft).top) - 30 > 80) {PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) - 30) + "px";}
+		else{PaddingLeft.style.top = 80 + "px";}
+	} if (PVPMode !== 'none') {
 		if (keyPressed['ArrowDown']) {
-			if (parseInt(window.getComputedStyle(PaddingRight).top) + 30 < 314)
-				PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) + 30) + "px";
-			else
-				PaddingRight.style.top = 314 + "px";
+			if (parseInt(window.getComputedStyle(PaddingRight).top) + 30 < 314) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) + 30) + "px";}
+			else {PaddingRight.style.top = 314 + "px";}
 		} if (keyPressed['ArrowUp']) {
-			if (parseInt(window.getComputedStyle(PaddingRight).top) - 30 > 80)
-				PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) - 30) + "px";
-			else
-				PaddingRight.style.top = 80 + "px";
+			if (parseInt(window.getComputedStyle(PaddingRight).top) - 30 > 80) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) - 30) + "px";}
+			else {PaddingRight.style.top = 80 + "px";}
 		}
-	}
-		// else {AI();}
+	}// else {AI();}
 }
 
-function addPoint(side) {
-	if (side === 'left') {
-		scoreleftplayer++;
-		ScorePlayerRightElement.textContent = scoreleftplayer;
-	} else if (side === 'right') {
-		scorerightplayer++;
-		ScorePlayerLeftElement.textContent = scorerightplayer;
-	}
-}
 
 function moveBall() {
-	let ballTop = parseInt(window.getComputedStyle(Ball).top);
-	let ballLeft = parseInt(window.getComputedStyle(Ball).left);
-	
-	ballTop += ballSpeed * ballDirectionY;
-	ballLeft += ballSpeed * ballDirectionX;
-	
-	if (ballTop <= Ball.offsetHeight / 2) {
-		ballDirectionY = 1;
-	} else if (ballTop >= 400 - Ball.offsetHeight) {
-		ballDirectionY = -1;
-	} if (ballLeft <= 0) {
-		ScorePlayerRightElement.textContent = parseInt(ScorePlayerRightElement.textContent) + 1;
-		softReset();
-		addPoint("left");
-		return;
-	} else if (ballLeft >= 700 - Ball.offsetWidth) {
-		ScorePlayerLeftElement.textContent = parseInt(ScorePlayerLeftElement.textContent) + 1;
-		softReset();
-		addPoint("right");
-		return;
-	}
-	
 	const paddingLeftRect = PaddingLeft.getBoundingClientRect();
 	const paddingRightRect = PaddingRight.getBoundingClientRect();
 	const ballRect = Ball.getBoundingClientRect();
-
-	if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left && ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) {
-		ballDirectionX = 1;
-	}
-
-	if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right && ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) {
-		ballDirectionX = -1;
-	}
-	
-	// const currentPaddingLeftTop = parseInt(window.getComputedStyle(PaddingLeft).top);
-	// const currentPaddingRightTop = parseInt(window.getComputedStyle(PaddingRight).top);
-	
-	// const paddingLeftMovingUp = currentPaddingLeftTop < lastPaddingLeftTop;
-	// const paddingLeftMovingDown = currentPaddingLeftTop > lastPaddingLeftTop;
-	// const paddingRightMovingUp = currentPaddingRightTop < lastPaddingRightTop;
-	// const paddingRightMovingDown = currentPaddingRightTop > lastPaddingRightTop;
-	
-	// if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left && ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) {
-	// 	ballDirectionX = 1;
-	// 	if (paddingLeftMovingUp && ballDirectionY > 0) {
-	// 		ballDirectionY *= -1;
-	// 		ballSpeed = Math.max(ballSpeed - 1, 2);
-	// 	} else if (paddingLeftMovingDown && ballDirectionY < 0) {
-	// 		if (ballSpeed < 10)
-	// 			ballSpeed += 1;
-	// 		if (ballSpeed > 10)
-	// 			ballSpeed = 10;
-	// 	}
-	// 	if (ballSpeed < 10) {
-	// 		ballSpeed += 0.1;
-	// 	}
-	// }
-	
-	// if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right && ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) {
-	// 	ballDirectionX = -1;
-	// 	if (paddingRightMovingUp && ballDirectionY > 0) {
-	// 		b
+	let ballTop = parseInt(window.getComputedStyle(Ball).top) + ballSpeed * ballDirectionY;
+	let ballLeft = parseInt(window.getComputedStyle(Ball).left) + ballSpeed * ballDirectionX;
+	if (ballTop <= Ball.offsetHeight / 2) {ballDirectionY = 1;}
+	else if (ballTop >= 400 - Ball.offsetHeight) {ballDirectionY = -1;}
+	if (ballLeft <= 0) {addPoint("right");softReset();return;}
+	else if (ballLeft >= 700 - Ball.offsetWidth) {addPoint("left");softReset();return;}
+	if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left 
+		&& ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) 
+		{ballDirectionX = 1;if (ballSpeed < 9)ballSpeed += 0.1;if (ballSpeed > 9)ballSpeed = 9;}
+	if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right 
+		&& ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) 
+		{ballDirectionX = -1;if (ballSpeed < 9)ballSpeed += 0.1;if (ballSpeed > 9)ballSpeed = 9;}
 	Ball.style.top = ballTop + 'px';
 	Ball.style.left = ballLeft + 'px';
 }
+		
+/*///////////////////////////////////////////////////////////////////////////////////////////////
+ ////                                  EVENTS                                               ////
+/////////////////////////////////////////////////////////////////////////////////////////////// */
 
-// ------------------------------- PVP events -------------------------------
-
-PVP1v1Button.addEventListener('click', () => {
-	PVPMode = '1vs1';
-	// ChangeGameModeHeader(PVPMode);
-	changeMenu('RoomMenu');
-});
-
-PVP2v2Button.addEventListener('click', () => {
-	PVPMode = '2vs2';
-	// ChangeGameModeHeader(PVPMode);
-	changeMenu('RoomMenu');
-});
-
-TournamentButton.addEventListener('click', () => {
-	PVPMode = 'Tournament';
-	// ChangeGameModeHeader(PVPMode);
-	changeMenu('RoomMenu');
-});
-
-// ------------------------------- AI events -------------------------------
-PVAButton.addEventListener('click', () => {
-	changeMenu('AIMenu');
-});
-
-PvAIeasyButton.addEventListener('click', () => {
-	AIDifficulty = 'Easy';
-	// ChangeGameModeHeader(AIDifficulty);
+PVP1v1Button.addEventListener('click', () => {PVPMode = '1vs1';changeMenu('RoomMenu');});
+PVP2v2Button.addEventListener('click', () => {PVPMode = '2vs2';changeMenu('RoomMenu');});
+TournamentButton.addEventListener('click', () => {PVPMode = 'Tournament';changeMenu('RoomMenu');});
+PVAButton.addEventListener('click', () => {changeMenu('AIMenu');});
+PvAIeasyButton.addEventListener('click', () => {AIDifficulty = 'Easy';changeMenu('Game');});
+PvAImediumButton.addEventListener('click', () => {AIDifficulty = 'Medium';changeMenu('Game');});
+PvAIhardButton.addEventListener('click', () => {AIDifficulty = 'Hard';changeMenu('Game');});
+BackToMainMenuButton.addEventListener('click', () => {changeMenu('MainMenu');resetAllData();});
+OptnButton.addEventListener('click', () => {console.log('OptnButton clicked');ToggleOptnMenu();});
+PVPStartButton.addEventListener('click', () => {changeMenu('Game');});
+ReadyButton.addEventListener('click', () => {ReadyButton.style.display = 'none';startGame();});
+NextButton.addEventListener('click', () => {
+	round++;
+	scorerightplayer = 0;
+	scoreleftplayer = 0;
+	ScorePlayerLeftElement.textContent = scoreleftplayer;
+	ScorePlayerRightElement.textContent = scorerightplayer;
+	softReset();
 	changeMenu('Game');
-	// startGame()
 });
 
-PvAImediumButton.addEventListener('click', () => {
-	AIDifficulty = 'Medium';
-	// ChangeGameModeHeader(AIDifficulty);
-	changeMenu('Game');
-	// startGame()
-});
-
-PvAIhardButton.addEventListener('click', () => {
-	AIDifficulty = 'Hard';
-	// ChangeGameModeHeader(AIDifficulty);
-	changeMenu('Game');
-	// startGame()
-});
-
-BackToMainMenuButton.addEventListener('click', () => {
-	changeMenu('MainMenu');
-	resetAllData();
-});
-
-OptnButton.addEventListener('click', () => {
-	console.log('OptnButton clicked');
-	ToggleOptnMenu();
-});
-
-////////////////////////////////////////////////////////////
-PVPStartButton.addEventListener('click', () => {
-	changeMenu('Game');
-	// startGame();
-});
-
-ReadyButton.addEventListener('click', () => {
-	ReadyButton.style.display = 'none';
-	startGame();
-});
-////////////////////////////////////////////////////////////
-
+PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
 document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
 
 function init() {
 	changeMenu('MainMenu');
-	// alert("test");
 	resetAllData();
 	setHostUserName("HostName");
 }

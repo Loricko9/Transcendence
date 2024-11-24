@@ -287,11 +287,41 @@
     z-index: 2;
 }
 
-#EndGameLeftPlayer {
+#Winner {
+    color: white;
+    position: absolute;
+    font-size: 50px;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+}
+
+#WinnerIcon {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: 50%;
+    top: 35%;
+    transform: translate(50%, -50%);
+    border : solid 1px white;
+}
+
+#WinnerName, #Draw{
+    position: absolute;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* #EndGameLeftPlayer {
     color: white;
     position: absolute;
     margin: 15px;
-}
+} */
 
 #counter {
 	position: absolute;
