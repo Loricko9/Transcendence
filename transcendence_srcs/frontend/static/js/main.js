@@ -437,10 +437,20 @@ function fetchFriendList() {
     .then(data => {
         const list = document.getElementById('friend-list');
         list.innerHTML = '';
-        data.forEach(friendship => {
-            const li = document.createElement('li');
-            li.textContent = `${friendship.sender_username} & ${friendship.receiver_username}`;
-            list.appendChild(li);
+        data.friendships.forEach(friendship => {
+			if (friendship.status == 'accepted')
+			{
+				console.log('accepted')
+	            const li = document.createElement('li');
+				// const del_button = createElement('a');
+				if (friendship.sender_username == data.username)
+					li.textContent = `${friendship.receiver_username}`;
+				else
+					li.textContent = `${friendship.sender_username}`;
+				list.appendChild(li);
+			}
+			else
+				console.log('not accepted')
         });
     })
     .catch(error => console.error('Error fetching friend list:', error));

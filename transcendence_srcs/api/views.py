@@ -33,13 +33,17 @@ def set_lang(request, lang):
 
 
 class FriendshipListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # Récupérer tous les amis de l'utilisateur connecté
-        friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
-        serializer = FriendshipSerializer(friendships, many=True)
-        return Response(serializer.data)
+	permission_classes = [IsAuthenticated]
+     
+	def get(self, request):
+		# Récupérer tous les amis de l'utilisateur connecté
+		friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
+		serializer = FriendshipSerializer(friendships, many=True)
+		response_data = {
+			"username": request.user.username,
+			"friendships": serializer.data
+		}
+		return Response(response_data)
 
 
 @api_view(['POST'])
@@ -73,7 +77,7 @@ class FriendRequestListView(APIView):
 
     def get(self, request):
         # Récupérer toutes les demandes d'ami en attente (status = 'pending')
-        pending_requests = Friendship.objects.filter(sender=request.user, status='pending')
+        pending_requests = Friendship.objects.filter(receiver=request.user, status='pending')
         serializer = FriendshipSerializer(pending_requests, many=True)
         return Response(serializer.data)
 
@@ -102,3 +106,11 @@ def respond_to_friend_request(request, username):
 
     friendship.save()
     return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
+
+def friend_delete(request, username):
+	friend = User.objects.get(username=username)
+	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
+		Friendship.objects.delete(sender=request.user, receiver=friend)
+	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
+		Friendship.objects.delete(sender=friend, receiver=request.user)
+	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
