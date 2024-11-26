@@ -278,7 +278,6 @@ span {
 }
 
 #deleteAccountBtn:hover {
-<<<<<<< HEAD
     background-color: #dc3545;  /* Rouge */
     border-color: #dc3545;      /* Bordure rouge */
     color: white;               /* Texte en blanc */
@@ -296,7 +295,6 @@ span {
 .avatar-img.selected {
     border-color: #007bff;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-=======
     background-color: #dc3545;
     border-color: #dc3545;
     color: white;
@@ -307,5 +305,4 @@ span {
 }
 .modal-header {
     border-bottom: none;
->>>>>>> main
 }

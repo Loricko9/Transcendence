@@ -34,12 +34,10 @@
         
         <a class="navbar-brand ms-3" href="/" data-link><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65" id="logo"/></a>
         <div class="collapse navbar-collapse" id="NavCollaspe">
-            <!-- <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page1/" data-link>Page1</a></li>
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link" style="display: none;">
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>Game</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page2/" data-link>Page2</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page3/" data-link>Page3</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/prank/" data-link>Prank</a></li>
-            </ul> -->
+            </ul>
             <div class="ms-auto dropdown">
                 <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
@@ -100,12 +98,10 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
-            <!-- <ul class="navbar-nav justify-content-end pe-3">
-                <li class="nav-item"><a class="nav-link fs-5" href="/page1/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 1</a> </li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/page2/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 2</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/page3/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Page 3</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" href="/prank/" data-bs-dismiss="offcanvas" aria-label="Close" data-link>Prank</a></li>
-            </ul> -->
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link" style="display: none;"></ul>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>Game</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/page2/" data-link>Page2</a></li>
+            </ul>
             <div class="mt-auto">
                 <div class="dropdown">
                     <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -347,10 +343,10 @@
 		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">{{ texts.Del_account }}</button>
 		</div>
 	</div>
-	<script defer src="{% static 'js/main.js' %}"></script>
-	<script type="module" defer src="{% static 'js/Game_JS/Gamemain.js' %}"></script>
+	<script type="module" defer src="{% static 'js/main.js' %}"></script>
+	<script defer src="{% static 'js/Game_JS/Gamemain.js' %}"></script>
 
 	<!-- <script defer src="{% static 'js/pong.js' %}"></script> -->
-	<script defer src="{% static 'css/style.css' %}"></script>
+	<!-- <script defer src="{% static 'css/style.css' %}"></script> -->
 </body>
 </html>

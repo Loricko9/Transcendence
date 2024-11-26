@@ -1,3 +1,5 @@
+import { initAll } from './Game_JS/Gamemain.js';
+
 // fonction pour gerer l'affichage en fonction de si un client est connecte
 async function checkAuthentification(user42_check) {
 	try{
@@ -6,6 +8,7 @@ async function checkAuthentification(user42_check) {
 		if (data.is_authenticated) {
 			// Affichage connecte
 			document.getElementById('option').style.display = 'flex';
+			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
 			document.getElementById('user_avatar').innerHTML = data.avatar;
@@ -28,6 +31,7 @@ async function checkAuthentification(user42_check) {
 			const appDiv = document.getElementById("app");
 			loadTemplate(appDiv, "temp_index");
 			document.getElementById('option').style.display = 'none';
+			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
 			document.getElementById('bar_sub_login').classList.add('d-flex');
 			document.getElementById('user_avatar').style.display = 'none';
@@ -57,10 +61,13 @@ function loadTemplate(appDiv, Id) {
 }
 
 // Fonction pour rediriger et obtenir le contenu des pages
+let blockage = false;
+// document.addEventListener('keydown', (event) => {if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {event.preventDefault();}});
+document.addEventListener('keydown', (event) => {if (blockage && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {event.preventDefault();}});
 function router(){
 	const path = window.location.pathname.substring(3); //chemin demandé par le user
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
-
+	blockage = false;
 	switch (path) {
 		case "/":
 			checkAuthentification().then(isAuthenticated => {
@@ -78,7 +85,9 @@ function router(){
 			checkAuthentification().then(isAuthenticated => {
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
-					// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+					appDiv.className = "";
+					blockage = true;
+					initAll();
 				} else {
 					const lang_path = window.location.pathname.substring(0, 3);
 					redirect_to(lang_path + "/");
