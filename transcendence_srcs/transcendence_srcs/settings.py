@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+				'django.template.context_processors.media',
             ],
         },
     },
@@ -149,7 +150,8 @@ STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
 	os.path.join(BASE_DIR, 'frontend/static/css'),
 	os.path.join(BASE_DIR, 'frontend/static/js'),
-	os.path.join(BASE_DIR, 'api/static/avatars'),
+	os.path.join(BASE_DIR, 'frontend/static/js/Game_JS'),
+	os.path.join(BASE_DIR, 'frontend/static/css/Game_css'),
 ]
 
 STATIC_ROOT = '/app/staticfiles'
@@ -159,7 +161,9 @@ STATIC_ROOT = '/app/staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 AUTH_USER_MODEL = 'api.User_tab'
 

@@ -45,8 +45,6 @@ services:
     env_file: .env
     networks:
       - Transcendence
-    depends_on:
-      - postgreSQL
   nginx:
     build: 
       context: Containers/Nginx
@@ -57,7 +55,8 @@ services:
       - "443:443"
       - "80:80"
     volumes:
-      - staticfiles:/app/staticfiles
+      - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
+      - mediafiles:/app/mediafiles
     networks:
       - Transcendence
     depends_on:
@@ -67,7 +66,6 @@ services:
       context: Containers/Nginx-exporter
       dockerfile: Dockerfile
     image: transcendence-nginx-exporter
-    env_file: .env
     container_name: Nginx-exporter
     networks:
       - Transcendence
@@ -79,27 +77,15 @@ services:
       dockerfile: Dockerfile
     image: transcendence-prometheus
     container_name: Prometheus
+    ports:
+      - "9090:9090"
     networks:
       - Transcendence
     depends_on:
       - nginx-exporter
       - django-exporter
       - postgreSQL-exporter
-  grafana:
-    build:
-      context: Containers/Grafana
-      dockerfile: Dockerfile
-    image: transcendence-grafana
-    env_file: .env
-    container_name: Grafana
-    networks:
-      - Transcendence
-    ports:
-      - "3000:3000"
-    depends_on:
-      - prometheus
-    logging:
-      driver: none
+
 
 volumes:
   Django:
@@ -117,9 +103,15 @@ volumes:
       o: 'bind'
       device: './database'
   staticfiles:
+    driver: local  # Volume pour partager les fichiers statiques entre Django et Nginx
+  mediafiles:
     driver: local
-  nginxlogs:
-    driver: local
+    name: mediafiles
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: './transcendence_srcs/media'
+
 
 networks:
   Transcendence:
