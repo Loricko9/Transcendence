@@ -1,5 +1,8 @@
 import { initAll } from './Game_JS/Gamemain.js';
 
+window.Change_lang = Change_lang;
+window.handleFormChangeAvatar = handleFormChangeAvatar;
+
 // fonction pour gerer l'affichage en fonction de si un client est connecte
 async function checkAuthentification(user42_check) {
 	try{
@@ -88,10 +91,8 @@ function router(){
 					appDiv.className = "";
 					blockage = true;
 					initAll();
-				} else {
-					const lang_path = window.location.pathname.substring(0, 3);
-					redirect_to(lang_path + "/");
-				}
+				} else
+					redirect_to("/");
 			});	
 			// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
@@ -111,10 +112,9 @@ function router(){
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-				} else {
-					const lang_path = window.location.pathname.substring(0, 3);
-					redirect_to(lang_path + "/");
-				}
+					loadChangeAvatar();
+				} else
+					redirect_to("/");
 			});
 			break;
 		default:
@@ -380,9 +380,7 @@ function handleFormChangePassword() {
 }
 
 // change avatar
-document.getElementById('change_avatar_btn').addEventListener('click', function() {
-    const appDiv = document.getElementById("app");
-    loadTemplate(appDiv, "temp_change_avatar");
+function loadChangeAvatar() {
     refreshCSRFToken();
 
     // Charger dynamiquement les avatars
@@ -414,7 +412,7 @@ document.getElementById('change_avatar_btn').addEventListener('click', function(
             });
         })
         .catch(error => console.error('Erreur:', error));
-});
+};
 
 // Fonction pour récupérer l'avatar sélectionné
 function handleFormChangeAvatar() {
@@ -427,7 +425,7 @@ function handleFormChangeAvatar() {
     const newAvatar = selectedImg.src.replace(window.location.origin, '').replace('/media/', ''); // Obtenir le chemin relatif
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    fetch('/change-avatar/', {
+    fetch('/api/change-avatar/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
