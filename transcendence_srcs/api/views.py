@@ -1,20 +1,15 @@
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect
+from django.middleware.csrf import get_token
+from django.contrib.auth import logout
 from django.conf import settings
 from api.models import User_tab
-import os, requests
+import os, requests, json, logging
 
 # Create your views here.
-def get_data(request):
-	data = {
-		'message': 'test django test',
-		'nb': [1,2,3,4]
-	}
-	return (JsonResponse(data))
-
 def set_lang(request, lang):
 	accept_lang = ['fr', 'en', 'es']
 	if lang not in accept_lang:
@@ -101,7 +96,7 @@ def change_password(request):
 
 		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
 
-	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
+	return redirect('/')
 
 # Change avatar
 @login_required
@@ -113,3 +108,119 @@ def change_avatar(request):
 			request.user.save()
 			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
 		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
+	
+def login_view(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		user = authenticate(request, Email=email, password=password)
+        
+		if user is not None:
+			login(request, user)
+			user.connect()
+			data = {'success': True, 'message': 'Connexion reussie'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
+		else:
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return redirect('/')
+
+def login_view(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		user = authenticate(request, Email=email, password=password)
+        
+		if user is not None:
+			login(request, user)
+			user.connect()
+			data = {'success': True, 'message': 'Connexion reussie'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
+		else:
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return redirect('/')
+
+@login_required
+def logout_view(request):
+	request.user.disconnect()
+	logout(request)
+	response =  JsonResponse({'success': True, 'message': 'Déconnexion réussie'})
+	response['Content-Type'] = 'application/json; charset=utf-8'
+	return response
+
+def check_authentication(request):
+	if request.user.is_authenticated:
+		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
+					   		'user': request.user.username,
+							'nb_win': request.user.nb_win,
+            				'nb_lose': request.user.nb_lose
+		})
+		response['Content-Type'] = 'application/json; charset=utf-8'
+		return response
+	else:
+		return JsonResponse({'is_authenticated': False})
+	
+def get_stats(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		result = data.get('result', True)
+		if result == True:
+			request.user.nb_win += 1
+		else:
+			request.user.nb_lose += 1
+		request.user.save()
+		response = JsonResponse({'success': True,
+					   		'message': 'Stats mises à jour',
+							'nb_win': request.user.nb_win,
+							'nb_lose': request.user.nb_lose
+		})
+		response['Content-Type'] = 'application/json; charset=utf-8'
+		return response
+	return redirect('/')
+
+def find_username(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		username = data.get('username')
+		if username:
+			if User_tab.objects.filter(username=username).exists():
+				user = User_tab.objects.get(username=username)
+				return JsonResponse({'user': user.username})
+		return JsonResponse({'username' : None})
+	return redirect('/')
+	
+@login_required
+@csrf_exempt
+def find_hostname(request):
+	if request.method == 'POST':
+		try:
+			user = request.user
+			if user.is_authenticated:
+				return JsonResponse({'user': user.username})
+			else:
+				return JsonResponse({'error': 'User not authenticated'})
+		except json.JSONDecodeError:
+			return JsonResponse({'error': 'Invalid JSON data'})
+	return redirect('/')
+
+# Génère un nouveau token CSRF et le renvoie
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})
+
+# Supprime l'utilisateur authentifié
+@login_required
+def delete_account(request):
+	if request.method == 'POST':
+		user = request.user
+		user.disconnect()
+		logout(request)
+		user.delete()
+		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
+	return redirect('/')

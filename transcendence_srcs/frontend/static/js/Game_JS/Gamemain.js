@@ -85,7 +85,7 @@ export function initAll() {
 
 	function searchUser(username, user_id) {
 		let UserName;
-		fetch('/find-username/', {
+		fetch('/api/find-username/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ export function initAll() {
 	function setUser2Image(value) {} //////////
 	function setUser3Image(value) {} //////////
 	function setHostUserName() {
-		fetch('/find-hostname/', {
+		fetch('/api/find-hostname/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -351,7 +351,7 @@ export function initAll() {
 	}
 
 	function checkWin() {
-		// fetch('/stat/', {
+		// fetch('/api/stat/', {
 		// 		method: 'POST',
 		// 		headers: {
 		// 			'Content-Type': 'application/json',
@@ -780,7 +780,7 @@ export function initAll() {
 // 			// console.log('Normalement false:', result);
 //         }
 //         gameStarted = false;
-// 		fetch('/game/', {
+// 		fetch('/api/game/', {
 // 			method: 'POST',
 // 			headers: {
 // 				'Content-Type': 'application/json',
@@ -1165,7 +1165,7 @@ if ()
 // 			console.log('Normalement false:', result);
 //         }
 //         gameStarted = false;
-// 		fetch('/game/', {
+// 		fetch('/api/game/', {
 // 			method: 'POST',
 // 			headers: {
 // 				'Content-Type': 'application/json',

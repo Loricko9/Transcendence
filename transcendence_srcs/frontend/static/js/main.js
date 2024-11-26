@@ -4,9 +4,9 @@ window.Change_lang = Change_lang;
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
 // fonction pour gerer l'affichage en fonction de si un client est connecte
-async function checkAuthentification(user42_check) {
+async function checkAuthentification() {
 	try{
-		const response = await fetch('/check-auth/');
+		const response = await fetch('/api/check-auth/');
 		const data = await response.json();
 		if (data.is_authenticated) {
 			// Affichage connecte
@@ -25,9 +25,9 @@ async function checkAuthentification(user42_check) {
 				nbWinElement.textContent = data.nb_win;
 				nbLoseElement.textContent = data.nb_lose;
 			}
-			if (data.is_user_42 && user42_check)
-				return false;
-			return true;
+			if (data.is_user_42)
+				return [true, true];
+			return [true, false];
 		}
 		else {
 			// Affichage deconnecte
@@ -40,12 +40,12 @@ async function checkAuthentification(user42_check) {
 			document.getElementById('user_avatar').style.display = 'none';
 			document.getElementById('user_connected').style.display = 'none';
 			document.getElementById('signin_btn_little').style.display = 'block';
-			return false;
+			return [false, false];
 		}
 	}
 	catch (error) {
 		console.error('Erreur:', error);
-		return false; // Retourne false en cas d'erreur
+		return [false, false]; // Retourne false en cas d'erreur
 	}
 }
 
@@ -71,21 +71,16 @@ function router(){
 	const path = window.location.pathname.substring(3); //chemin demandé par le user
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
 	blockage = false;
-	switch (path) {
-		case "/":
-			checkAuthentification().then(isAuthenticated => {
-				if (isAuthenticated) {
+	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
+		switch (path) {
+			case "/":
+				if (isAuthenticated)
 					loadTemplate(appDiv, "temp_login");
-					console.log("connect");
-				} else {
+				else
 					loadTemplate(appDiv, "temp_index");
-					console.log("disconnect");
-				}
-			});
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-			break;
-		case "/Game/":
-			checkAuthentification().then(isAuthenticated => {
+				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				break;
+			case "/Game/":
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
 					appDiv.className = "";
@@ -93,33 +88,29 @@ function router(){
 					initAll();
 				} else
 					redirect_to("/");
-			});	
-			break;
-		case "/change-password/":
-			checkAuthentification(true).then(isAuthenticated => {
-				if (isAuthenticated) {
+				break;
+			case "/change-password/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_password");
 					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
 					loadChangePassword();
 				}
 				else
 					redirect_to("/");
-			});
-			break;
-		case "/change-avatar/":
-			checkAuthentification().then(isAuthenticated => {
-				if (isAuthenticated) {
+				break;
+			case "/change-avatar/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
 				} else
 					redirect_to("/");
-			});
-			break;
-		default:
-			loadTemplate(appDiv, "temp_notFound");
-			appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
-	}
+				break;
+			default:
+				loadTemplate(appDiv, "temp_notFound");
+				appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
+		}
+	});
 }
 
 // Fonction pour detecter les click sur le liens / chargement page
@@ -180,14 +171,13 @@ function Click_login() {
 
 // fonction pour gerer les connexion avec fetch en mode dynamique
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
-		event.preventDefault();  // Empêche le rechargement de la page
+	event.preventDefault();  // Empêche le rechargement de la page
 
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
 	const csrfToken = document.querySelector('[name=csrf-token]').content
-	console.log(inputEmail)
 
-	fetch('/login/', {
+	fetch('/api/login/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
@@ -213,7 +203,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
-    fetch('/logout/', {
+    fetch('/api/logout/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -261,7 +251,7 @@ function showSuccessModal() {
 
 // Fonction pour rafraîchir le token CSR
 function refreshCSRFToken() {
-    fetch('/get-csrf-token/')
+    fetch('/api/get-csrf-token/')
         .then(response => response.json())
         .then(data => {
             document.querySelector('[name=csrf-token]').content = data.csrfToken;
@@ -278,7 +268,7 @@ function clearFormFields() {
 // delete account
 document.getElementById('deleteAccountBtn').addEventListener('click', function() {
     if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
-        fetch('/delete-account/', {
+        fetch('/api/delete-account/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
