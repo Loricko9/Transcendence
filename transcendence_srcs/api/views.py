@@ -31,7 +31,7 @@ def set_lang(request, lang):
 	reponse.set_cookie('language', lang, max_age=tps)
 	return reponse
 
-
+# Afficher la liste des amis
 class FriendshipListView(APIView):
 	permission_classes = [IsAuthenticated]
      
@@ -44,6 +44,17 @@ class FriendshipListView(APIView):
 			"friendships": serializer.data
 		}
 		return Response(response_data)
+
+	def delete(self, request, id):
+		try:
+			friendship = Friendship.objects.get(id=id)
+			if friendship.sender == request.user or friendship.receiver == request.user:
+				friendship.delete()
+				return Response({"message": "Friendship deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+			else:
+				return Response({"error": "Not authorized to delete this friendship."}, status=status.HTTP_403_FORBIDDEN)
+		except Friendship.DoesNotExist:
+			return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])

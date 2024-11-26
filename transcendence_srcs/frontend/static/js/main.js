@@ -14,12 +14,12 @@ async function checkAuthentification() {
 			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block'; 
-			const nbWinElement = document.getElementById('nbWin');
-			const nbLoseElement = document.getElementById('nbLose');
-			if (nbWinElement && nbLoseElement) {
-				nbWinElement.textContent = data.nb_win;
-				nbLoseElement.textContent = data.nb_lose;
-			}
+			// const nbWinElement = document.getElementById('nbWin');
+			// const nbLoseElement = document.getElementById('nbLose');
+			// if (nbWinElement && nbLoseElement) {
+			// 	nbWinElement.textContent = data.nb_win;
+			// 	nbLoseElement.textContent = data.nb_lose;
+			// }
 			return true;
 		}
 		else {
@@ -440,20 +440,44 @@ function fetchFriendList() {
         data.friendships.forEach(friendship => {
 			if (friendship.status == 'accepted')
 			{
-				console.log('accepted')
 	            const li = document.createElement('li');
 				// const del_button = createElement('a');
 				if (friendship.sender_username == data.username)
 					li.textContent = `${friendship.receiver_username}`;
 				else
 					li.textContent = `${friendship.sender_username}`;
+				const deleteButton = document.createElement('button');
+				deleteButton.textContent = 'Remove';
+				deleteButton.style.marginLeft = '10px';
+				deleteButton.addEventListener('click', () => {
+					deleteFriendship(friendship.id); // Appel de la fonction de suppression
+				});
+				li.appendChild(deleteButton);
 				list.appendChild(li);
 			}
-			else
-				console.log('not accepted')
         });
     })
     .catch(error => console.error('Error fetching friend list:', error));
+}
+
+// delete a friend
+function deleteFriendship(friendshipId){
+	fetch(`/api/friends/${friendshipId}/`, { // URL pour la suppression
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			console.log('Friendship deleted successfully.');
+			fetchFriendList(); // Rafraîchir la liste
+		} else {
+			console.error('Failed to delete friendship.');
+		}
+	})
+	.catch(error => console.error('Error deleting friendship:', error));
 }
 
 
@@ -528,6 +552,7 @@ function respondToRequest(username, action) {
     .then(data => {
         alert(data.message || data.error);
         fetchFriendRequests();  // Rafraîchir la liste des demandes
+		fetchFriendList();
     })
     .catch(error => console.error('Error responding to friend request:', error));
 }
