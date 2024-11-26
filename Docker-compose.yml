@@ -12,6 +12,7 @@ services:
       - Transcendence
     depends_on:
       - postgreSQL
+      - redis
   postgreSQL:
     build: Containers/PostgreSQL
     image: transcendence-postgresql
@@ -39,6 +40,10 @@ services:
       - Transcendence
     depends_on:
       - django
+  redis:
+    image: redis:alpine # Utilisation de l'image officielle Redis Alpine (légère)
+    ports:
+      - "6379:6379"
 
 
 volumes:

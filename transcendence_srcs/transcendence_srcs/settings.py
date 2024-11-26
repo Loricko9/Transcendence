@@ -206,3 +206,17 @@ SITE_URL = 'https://localhost'
 
 DEFAULT_CHARSET = 'utf-8'
 DEFAULT_CONTENT_TYPE = 'text/html'
+
+# For change in real time
+# Activer le support ASGI
+ASGI_APPLICATION = 'transcendence_srcs.asgi.application'
+
+# Configurer le channel layer avec Redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.getenv("REDIS_HOST", "localhost"), int(os.getenv("REDIS_PORT", 6379)))],
+        },
+    },
+}
