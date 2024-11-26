@@ -1,37 +1,59 @@
 services:
   django:
-    build: Containers/Django
+    build: 
+      context: Containers/Django
+      dockerfile: Dockerfile
     image: transcendence-django
     container_name: Django
     env_file: .env
     restart: on-failure
     volumes:
       - Django:/transcendence
-      - staticfiles:/app/staticfiles # Volume pour les fichiers statiques
+      - staticfiles:/app/staticfiles
     networks:
       - Transcendence
     depends_on:
       - postgreSQL
+  django-exporter:
+    build:
+      context: Containers/Django-exporter
+      dockerfile: Dockerfile
+    image: transcendence-django-exporter
+    container_name: Django-exporter
+    networks:
+      - Transcendence
+    depends_on:
+      - django
   postgreSQL:
-    build: Containers/PostgreSQL
+    build: 
+      context: Containers/PostgreSQL
+      dockerfile: Dockerfile
     image: transcendence-postgresql
     container_name: PostgreSQL
     env_file: .env
     restart: unless-stopped
     volumes :
       - PostgreSQL:/var/lib/postgresql/15/main
-    expose:
-      - "5432"
+    networks:
+      - Transcendence
+  postgreSQL-exporter:
+    build: 
+      context: Containers/PostgreSQL-exporter
+      dockerfile: Dockerfile
+    image: transcendence-postgresql-exporter
+    container_name: PostgreSQL-exporter
+    env_file: .env
     networks:
       - Transcendence
   nginx:
-    build: Containers/Nginx
+    build: 
+      context: Containers/Nginx
+      dockerfile: Dockerfile
     image: transcendence-nginx
     container_name: Nginx
     ports:
       - "443:443"
-      - "80:80"  # Optionnel si tu veux rediriger HTTP vers HTTPS
-      - "8000:8000"
+      - "80:80"
     volumes:
       - staticfiles:/app/staticfiles  # Volume pour les fichiers statiques
       - mediafiles:/app/mediafiles
@@ -39,6 +61,30 @@ services:
       - Transcendence
     depends_on:
       - django
+  nginx-exporter:
+    build:
+      context: Containers/Nginx-exporter
+      dockerfile: Dockerfile
+    image: transcendence-nginx-exporter
+    container_name: Nginx-exporter
+    networks:
+      - Transcendence
+    depends_on:
+      - nginx
+  prometheus:
+    build:
+      context: Containers/Prometheus
+      dockerfile: Dockerfile
+    image: transcendence-prometheus
+    container_name: Prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - Transcendence
+    depends_on:
+      - nginx-exporter
+      - django-exporter
+      - postgreSQL-exporter
 
 
 volumes:
@@ -57,6 +103,7 @@ volumes:
       o: 'bind'
       device: './database'
   staticfiles:
+<<<<<<< HEAD
     driver: local  # Volume pour partager les fichiers statiques entre Django et Nginx
   mediafiles:
     driver: local
@@ -66,6 +113,9 @@ volumes:
       o: 'bind'
       device: './transcendence_srcs/media'
 
+=======
+    driver: local
+>>>>>>> main
 
 networks:
   Transcendence:

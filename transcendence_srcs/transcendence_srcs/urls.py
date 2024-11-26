@@ -16,13 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin # type: ignore
 from django.urls import path, include # type: ignore
+from django_prometheus import urls, exports
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+	path("prometheus/", include('django_prometheus.urls')),
+	path('api/', include('api.urls')),
 	path('sign_in/', include('register.urls')),
     path('<str:lang>/sign_in/', include('register.urls')),
 	path('', include('frontend.urls')),
-	path('api/', include('api.urls')),
 	path('<str:lang>/', include('frontend.urls')),
 	# path('accounts/', include('allauth.urls')),  # Ajoute toutes les URL d'allauth
 ]

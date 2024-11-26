@@ -29,8 +29,13 @@ SECRET_KEY = 'django-insecure-p137f&8iautjsybygl)_3kc0(r)(+smeu3_v^r%13csbdg--&^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+	"transcendence-42.fr",
+	"www.transcendence-42.fr",
+	"django",
+	"nginx",
+	"localhost",
+]
 
 # Application definition
 
@@ -39,6 +44,7 @@ INSTALLED_APPS = [
 	# 'allauth',
 	# 'allauth.account',
 	# 'allauth.socialaccount',
+	"django_prometheus",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,6 +57,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
@@ -59,6 +66,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'transcendence_srcs.urls'
