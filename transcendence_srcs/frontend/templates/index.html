@@ -182,6 +182,7 @@
 					</tbody>
 				</table>
 			</div>
+            <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="loginStartGameButton">Start Game</button>
 		</div>
     </template>
 
@@ -223,21 +224,21 @@
                         <p id="User1Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User1Icon" id="user1Icon">
                         <input id="User1SearchBox" type="SearchBox">
-                        <button onclick="clearInput('User1SearchBox')" id="User1Search">{{ texts.GameUserSearch }}</button>
+                        <button id="User1Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User2">
                         <p id="User2Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User2Icon" id="user2Icon">
                         <input id="User2SearchBox" type="SearchBox">
-                        <button onclick="clearInput('User2SearchBox')" id="User2Search">{{ texts.GameUserSearch }}</button>
+                        <button id="User2Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User3">
                         <p id="User3Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User3Icon" id="user3Icon">
                         <input id="User3SearchBox" type="SearchBox">
-                        <button onclick="clearInput('User3SearchBox')" id="User3Search">{{ texts.GameUserSearch }}</button>
+                        <button id="User3Search">{{ texts.GameUserSearch }}</button>
                     </div>
-                    <script>function clearInput(id) {document.getElementById(id).value = "";}</script>
+                    <!-- <script>function clearInput(id) {document.getElementById(id).value = "";}</script> -->
                     <!-- <script></script> -->
                 </div>
                 <button id="StartGame">{{ texts.StartGame }}</button>

@@ -69,7 +69,15 @@ function router(){
 			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
 		case "/Game/":
-			loadTemplate(appDiv, "Game");
+			checkAuthentification().then(isAuthenticated => {
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "Game");
+					// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				} else {
+					const lang_path = window.location.pathname.substring(0, 3);
+					redirect_to(lang_path + "/");
+				}
+			});	
 			// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
 		case "/change-password/":
@@ -146,6 +154,18 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	});
 	
+	const loginStartGameButton = document.getElementById('loginStartGameButton');
+	if (loginStartGameButton) {
+		loginStartGameButton.addEventListener('click', function() {
+			const appDiv = document.getElementById("app");
+			loadTemplate(appDiv, "Game");
+		});
+	} else {
+		console.log("loginStartGameButton not found", loginStartGameButton);
+		const appDiv = document.getElementById("app");
+		loadTemplate(appDiv, "temp_index");
+	}
+
 	router(); // gère la cas pour rafraichir la page
 });
 

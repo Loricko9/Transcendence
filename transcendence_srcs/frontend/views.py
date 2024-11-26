@@ -5,12 +5,14 @@ from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
 from .models import TextTranslation
-from django.contrib.auth import logout # type: ignore
+from django.contrib.auth import logout, get_user_model # type: ignore
 import json
 from django.middleware.csrf import get_token # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.conf import settings # type: ignore
 import os # type: ignore
+
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +93,7 @@ def index_lang(request, lang, any=None):
 	return redirect(new_path)
 
 
-def game_view(request):
+def get_stats(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		result = data.get('result', True)
@@ -109,6 +111,25 @@ def game_view(request):
 		return response
 	else:
 		return JsonResponse({'success': False}, status=400)
+	
+
+
+def find_username(request):
+	if request.method == 'POST':
+		username = request.POST.get('username')
+		if username:
+			if User.objects.filter(username=username).exists():
+				user = User.objects.get(username=username)
+				return JsonResponse({'user': {user.username}})
+				# return JsonResponse({'success': False, 'message': 'Ce nom d\'utilisateur est déjà pris.'}, status=400)
+			# return JsonResponse({'success': True, 'message': 'Nom d\'utilisateur disponible.'})
+		return JsonResponse({'success': False, 'message': 'Nom d\'utilisateur invalide.'}),
+
+
+@login_required
+def	game(request):
+	pass
+	# return render(request, 'game.html')
 	
 
 # Génère un nouveau token CSRF et le renvoie
