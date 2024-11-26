@@ -94,7 +94,6 @@ function router(){
 				} else
 					redirect_to("/");
 			});	
-			// appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 			break;
 		case "/change-password/":
 			checkAuthentification(true).then(isAuthenticated => {
@@ -167,19 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			redirect_to(target); // vers la nouvelle page
 		});
 	});
-	
-	const loginStartGameButton = document.getElementById('loginStartGameButton');
-	if (loginStartGameButton) {
-		loginStartGameButton.addEventListener('click', function() {
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "Game");
-		});
-	} else {
-		console.log("loginStartGameButton not found", loginStartGameButton);
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_index");
-	}
-
 	router(); // gère la cas pour rafraichir la page
 });
 
@@ -218,9 +204,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 		document.getElementById('infoco').innerHTML = data.message
 		document.getElementById('dropdown_form').reset(); // reinitialise le form
 		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_login");
+		redirect_to("/")
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
@@ -242,9 +226,7 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 		clearFormFields()
 		refreshCSRFToken()
 		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_index");
+		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
 });
@@ -277,22 +259,6 @@ function showSuccessModal() {
 	}, 3000); // 3000 ms = 3 secondes
 }
 
-// gestion du display au moment du click sur le logo
-document.getElementById('logo').addEventListener('click', function() {
-	checkAuthentification().then(isAuthenticated => {
-		if (isAuthenticated) {
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_login");
-			console.log("connect");
-		} else {
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_index");
-			console.log("disconnect");
-		}
-	});
-});
-
-
 // Fonction pour rafraîchir le token CSR
 function refreshCSRFToken() {
     fetch('/get-csrf-token/')
@@ -324,9 +290,7 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
             if (data.success) {
                 document.getElementById('infoco').innerHTML = data.message
 				showSuccessModal()
-				checkAuthentification()
-				const appDiv = document.getElementById("app");
-				loadTemplate(appDiv, "temp_index");
+				redirect_to("/")
             } else {
                 alert("Erreur lors de la suppression du compte: " + data.message);
             }
@@ -373,7 +337,6 @@ function handleFormChangePassword() {
     .then(data => {
 		document.getElementById('infoco').innerHTML = data.message
 		showSuccessModal()
-		checkAuthentification()
 		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
@@ -422,7 +385,8 @@ function handleFormChangeAvatar() {
         return;
     }
 
-    const newAvatar = selectedImg.src.replace(window.location.origin, '').replace('/media/', ''); // Obtenir le chemin relatif
+    const newAvatar = selectedImg.src.replace(window.location.origin, '');
+	console.log("newAvatar : ", newAvatar);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     fetch('/api/change-avatar/', {
@@ -440,9 +404,7 @@ function handleFormChangeAvatar() {
         document.getElementById('infoco').innerHTML = data.message;
         if (data.success) {
             showSuccessModal();
-            checkAuthentification();
-            const appDiv = document.getElementById("app");
-            loadTemplate(appDiv, "temp_login");
+			redirect_to("/");
         } else {
             alert(data.message);
         }
