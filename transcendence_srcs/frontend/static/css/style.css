@@ -44,6 +44,11 @@ body {
 	border-color: rgba(128, 128, 128, 0.632);
 }
 
+#option {
+	align-items: center;
+	gap: 10px;
+	border: 0;
+}
 .log_form {
 	width: 35rem;
 	max-width: 97vw;
@@ -105,6 +110,12 @@ p {
 }
 
 h1 {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
+h5 {
 	font-family: "Audiowide", sans-serif;
 	font-weight: 400;
 	font-style: normal;
@@ -258,7 +269,7 @@ span {
 	z-index: 0;
 }
 
-.user_display {
+#user_connected {
 	color: white;
 }
 
@@ -267,6 +278,7 @@ span {
 }
 
 #deleteAccountBtn:hover {
+<<<<<<< HEAD
     background-color: #dc3545;  /* Rouge */
     border-color: #dc3545;      /* Bordure rouge */
     color: white;               /* Texte en blanc */
@@ -284,4 +296,16 @@ span {
 .avatar-img.selected {
     border-color: #007bff;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+=======
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.modal-content {
+    padding-bottom: 0;
+}
+.modal-header {
+    border-bottom: none;
+>>>>>>> main
 }

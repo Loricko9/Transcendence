@@ -21,5 +21,4 @@ USER root
 RUN chmod 755 /etc/postgresql/15/main/postgresql.conf
 RUN chmod 755 /etc/postgresql/15/main/pg_hba.conf
 
-# ENTRYPOINT [ "/setup.sh" ]
-CMD [ "/setup.sh" ]
+ENTRYPOINT [ "/setup.sh" ]

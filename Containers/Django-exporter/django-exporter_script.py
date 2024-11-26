@@ -1,7 +1,9 @@
 from flask import Flask, Response
-import requests
+import requests, logging
 
 app = Flask(__name__)
+log = logging.getLogger('werkzeug')
+log.disabled = True
 
 @app.route('/metrics')
 def metrics_redirect():

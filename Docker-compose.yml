@@ -103,7 +103,6 @@ volumes:
       o: 'bind'
       device: './database'
   staticfiles:
-<<<<<<< HEAD
     driver: local  # Volume pour partager les fichiers statiques entre Django et Nginx
   mediafiles:
     driver: local
@@ -113,9 +112,6 @@ volumes:
       o: 'bind'
       device: './transcendence_srcs/media'
 
-=======
-    driver: local
->>>>>>> main
 
 networks:
   Transcendence:

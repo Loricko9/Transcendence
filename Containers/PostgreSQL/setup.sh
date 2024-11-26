@@ -43,7 +43,6 @@ else
     # Créer la base de données si non existante
     echo "Création de la base de données $DATABASE_NAME..."
     su - postgres -c "psql -U postgres -c \"CREATE DATABASE $DATABASE_NAME OWNER $DATABASE_USER;\""
-    # Accorder tous les droits à l'utilisateur sur la base de données
     echo "Accord des privilèges à l'utilisateur $DATABASE_USER..."
     su - postgres -c "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE $DATABASE_NAME TO $DATABASE_USER;\""
 	service postgresql restart
@@ -53,7 +52,6 @@ fi
 if user_exists "$DATABASE_USER_EXPORT"; then
     echo "L'utilisateur $DATABASE_USER_EXPORT existe déjà."
 else
-    # Créer l'utilisateur si non existant
     echo "Création de l'utilisateur $DATABASE_USER_EXPORT..."
     su - postgres -c "psql -c \"CREATE USER $DATABASE_USER_EXPORT WITH PASSWORD '$DATABASE_PASSWORD_EXPORT';\""
     su - postgres -c "psql -c \"GRANT CONNECT ON DATABASE $DATABASE_NAME TO $DATABASE_USER_EXPORT;\""
@@ -64,10 +62,28 @@ else
     service postgresql restart
 fi
 
-# Vérifier si la fonction de monitoring pour l'exporter exist
+# Vérifier si l'utilisateur grafana existe déjà
+if user_exists "$GF_DATABASE_USER"; then
+    echo "L'utilisateur $GF_DATABASE_USER existe déjà."
+else
+    echo "Création de l'utilisateur $GF_DATABASE_USER..."
+    su - postgres -c "psql -c \"CREATE USER $GF_DATABASE_USER WITH PASSWORD '$GF_DATABASE_PASSWORD';\""
+	service postgresql restart
+fi
+
+# Vérifier si la base de données grafana existe déjà
+if database_exists "$GF_DATABASE_NAME"; then
+    echo "La base de données $GF_DATABASE_NAME existe déjà."
+else
+    echo "Création de la base de données $GF_DATABASE_NAME..."
+    su - postgres -c "psql -U postgres -c \"CREATE DATABASE $GF_DATABASE_NAME OWNER $GF_DATABASE_USER;\""
+    echo "Accord des privilèges à l'utilisateur $GF_DATABASE_USER..."
+    su - postgres -c "psql -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE $GF_DATABASE_NAME TO $GF_DATABASE_USER;\""
+	service postgresql restart
+fi
 
 echo "Configuration terminée."
 
-# Permet de mettre postgre en prosses principal
+# Permet de mettre postgre en process principal
 service postgresql stop
 exec su - postgres -c "/usr/lib/postgresql/15/bin/postgres -D /etc/postgresql/15/main"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 10
+sleep 20
 python3 manage.py makemigrations api
 python3 manage.py makemigrations frontend
 python3 manage.py collectstatic --noinput

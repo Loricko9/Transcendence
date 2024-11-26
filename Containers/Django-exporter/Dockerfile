@@ -5,4 +5,4 @@ RUN apt update && \
 COPY ./django-exporter_script.py /django-exporter_script.py
 EXPOSE 9118
 
-CMD ["python3", "/django-exporter_script.py"]
+ENTRYPOINT ["python3", "/django-exporter_script.py"]

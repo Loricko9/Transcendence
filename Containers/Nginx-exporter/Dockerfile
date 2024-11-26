@@ -6,4 +6,4 @@ RUN tar -xvzf /nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz -C /usr/local/
 	rm -rf /nginx-prometheus-exporter_1.3.0_linux_amd64.tar.gz
 EXPOSE 9113
 
-CMD ["/usr/local/bin/nginx-prometheus-exporter", "-nginx.scrape-uri=http://nginx:8080/nginx_status"]
+ENTRYPOINT ["/usr/local/bin/nginx-prometheus-exporter", "-nginx.scrape-uri=http://nginx:8080/nginx_status"]

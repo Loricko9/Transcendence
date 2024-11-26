@@ -25,7 +25,7 @@ class Command(BaseCommand):
 			{'Key': 'Log_on', 'Lang': 'en', 'Text': 'Log on to'},
 			{'Key': 'Log_on', 'Lang': 'es', 'Text': 'Conéctese a'},
 			{'Key': 'Log_in', 'Lang': 'fr', 'Text': 'Connexion'},
-			{'Key': 'Log_in', 'Lang': 'en', 'Text': 'Log_in'},
+			{'Key': 'Log_in', 'Lang': 'en', 'Text': 'Log in'},
 			{'Key': 'Log_in', 'Lang': 'es', 'Text': 'Conexión'},
 			{'Key': 'Sign_in', 'Lang': 'fr', 'Text': 'Inscription'},
 			{'Key': 'Sign_in', 'Lang': 'en', 'Text': 'Sign_in'},
@@ -126,6 +126,34 @@ class Command(BaseCommand):
 			{'Key': 'GameDraw', 'Lang': 'fr', 'Text': 'Egalité'},
 			{'Key': 'GameDraw', 'Lang': 'en', 'Text': 'Draw'},
 			{'Key': 'GameDraw', 'Lang': 'es', 'Text': 'Empate'},
+			{'Key': 'Log_42', 'Lang': 'fr', 'Text': 'Connexion avec'},
+			{'Key': 'Log_42', 'Lang': 'en', 'Text': 'Log in with'},
+			{'Key': 'Log_42', 'Lang': 'es', 'Text': 'Conexión con'},
+			{'Key': 'Change_Passwd_1', 'Lang': 'fr', 'Text': 'Changement de mot de passe'},
+			{'Key': 'Change_Passwd_1', 'Lang': 'en', 'Text': 'Password change'},
+			{'Key': 'Change_Passwd_1', 'Lang': 'es', 'Text': 'Cambiar contraseña'},
+			{'Key': 'Change_Passwd_2', 'Lang': 'fr', 'Text': 'Ancien mot de passe :'},
+			{'Key': 'Change_Passwd_2', 'Lang': 'en', 'Text': 'Old password :'},
+			{'Key': 'Change_Passwd_2', 'Lang': 'es', 'Text': 'Antigua contraseña :'},
+			{'Key': 'Change_Passwd_3', 'Lang': 'fr', 'Text': 'Nouveau mot de passe :'},
+			{'Key': 'Change_Passwd_3', 'Lang': 'en', 'Text': 'New password :'},
+			{'Key': 'Change_Passwd_3', 'Lang': 'es', 'Text': 'Nueva contraseña :'},
+			{'Key': 'Change_Passwd_4', 'Lang': 'fr', 'Text': 'Confirmer le nouveau mot de passe :'},
+			{'Key': 'Change_Passwd_4', 'Lang': 'en', 'Text': 'Confirm the new password :'},
+			{'Key': 'Change_Passwd_4', 'Lang': 'es', 'Text': 'Confirme la nueva contraseña :'},
+			{'Key': 'Change_Passwd_5', 'Lang': 'fr', 'Text': 'Changer le mot de passe'},
+			{'Key': 'Change_Passwd_5', 'Lang': 'en', 'Text': 'Change your password'},
+			{'Key': 'Change_Passwd_5', 'Lang': 'es', 'Text': 'Cambiar contraseña'},
+			{'Key': 'Log_out', 'Lang': 'fr', 'Text': 'Déconnexion'},
+			{'Key': 'Log_out', 'Lang': 'en', 'Text': 'Log out'},
+			{'Key': 'Log_out', 'Lang': 'es', 'Text': 'Desconexión'},
+			{'Key': 'Options', 'Lang': 'fr', 'Text': 'Options'},
+			{'Key': 'Options', 'Lang': 'en', 'Text': 'Options'},
+			{'Key': 'Options', 'Lang': 'es', 'Text': 'Opciones'},
+			{'Key': 'Del_account', 'Lang': 'fr', 'Text': 'Supprimer mon compte'},
+			{'Key': 'Del_account', 'Lang': 'en', 'Text': 'Delete my account'},
+			{'Key': 'Del_account', 'Lang': 'es', 'Text': 'Eliminar mi cuenta'},
+
 		]
 
 
@@ -138,5 +166,4 @@ class Command(BaseCommand):
 			
 			if created:
 				self.stdout.write('CREATION DE : ' + trans_enter['Key'] + ' (' + trans_enter['Lang'] + ')')
-			else:
-				self.stdout.write('ENTREE DEJA EXISTANTE : ' + trans_enter['Key'] + ' (' + trans_enter['Lang'] + ')')
+		self.stdout.write('------- All Text Translation Add -------')

@@ -26,12 +26,12 @@ def login_view(request):
 		if user is not None:
 			login(request, user)
 			user.connect()
-			data = {'success': True, 'message': '<p>Connexion reussie</p>'}
+			data = {'success': True, 'message': 'Connexion reussie'}
 			response = JsonResponse(data)
 			response['Content-Type'] = 'application/json; charset=utf-8'
 			return response
 		else:
-			return JsonResponse({'success': False, 'message' : '<p>Connexion echouée</p>', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return JsonResponse({'success': False, 'error': 'Méthode non autorisée.'}, content_type='application/json; charset=utf-8')
 
 @login_required
@@ -44,9 +44,9 @@ def logout_view(request):
 
 def check_authentication(request):
 	if request.user.is_authenticated:
-		response = JsonResponse({'is_authenticated': True,
-						   	'avatar': f'<img src="{ request.user.avatar.url }" width="75" height="65" alt="Avatar">',
-					   		'user': f'<p class="user_display">{request.user.username} 🟢</p>',
+		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="75">',
+					   		'user': request.user.username,
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
 		})
@@ -103,7 +103,7 @@ def get_stats(request):
 			request.user.nb_lose += 1
 		request.user.save()
 		response = JsonResponse({'success': True,
-					   		'message': '<p>Stats mises à jour</p>',
+					   		'message': 'Stats mises à jour',
 							'nb_win': request.user.nb_win,
 							'nb_lose': request.user.nb_lose
 		})
@@ -146,37 +146,6 @@ def delete_account(request):
 		logout(request)
 		user.delete()
 		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
-	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
-
-
-# Change password
-@login_required
-@csrf_protect
-def change_password(request):
-	if request.method == 'POST':
-		old_password = request.POST.get('old_password')
-		new_password = request.POST.get('new_password')
-		confirm_password = request.POST.get('confirm_password')
-
-		if new_password != confirm_password:
-			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
-
-		user = request.user
-
-		# Vérifie si l'ancien mot de passe est correct
-		if not user.check_password(old_password):
-			return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
-
-		# Change le mot de passe et sauvegarde l'utilisateur
-		user.set_password(new_password)
-		user.save()
-
-		update_session_auth_hash(request, user)
-		# Authentifie à nouveau l'utilisateur avec son nouveau mot de passe
-		login(request, user)
-
-		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
-
 	return JsonResponse({'success': False, 'message': 'Requête invalide.'}, status=400)
 
 # Change avatar
