@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect # type: ignore
+from api.models import User_tab
 from django.contrib.auth import authenticate, login, update_session_auth_hash # type: ignore
 from django.views.decorators.csrf import csrf_protect, csrf_exempt # type: ignore
 from django.http import JsonResponse # type: ignore
 import logging
 from django.utils.translation import get_language # type: ignore
 from .models import TextTranslation
-from django.contrib.auth import logout, get_user_model # type: ignore
+from django.contrib.auth import logout # type: ignore
 import json
 from django.middleware.csrf import get_token # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.conf import settings # type: ignore
 import os # type: ignore
-
-User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -116,14 +115,29 @@ def get_stats(request):
 
 def find_username(request):
 	if request.method == 'POST':
-		username = request.POST.get('username')
+		data = json.loads(request.body)
+		username = data.get('username')
 		if username:
-			if User.objects.filter(username=username).exists():
-				user = User.objects.get(username=username)
-				return JsonResponse({'user': {user.username}})
+			if User_tab.objects.filter(username=username).exists():
+				user = User_tab.objects.get(username=username)
+				return JsonResponse({'user': user.username})
 				# return JsonResponse({'success': False, 'message': 'Ce nom d\'utilisateur est déjà pris.'}, status=400)
 			# return JsonResponse({'success': True, 'message': 'Nom d\'utilisateur disponible.'})
-		return JsonResponse({'success': False, 'message': 'Nom d\'utilisateur invalide.'}),
+		return JsonResponse({'username' : None})
+	
+@login_required
+@csrf_exempt
+def find_hostname(request):
+	if request.method == 'POST':
+		try:
+			user = request.user
+			if user.is_authenticated:
+				return JsonResponse({'user': user.username})
+			else:
+				return JsonResponse({'error': 'User not authenticated'})
+		except json.JSONDecodeError:
+			return JsonResponse({'error': 'Invalid JSON data'})
+	return JsonResponse({'error': 'Invalid request method'})
 
 
 @login_required

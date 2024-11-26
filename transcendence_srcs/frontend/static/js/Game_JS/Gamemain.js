@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+export function initAll() {
 	const PaddingLeft = document.getElementById('left-paddle');
 	const PaddingRight = document.getElementById('right-paddle');
 	const Ball = document.getElementById('ball');
@@ -83,49 +83,61 @@ document.addEventListener("DOMContentLoaded", function() {
 	let tournamentWinnerRound1 = null;
 	let tournamentWinnerRound2 = null;
 
-	function searchUser(username) {
+	function searchUser(username, user_id) {
+		let UserName;
 		fetch('/find-username/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': Get_Cookie('csrftoken')
-				},
-				body: JSON.stringify({
-					'username': username
-				})
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+			body: JSON.stringify({
+				'username': username
 			})
-			.then(response => response.json())
-			.then(data => {
-				setHostUserName(data.user);
-			})
-			.catch(error => {
-				console.error('Erreur:', error);
-			});
+		})
+		.then(response => response.json())
+		.then(data => {
+			UserName = data.user;
+			if (UserName === undefined || UserName === null) {
+				alert('User not found');
+				return ;
+			}
+			if (UserName!== User1UserNameVar && UserName !== User2UserNameVar && UserName !== User3UserNameVar) {
+				if (user_id == 'user1') {
+					setUser1UserName(UserName);
+					// setUser1Image(user.db.image);
+					return ;
+				}
+				else if (user_id == 'user2') {
+					setUser2UserName(UserName);
+					// setUser2Image(user.db.image);
+					return ;
+				}
+				else if (user_id == 'user3') {
+					setUser3UserName(UserName);
+					// setUser3Image(user.db.image);
+					return ;
+				}
+			}
+			alert('User already in the room');
+			// console.log('data.user: ', data.user)
+		})
+		.catch(error => {
+			console.error('Erreur:', error);
+		});
+		// console.log('username: ', UserName)
+		return;
+	}
 
-		console.log(username);
-		// if (username === user.db.username) {
-		// 	if (username !== User1UserNameVar && username !== User2UserNameVar && username !== User3UserNameVar) {
-		// 		if (user_id == 'user1') {
-		// 			setUser1UserName(username.username);
-		// 			setUser1Image(user.db.image);
-		// 			return ;
-		// 		}
-		// 		else if (user_id == 'user2') {
-		// 			setUser2UserName(username.username);
-		// 			setUser2Image(user.db.image);
-		// 			return ;
-		// 		}
-		// 		else if (user_id == 'user3') {
-		// 			setUser3UserName(username.username);
-		// 			setUser3Image(user.db.image);
-		// 			return ;
-		// 		}
-		// 	}
-		// 	alert('User already in the room');
-		// 	return;
-		// }
-		// alert('User not found');
-		// return;
+	function Get_Cookie(name) {
+		let new_name = name + "=";
+		let tab = decodeURIComponent(document.cookie).split(';');
+		for (let i = 0; i < tab.length; i++) {
+			let cookie = tab[i].trim();
+			if (cookie.indexOf(new_name) == 0)
+				return (cookie.substring(new_name.length, cookie.length))
+		}
+		return null
 	}
 
 	function setHostImage(value) {
@@ -135,10 +147,49 @@ document.addEventListener("DOMContentLoaded", function() {
 	function setUser1Image(value) {} //////////
 	function setUser2Image(value) {} //////////
 	function setUser3Image(value) {} //////////
-	function setHostUserName(value) {HostUserNameVar = value;if (value === null) {RoomHostName.textContent = '...';} else {RoomHostName.textContent = value;}}
-	function setUser1UserName(value) {User1UserNameVar = value;if (value === null) {RoomUser1Name.textContent = '...';} else {RoomUser1Name.textContent = value;}}
-	function setUser2UserName(value) {User2UserNameVar = value;if (value === null) {RoomUser2Name.textContent = '...';} else {RoomUser2Name.textContent = value;}}
-	function setUser3UserName(value) {User3UserNameVar = value;if (value === null) {RoomUser3Name.textContent = '...';} else {RoomUser3Name.textContent = value;}}
+	function setHostUserName() {
+		fetch('/find-hostname/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.user) {
+				console.log('User:', data.user);
+				HostUserNameVar = data.user;
+				RoomHostName.textContent = data.user;
+			} else {
+				console.error('Error:', data.error);
+			}
+		})
+	}
+
+	function setUser1UserName(value) {
+		if (value === null) {
+			User1UserNameVar = null;
+			RoomUser1Name.textContent = '...';
+		} else {
+			User1UserNameVar = value;
+			RoomUser1Name.textContent = value;
+		}}
+	function setUser2UserName(value) {
+		if (value === null) {
+			User2UserNameVar = null;
+			RoomUser2Name.textContent = '...';
+		} else {
+			User2UserNameVar = value;
+			RoomUser2Name.textContent = value;
+		}}
+	function setUser3UserName(value) {
+		if (value === null) {
+			User3UserNameVar = null;
+			RoomUser3Name.textContent = '...';
+		} else {
+			User3UserNameVar = value;
+			RoomUser3Name.textContent = value;}}
 
 	function resetFight() {fight = [null, null];}
 	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
@@ -238,16 +289,16 @@ document.addEventListener("DOMContentLoaded", function() {
 		LeftPlayerUserNameContent.textContent = '...';
 		RightPlayerUserNameContent.textContent = '...';
 		round = 0;
-		setHostUserName("hostname"); ///////////////////////
+		setHostUserName(); ///////////////////////
 		// setHostUserName(current_logged_user_name);
 		// setHostImage(curent_logged_user_icon);
-		setUser1UserName("test1"); ////////////
+		setUser1UserName(null); ////////////
 		// setUser1UserName();
 		// setUser1Image();
-		setUser2UserName("test2"); ////////////
+		setUser2UserName(null); ////////////
 		// setUser2UserName();
 		// setUser2Image();
-		setUser3UserName("test3"); ////////////
+		setUser3UserName(null); ////////////
 		// setUser3UserName();
 		// setUser3Image();
 		resetFight();
@@ -336,6 +387,8 @@ document.addEventListener("DOMContentLoaded", function() {
 			gameStarted = false;
 			if (PVPMode === 'none' || PVPMode === '1vs1') {
 				changeMenu("endGameMenu");
+				NextButton.style.display = 'none';
+				PlayAgainButton.style.display = 'block';
 				if (scoreleftplayer === 3) {document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
 				else if (scorerightplayer === 3){document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
 			}
@@ -511,19 +564,23 @@ document.addEventListener("DOMContentLoaded", function() {
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
 
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
-	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
-	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
+	document.addEventListener("keydown", (e) => {
+		keyPressed[e.key] = true;
+	});
+	document.addEventListener("keyup", (e) => {
+		keyPressed[e.key] = false;
+	});
 
 	function init() {
 		changeMenu('MainMenu');
 		resetAllData();
-		setHostUserName("HostName");
+		setHostUserName();
 	}
 
 
 
 	init();
-});
+};
 
 // ------------------------------- -------------------------------
 // let ballTop = parseInt(window.getComputedStyle(ball).top);
