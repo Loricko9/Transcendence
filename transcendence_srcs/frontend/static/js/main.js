@@ -82,7 +82,7 @@ function router(){
 			checkAuthentification(true).then(isAuthenticated => {
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_change_password");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
 					loadChangePassword();
 				}
 				else

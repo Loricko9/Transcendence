@@ -3,3 +3,4 @@ database/
 migrations/
 fullchain1.pem
 privkey1.pem
+.env
