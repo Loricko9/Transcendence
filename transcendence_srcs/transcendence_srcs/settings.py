@@ -150,7 +150,6 @@ STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
 	os.path.join(BASE_DIR, 'frontend/static/css'),
 	os.path.join(BASE_DIR, 'frontend/static/js'),
-	os.path.join(BASE_DIR, 'frontend/static/js/Game_JS'),
 	os.path.join(BASE_DIR, 'frontend/static/css/Game_css'),
 ]
 

@@ -4,7 +4,9 @@ RUN apt update && \
 	gunicorn python3-dotenv python3-django-prometheus python3-pillow python3-requests
 
 COPY start_django.sh /start_django.sh
+COPY migrations.sh /migrations.sh
 RUN chmod 755 start_django.sh
+RUN chmod 755 migrations.sh
 
 WORKDIR /transcendence
 EXPOSE 8000
