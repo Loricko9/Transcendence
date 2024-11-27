@@ -421,7 +421,6 @@ function fetchFriendList() {
 			if (friendship.status == 'accepted')
 			{
 	            const li = document.createElement('li');
-				// const del_button = createElement('a');
 				if (friendship.sender_username == data.username)
 					li.textContent = `${friendship.receiver_username}`;
 				else
@@ -536,3 +535,17 @@ function respondToRequest(username, action) {
     })
     .catch(error => console.error('Error responding to friend request:', error));
 }
+
+// Getsionnaire de web socket
+const socket = new WebSocket(`ws://${window.location.host}/ws/friendship/`);
+
+socket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    alert(data.message); // Affichez la notification ou rafraîchissez la liste
+    fetchFriendList();  // Rafraîchir la liste des amis
+    fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
+};
+
+socket.onclose = function () {
+    console.error("WebSocket connection closed.");
+};

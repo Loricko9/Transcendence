@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 	'api',
 	'register',
 	'rest_framework',
+	'channels',
 ]
 
 MIDDLEWARE = [

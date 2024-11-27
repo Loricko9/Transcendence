@@ -14,6 +14,8 @@ from django.contrib.auth.decorators import login_required # type: ignore
 from django.middleware.csrf import get_token # type: ignore
 from django.conf import settings # type: ignore
 import os, requests, json, logging
+from asgiref.sync import async_to_sync # type: ignore
+from channels.layers import get_channel_layer # type: ignore
 
 User = get_user_model()
 
@@ -47,7 +49,17 @@ class FriendshipListView(APIView):
 		try:
 			friendship = Friendship.objects.get(id=id)
 			if friendship.sender == request.user or friendship.receiver == request.user:
+				other_user = friendship.receiver if friendship.sender == request.user else friendship.sender
 				friendship.delete()
+				# Notifier l'autre utilisateur
+				channel_layer = get_channel_layer()
+				async_to_sync(channel_layer.group_send)(
+					f"friendship_updates_{other_user.id}",
+					{
+						"type": "friendship_update",
+						"data": {"message": f"{request.user.username} has removed you as a friend."}
+					}
+				)
 				return Response({"message": "Friendship deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 			else:
 				return Response({"error": "Not authorized to delete this friendship."}, status=status.HTTP_403_FORBIDDEN)
@@ -78,6 +90,15 @@ def send_friend_request(request):
 
     # Créer une relation d'amitié
     Friendship.objects.create(sender=request.user, receiver=receiver)
+	# Notification via WebSocket
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"friendship_updates_{receiver.id}",
+        {
+            "type": "friendship_update",
+            "data": {"message": f"You have a new friend request from {request.user.username}"}
+        }
+    )
     return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
 
 # afficher la liste des demandes d'amis
@@ -93,28 +114,40 @@ class FriendRequestListView(APIView):
 # repondre a la demande d'amis
 @api_view(['PATCH'])
 def respond_to_friend_request(request, username):
-    try:
-        # Trouver l'utilisateur qui a envoyé la demande
-        sender = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+	try:
+		# Trouver l'utilisateur qui a envoyé la demande
+		sender = User.objects.get(username=username)
+	except User.DoesNotExist:
+		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    # Vérifier s'il y a une demande d'ami en attente
-    friendship = Friendship.objects.filter(sender=sender, receiver=request.user, status='pending').first()
-    if not friendship:
-        return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
+	# Vérifier s'il y a une demande d'ami en attente
+	friendship = Friendship.objects.filter(sender=sender, receiver=request.user, status='pending').first()
+	if not friendship:
+		return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
 
-    # Vérifier l'action (accepter ou refuser)
-    action = request.data.get('action')
-    if action == 'accepted':
-        friendship.status = 'accepted'
-    elif action == 'rejected':
-        friendship.status = 'rejected'
-    else:
-        return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+	# Vérifier l'action (accepter ou refuser)
+	action = request.data.get('action')
+	if action == 'accepted':
+		friendship.status = 'accepted'
+		message = f"{request.user.username} has accepted your friend request."
+	elif action == 'rejected':
+		friendship.status = 'rejected'
+		message = f"{request.user.username} has rejected your friend request."
+	else:
+		return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
 
-    friendship.save()
-    return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
+	friendship.save()
+
+	# Notifier l'utilisateur qui a envoyé la demande
+	channel_layer = get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		f"friendship_updates_{sender.id}",
+		{
+			"type": "friendship_update",
+			"data": {"message": message}
+		}
+	)
+	return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
 
 def friend_delete(request, username):
 	friend = User.objects.get(username=username)
@@ -123,6 +156,7 @@ def friend_delete(request, username):
 	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
 		Friendship.objects.delete(sender=friend, receiver=request.user)
 	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
+
 def log_42(request):
 	code = request.GET.get('code')
 	if not code:
