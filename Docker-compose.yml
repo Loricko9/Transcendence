@@ -67,6 +67,7 @@ services:
       dockerfile: Dockerfile
     image: transcendence-nginx-exporter
     container_name: Nginx-exporter
+    env_file: .env
     networks:
       - Transcendence
     depends_on:
@@ -77,14 +78,27 @@ services:
       dockerfile: Dockerfile
     image: transcendence-prometheus
     container_name: Prometheus
-    ports:
-      - "9090:9090"
     networks:
       - Transcendence
     depends_on:
       - nginx-exporter
       - django-exporter
       - postgreSQL-exporter
+  grafana:
+    build:
+      context: Containers/Grafana
+      dockerfile: Dockerfile
+    image: transcendence-grafana
+    env_file: .env
+    container_name: Grafana
+    networks:
+      - Transcendence
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    logging:
+      driver: none
 
 
 volumes:
