@@ -44,6 +44,11 @@ body {
 	border-color: rgba(128, 128, 128, 0.632);
 }
 
+#option {
+	align-items: center;
+	gap: 10px;
+	border: 0;
+}
 .log_form {
 	width: 35rem;
 	max-width: 97vw;
@@ -110,6 +115,12 @@ h1 {
 	font-style: normal;
 }
 
+h5 {
+	font-family: "Audiowide", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+
 span {
 	font-family: "Audiowide", sans-serif;
 	font-weight: 400;
@@ -157,19 +168,19 @@ span {
     font-family: 'Courier New', Courier, monospace;
 }
 
-#score-player1, #score-player2 {
+#score-player-left, #score-player-right {
     color: white;
 }
 
-#score-player1 {
+#score-player-left {
 	float: left;
 }
 
-#score-player2 {
+#score-player-right {
 	float: right;
 }
 
-#difficulty-menu {
+#difficulty-menu, #pvp-menu {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -181,7 +192,7 @@ span {
 	z-index: 2;
 }
 
-#difficulty-menu button {
+#difficulty-menu button, #pvp-menu button {
     background-color: white;
     color: black;
     border: none;
@@ -192,11 +203,11 @@ span {
     border-radius: 5px
 }
 
-#difficulty-menu button:hover {
+#difficulty-menu button:hover, #pvp-menu button:hover {
     background-color: grey;
 }
 
-.padding1, .padding2 {
+.padding-left, .padding-right {
     top: 50%;
 	position: absolute;
     background: white;
@@ -208,11 +219,11 @@ span {
 
 }
 
-.padding1 {
+.padding-left {
     left: 5px;
 }
 
-.padding2 {
+.padding-right {
     right: 5px;
 }
 
@@ -258,7 +269,7 @@ span {
 	z-index: 0;
 }
 
-.user_display {
+#user_connected {
 	color: white;
 }
 
@@ -284,4 +295,14 @@ span {
 .avatar-img.selected {
     border-color: #007bff;
     box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: white;
+}
+
+.modal-content {
+    padding-bottom: 0;
+}
+.modal-header {
+    border-bottom: none;
 }

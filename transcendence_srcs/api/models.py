@@ -47,6 +47,7 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	is_superuser = models.BooleanField(default=False)
 	is_connected = models.BooleanField(default=False)
 	is_email_verified = models.BooleanField(default=False)
+	is_user_42 = models.BooleanField(default=False)
 	verification_token = models.UUIDField(default=uuid.uuid4, editable=False) # génère un UUID de type 4 aleatoire
 	nb_win = models.IntegerField(default=0)
 	nb_lose = models.IntegerField(default=0)

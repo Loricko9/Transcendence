@@ -1,48 +1,61 @@
+import { initAll } from './Game_JS/Gamemain.js';
+
+window.Change_lang = Change_lang;
+window.handleFormChangeAvatar = handleFormChangeAvatar;
+
 // fonction pour gerer l'affichage en fonction de si un client est connecte
 async function checkAuthentification() {
 	try{
-		const response = await fetch('/check-auth/');
+		const response = await fetch('/api/check-auth/');
 		const data = await response.json();
 		if (data.is_authenticated) {
 			// Affichage connecte
 			fetchFriendList();
 			fetchFriendRequests();
-			document.getElementById('option').style.display = 'inline-block';
+			document.getElementById('option').style.display = 'flex';
+			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
 			document.getElementById('user_avatar').innerHTML = data.avatar;
 			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
-			document.getElementById('user_connected').style.display = 'block'; 
-			// const nbWinElement = document.getElementById('nbWin');
-			// const nbLoseElement = document.getElementById('nbLose');
-			// if (nbWinElement && nbLoseElement) {
-			// 	nbWinElement.textContent = data.nb_win;
-			// 	nbLoseElement.textContent = data.nb_lose;
-			// }
-			return true;
+			document.getElementById('user_connected').style.display = 'block';
+			document.getElementById('signin_btn_little').style.display = 'none';
+			const nbWinElement = document.getElementById('nbWin');
+			const nbLoseElement = document.getElementById('nbLose');
+			if (nbWinElement && nbLoseElement) {
+				nbWinElement.textContent = data.nb_win;
+				nbLoseElement.textContent = data.nb_lose;
+			}
+			if (data.is_user_42)
+				return [true, true];
+			return [true, false];
 		}
 		else {
 			// Affichage deconnecte
 			const appDiv = document.getElementById("app");
 			loadTemplate(appDiv, "temp_index");
 			document.getElementById('option').style.display = 'none';
+			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
 			document.getElementById('bar_sub_login').classList.add('d-flex');
 			document.getElementById('user_avatar').style.display = 'none';
 			document.getElementById('user_connected').style.display = 'none';
-			return false;
+			document.getElementById('signin_btn_little').style.display = 'block';
+			return [false, false];
 		}
 	}
 	catch (error) {
 		console.error('Erreur:', error);
-		return false; // Retourne false en cas d'erreur
+		return [false, false]; // Retourne false en cas d'erreur
 	}
 }
 
 // Fonction qui permet de ne pas recharger la page (1ère appeler)
 function redirect_to(url) {
-	history.pushState(null, null, url);
+	const lang_path = window.location.pathname.substring(0, 3);
+	let new_url = lang_path + url
+	history.pushState(null, null, new_url);
 	router();
 }
 
@@ -53,49 +66,53 @@ function loadTemplate(appDiv, Id) {
 }
 
 // Fonction pour rediriger et obtenir le contenu des pages
+let blockage = false;
+// document.addEventListener('keydown', (event) => {if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {event.preventDefault();}});
+document.addEventListener('keydown', (event) => {if (blockage && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {event.preventDefault();}});
 function router(){
 	const path = window.location.pathname.substring(3); //chemin demandé par le user
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
-
-	switch (path) {
-		case "/":
-			checkAuthentification().then(isAuthenticated => {
-				if (isAuthenticated) {
+	blockage = false;
+	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
+		switch (path) {
+			case "/":
+				if (isAuthenticated)
 					loadTemplate(appDiv, "temp_login");
-					console.log("connect");
-				} else {
+				else
 					loadTemplate(appDiv, "temp_index");
-					console.log("disconnect");
-				}
-			});
-			appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-			break;
-		case "/change-password/":
-			checkAuthentification().then(isAuthenticated => {
+				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				break;
+			case "/Game/":
 				if (isAuthenticated) {
+					loadTemplate(appDiv, "Game");
+					appDiv.className = "";
+					blockage = true;
+					initAll();
+				} else
+					redirect_to("/");
+				break;
+			case "/change-password/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_password");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-				} else {
-					const lang_path = window.location.pathname.substring(0, 3);
-					redirect_to(lang_path + "/");
+					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
+					loadChangePassword();
 				}
-			});
-			break;
-		case "/change-avatar/":
-			checkAuthentification().then(isAuthenticated => {
-				if (isAuthenticated) {
+				else
+					redirect_to("/");
+				break;
+			case "/change-avatar/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-				} else {
-					const lang_path = window.location.pathname.substring(0, 3);
-					redirect_to(lang_path + "/");
-				}
-			});
-			break;
-		default:
-			loadTemplate(appDiv, "temp_notFound");
-			appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
-	}
+					loadChangeAvatar();
+				} else
+					redirect_to("/");
+				break;
+			default:
+				loadTemplate(appDiv, "temp_notFound");
+				appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
+		}
+	});
 }
 
 // Fonction pour detecter les click sur le liens / chargement page
@@ -139,11 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
 		link.addEventListener('click', (event) => {
 			event.preventDefault(); // evite le rechargement de la page
 			const target = event.currentTarget.getAttribute('href');
-			const lang_path = window.location.pathname.substring(0, 3);
-			redirect_to(lang_path + target); // vers la nouvelle page
+			redirect_to(target); // vers la nouvelle page
 		});
 	});
-	
 	router(); // gère la cas pour rafraichir la page
 });
 
@@ -158,14 +173,13 @@ function Click_login() {
 
 // fonction pour gerer les connexion avec fetch en mode dynamique
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
-		event.preventDefault();  // Empêche le rechargement de la page
+	event.preventDefault();  // Empêche le rechargement de la page
 
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
 	const csrfToken = document.querySelector('[name=csrf-token]').content
-	console.log(inputEmail)
 
-	fetch('/login/', {
+	fetch('/api/login/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/x-www-form-urlencoded',
@@ -182,9 +196,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 		document.getElementById('infoco').innerHTML = data.message
 		document.getElementById('dropdown_form').reset(); // reinitialise le form
 		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_login");
+		redirect_to("/")
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
@@ -193,7 +205,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
-    fetch('/logout/', {
+    fetch('/api/logout/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -206,9 +218,7 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 		clearFormFields()
 		refreshCSRFToken()
 		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_index");
+		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
 });
@@ -241,25 +251,9 @@ function showSuccessModal() {
 	}, 3000); // 3000 ms = 3 secondes
 }
 
-// gestion du display au moment du click sur le logo
-document.getElementById('logo').addEventListener('click', function() {
-	checkAuthentification().then(isAuthenticated => {
-		if (isAuthenticated) {
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_login");
-			console.log("connect");
-		} else {
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_index");
-			console.log("disconnect");
-		}
-	});
-});
-
-
 // Fonction pour rafraîchir le token CSR
 function refreshCSRFToken() {
-    fetch('/get-csrf-token/')
+    fetch('/api/get-csrf-token/')
         .then(response => response.json())
         .then(data => {
             document.querySelector('[name=csrf-token]').content = data.csrfToken;
@@ -276,7 +270,7 @@ function clearFormFields() {
 // delete account
 document.getElementById('deleteAccountBtn').addEventListener('click', function() {
     if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
-        fetch('/delete-account/', {
+        fetch('/api/delete-account/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -288,9 +282,7 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
             if (data.success) {
                 document.getElementById('infoco').innerHTML = data.message
 				showSuccessModal()
-				checkAuthentification()
-				const appDiv = document.getElementById("app");
-				loadTemplate(appDiv, "temp_index");
+				redirect_to("/")
             } else {
                 alert("Erreur lors de la suppression du compte: " + data.message);
             }
@@ -300,35 +292,28 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
 });
 
 // change password
-document.getElementById('change_password_btn').addEventListener('click', function() {
-	const appDiv = document.getElementById("app");
-	loadTemplate(appDiv, "temp_change_password");
-	console.log("template load")
+function loadChangePassword() {
 	refreshCSRFToken()
-	console.log("csrfToken refresh")
 	const form = document.getElementById('change-password-form');
 	if (form) {
-		console.log("form trouve")
 		form.addEventListener('submit', function(event) {
 			event.preventDefault();
 			handleFormChangePassword();
 		});
 	}
-	else
-		console.log("form pas trouve")
-});
+	else {
+		console.error("Form error");
+		redirect_to("/error/")
+	}
+}
 
 function handleFormChangePassword() {
-
 	const oldPassword = document.getElementById('oldPassword').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-	console.log(csrfToken);
-	console.log("old-passWord: ", oldPassword)
-	console.log("new-passWord: ", newPassword)
 
-    fetch('/change-password/', {
+    fetch('/api/change-password/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -342,19 +327,15 @@ function handleFormChangePassword() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('infoco').innerHTML = data.message
+		document.getElementById('infoco').innerHTML = data.message
 		showSuccessModal()
-		checkAuthentification()
-		const appDiv = document.getElementById("app");
-		loadTemplate(appDiv, "temp_login");
+		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
 }
 
 // change avatar
-document.getElementById('change_avatar_btn').addEventListener('click', function() {
-    const appDiv = document.getElementById("app");
-    loadTemplate(appDiv, "temp_change_avatar");
+function loadChangeAvatar() {
     refreshCSRFToken();
 
     // Charger dynamiquement les avatars
@@ -386,7 +367,7 @@ document.getElementById('change_avatar_btn').addEventListener('click', function(
             });
         })
         .catch(error => console.error('Erreur:', error));
-});
+};
 
 // Fonction pour récupérer l'avatar sélectionné
 function handleFormChangeAvatar() {
@@ -396,10 +377,11 @@ function handleFormChangeAvatar() {
         return;
     }
 
-    const newAvatar = selectedImg.src.replace(window.location.origin, '').replace('/media/', ''); // Obtenir le chemin relatif
+    const newAvatar = selectedImg.src.replace(window.location.origin, '');
+	console.log("newAvatar : ", newAvatar);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    fetch('/change-avatar/', {
+    fetch('/api/change-avatar/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -414,9 +396,7 @@ function handleFormChangeAvatar() {
         document.getElementById('infoco').innerHTML = data.message;
         if (data.success) {
             showSuccessModal();
-            checkAuthentification();
-            const appDiv = document.getElementById("app");
-            loadTemplate(appDiv, "temp_login");
+			redirect_to("/");
         } else {
             alert(data.message);
         }

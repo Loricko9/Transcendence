@@ -29,12 +29,18 @@ SECRET_KEY = 'django-insecure-p137f&8iautjsybygl)_3kc0(r)(+smeu3_v^r%13csbdg--&^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+	"transcendence-42.fr",
+	"www.transcendence-42.fr",
+	"django",
+	"nginx",
+	"localhost",
+]
 
 # Application definition
 
 INSTALLED_APPS = [
+	"django_prometheus",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,6 +54,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.locale.LocaleMiddleware',
@@ -56,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'transcendence_srcs.urls'
@@ -118,7 +126,6 @@ AUTH_PASSWORD_VALIDATORS = [
 #     'allauth.account.auth_backends.AuthenticationBackend',  # Pour allauth
 # ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -140,6 +147,8 @@ STATICFILES_DIRS = [
 	os.path.join(BASE_DIR, 'transcendence_srcs/static'),
 	os.path.join(BASE_DIR, 'frontend/static/css'),
 	os.path.join(BASE_DIR, 'frontend/static/js'),
+	os.path.join(BASE_DIR, 'frontend/static/js/Game_JS'),
+	os.path.join(BASE_DIR, 'frontend/static/css/Game_css'),
 ]
 
 STATIC_ROOT = '/app/staticfiles'

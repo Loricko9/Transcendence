@@ -10,11 +10,14 @@ RUN apt update && \
 	python3-pillow \
 	python3-djangorestframework \
 	python3-channels \
-	python3-channels-redis
+	python3-channels-redis \
+	python3-django-prometheus \
+	python3-requests
 
 COPY start_django.sh /start_django.sh
 RUN chmod 755 start_django.sh
 
 WORKDIR /transcendence
+EXPOSE 8000
 
 ENTRYPOINT [ "/start_django.sh" ]
