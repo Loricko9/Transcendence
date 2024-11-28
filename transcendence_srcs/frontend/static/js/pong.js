@@ -8,7 +8,6 @@ export function initAll() {
 	const RoomUser1Info = document.getElementById('User1');
 	const RoomUser2Info = document.getElementById('User2');
 	const RoomUser3Info = document.getElementById('User3');
-	// const GameTypeHeader = document.getElementById('GameTypeHeader');
 	const Ltips = document.getElementById('tips1');
 	const Rtips = document.getElementById('tips2');
 
@@ -86,6 +85,46 @@ export function initAll() {
 	let tournamentWinnerRound2 = null;
 	let tournamentWinnerRound2Icon = null;
 
+	//////////////////////////////////////////////////////////////////////////////////
+	////                             functions                                    ///
+	////////////////////////////////////////////////////////////////////////////////
+
+	function setHostImage(value) {if (value === null) {HostUserIcon.src = '/media/avatars/DefaultIcon.png';}else {HostUserIcon.src = value;}}
+	function setUser1Image(value) {if (value === null) {User1Icon.src = '/media/avatars/DefaultIcon.png';}else {User1Icon.src = value;}}
+	function setUser2Image(value) {if (value === null) {User2Icon.src = '/media/avatars/DefaultIcon.png';}else {User2Icon.src = value;}}
+	function setUser3Image(value) {if (value === null) {User3Icon.src = '/media/avatars/DefaultIcon.png';}else {User3Icon.src = value;}}
+	function setWinnerIcon(value) {if (value === null) {WinnerIcon.src = '/media/avatars/DefaultIcon.png';}else {WinnerIcon.src = value;}}
+	function setUser1UserName(value) {if (value === null) {User1UserNameVar = null;RoomUser1Name.textContent = '...';} else {User1UserNameVar = value;RoomUser1Name.textContent = value;}}
+	function setUser2UserName(value) {if (value === null) {User2UserNameVar = null;RoomUser2Name.textContent = '...';} else {User2UserNameVar = value;RoomUser2Name.textContent = value;}}
+	function setUser3UserName(value) {if (value === null) {User3UserNameVar = null;RoomUser3Name.textContent = '...';}else {User3UserNameVar = value;RoomUser3Name.textContent = value;}}
+	function resetFight() {fight = [null, null];}
+	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
+	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
+	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
+	function setHostUserName() {
+		let UserIcon;
+		fetch('/api/find-hostname/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.user) {
+				UserIcon = data.userIcon;
+				UserIcon = UserIcon.replace('/media/media/', '/media/');
+				if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
+				HostUserNameVar = data.user;
+				RoomHostName.textContent = data.user;
+				setHostImage(UserIcon);
+			} else {
+				console.error('Error:', data.error);
+			}
+		})
+	}
+
 	function searchUser(username, user_id) {
 		let UserName;
 		let UserIcon;
@@ -145,99 +184,30 @@ export function initAll() {
 		return null
 	}
 
-	function setHostImage(value) {
-		if (value === null) {HostUserIcon.src = 'avatar/default.png';}
-		else {HostUserIcon.src = value;}
-	}
-	function setUser1Image(value) {
-		if (value === null) {User1Icon.src = '/media/avatars/DefaultIcon.png';}
-		else {User1Icon.src = value;}
-	}
-	function setUser2Image(value) {
-		if (value === null) {User2Icon.src = '/media/avatars/DefaultIcon.png';}
-		else {User2Icon.src = value;}
-	}
-	function setUser3Image(value) {
-		if (value === null) {User3Icon.src = '/media/avatars/DefaultIcon.png';}
-		else {User3Icon.src = value;}
-	}
-	function setWinnerIcon(value) {
-		if (value === null) {WinnerIcon.src = '/media/avatars/DefaultIcon.png';}
-		else {WinnerIcon.src = value;}
-	}
-	
-	function setHostUserName() {
-		let UserIcon;
-		fetch('/api/find-hostname/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': Get_Cookie('csrftoken')
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.user) {
-				UserIcon = data.userIcon;
-				UserIcon = UserIcon.replace('/media/media/', '/media/');
-				if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
-				HostUserNameVar = data.user;
-				RoomHostName.textContent = data.user;
-				setHostImage(UserIcon);
-			} else {
-				console.error('Error:', data.error);
-			}
-		})
-	}
-
-	function setUser1UserName(value) {
-		if (value === null) {
-			User1UserNameVar = null;
-			RoomUser1Name.textContent = '...';
-		} else {
-			User1UserNameVar = value;
-			RoomUser1Name.textContent = value;
-		}}
-	function setUser2UserName(value) {
-		if (value === null) {
-			User2UserNameVar = null;
-			RoomUser2Name.textContent = '...';
-		} else {
-			User2UserNameVar = value;
-			RoomUser2Name.textContent = value;
-		}}
-	function setUser3UserName(value) {
-		if (value === null) {
-			User3UserNameVar = null;
-			RoomUser3Name.textContent = '...';
-		} else {
-			User3UserNameVar = value;
-			RoomUser3Name.textContent = value;}}
-
-	function resetFight() {fight = [null, null];}
-	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
-	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
-
 	function setFight(value1, value2) {
 		fight[0] = value1;fight[1] = value2;
 		if (value1 === null || value2 === null) {
 			console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 		LeftPlayerUserNameContent.textContent = value1;
-		RightPlayerUserNameContent.textContent = value2;}
+		RightPlayerUserNameContent.textContent = value2;
+	}
 
 	function setFightIcons(value1, value2) {
 		if (value1 === null) {leftUserIcon.src = '/media/avatars/DefaultIcon.png';}
 		else {leftUserIcon.src = value1;}
 		if (value2 === null) {rightUserIcon.src = '/media/avatars/DefaultIcon.png';}
-		else {rightUserIcon.src = value2;}}
+		else {rightUserIcon.src = value2;}
+	}
 
 	function AnimationMainMenu(mode) {
 		if (mode === 'in') {PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';}
-		else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}}
+		else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}
+	}
 
 	function AnimationAIMenu(mode) {
 		if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';}
-		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}}
+		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}
+	}
 
 	function changeMenu(menu) {
 		hideOptnMenu();
@@ -285,7 +255,6 @@ export function initAll() {
 		else
 			console.error('Menu not found');
 	}
-
 
 	function resetAllData() {
 		gameStarted = false;
@@ -456,8 +425,6 @@ export function initAll() {
 		}
 	}
 
-	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
-
 	function gameLoop() {
 		if (gameStarted === true) {	
 			movePaddings();
@@ -551,34 +518,16 @@ export function initAll() {
 	BackToMainMenuButton.addEventListener('click', () => {changeMenu('MainMenu');resetAllData();});
 	OptnButton.addEventListener('click', () => {ToggleOptnMenu();});
 	PVPStartButton.addEventListener('click', () => {changeMenu('Game');});
-	ReadyButton.addEventListener('click', () => {
-		if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}
-		if (AIDifficulty === 'Easy') {PaddingRight.style.transition = '1.5s linear';}
-		if (AIDifficulty === 'Meduim') {PaddingRight.style.transition = '1s linear';}
-		if (AIDifficulty === 'Hard') {PaddingRight.style.transition = '0.8s linear';}
-		ReadyButton.style.display = 'none';startGame();
-	});
-	NextButton.addEventListener('click', () => {
-		round++;
-		scorerightplayer = 0;
-		scoreleftplayer = 0;
-		ScorePlayerLeftElement.textContent = scoreleftplayer;
-		ScorePlayerRightElement.textContent = scorerightplayer;
-		softReset();
-		changeMenu('Game');
-	});
+	ReadyButton.addEventListener('click', () => {if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}if (AIDifficulty === 'Easy') {PaddingRight.style.transition = '1.5s linear';}if (AIDifficulty === 'Meduim') {PaddingRight.style.transition = '1s linear';}if (AIDifficulty === 'Hard') {PaddingRight.style.transition = '0.8s linear';}ReadyButton.style.display = 'none';startGame();});
+	NextButton.addEventListener('click', () => {round++;scorerightplayer = 0;scoreleftplayer = 0;ScorePlayerLeftElement.textContent = scoreleftplayer;ScorePlayerRightElement.textContent = scorerightplayer;softReset();changeMenu('Game');});
 
 	Player1SearchButton.addEventListener('click', () => {searchUser(User1SearchBox.value, 'user1');});
 	Player2SearchButton.addEventListener('click', () => {searchUser(User2SearchBox.value, 'user2');});
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
 
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
-	document.addEventListener("keydown", (e) => {
-		keyPressed[e.key] = true;
-	});
-	document.addEventListener("keyup", (e) => {
-		keyPressed[e.key] = false;
-	});
+	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
+	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
 
 	function init() {
 		changeMenu('MainMenu');
