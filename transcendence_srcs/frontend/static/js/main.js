@@ -10,6 +10,8 @@ async function checkAuthentification() {
 		const data = await response.json();
 		if (data.is_authenticated) {
 			// Affichage connecte
+			fetchFriendList();
+			fetchFriendRequests();
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -401,3 +403,149 @@ function handleFormChangeAvatar() {
     })
     .catch(error => console.error('Erreur:', error));
 }
+
+// Récupération de la liste d'amis
+function fetchFriendList() {
+    fetch('/api/friends/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const list = document.getElementById('friend-list');
+        list.innerHTML = '';
+        data.friendships.forEach(friendship => {
+			if (friendship.status == 'accepted')
+			{
+	            const li = document.createElement('li');
+				if (friendship.sender_username == data.username)
+					li.textContent = `${friendship.receiver_username}`;
+				else
+					li.textContent = `${friendship.sender_username}`;
+				const deleteButton = document.createElement('button');
+				deleteButton.textContent = 'Remove';
+				deleteButton.style.marginLeft = '10px';
+				deleteButton.addEventListener('click', () => {
+					deleteFriendship(friendship.id); // Appel de la fonction de suppression
+				});
+				li.appendChild(deleteButton);
+				list.appendChild(li);
+			}
+        });
+    })
+    .catch(error => console.error('Error fetching friend list:', error));
+}
+
+// delete a friend
+function deleteFriendship(friendshipId){
+	fetch(`/api/friends/${friendshipId}/`, { // URL pour la suppression
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			console.log('Friendship deleted successfully.');
+			fetchFriendList(); // Rafraîchir la liste
+		} else {
+			console.error('Failed to delete friendship.');
+		}
+	})
+	.catch(error => console.error('Error deleting friendship:', error));
+}
+
+
+// Envoyer une demande d'amis
+function sendFriendRequest() {
+    const username = document.getElementById('username').value;
+	console.log('Sending friend request to:', username);
+    fetch('/api/friend-request/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        },
+        body: JSON.stringify({ receiver_username: username })
+    })
+    .then(response => response.json())
+    .then(data => {
+		console.log('Response data:', data);
+        alert(data.message || data.error);
+        fetchFriendList(); // Rafraîchir la liste des amis
+    })
+    .catch(error => console.error('Error sending friend request:', error));
+}
+
+
+// Récupérer la liste des demandes d'amis
+function fetchFriendRequests() {
+    fetch('/api/friend-requests/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const list = document.getElementById('friend-request-list');
+        list.innerHTML = '';  // Vide la liste avant de la remplir
+        data.forEach(request => {
+            const li = document.createElement('li');
+            li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
+
+            // Bouton pour accepter
+            const acceptButton = document.createElement('button');
+            acceptButton.textContent = 'Accepter';
+            acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
+
+            // Bouton pour refuser
+            const rejectButton = document.createElement('button');
+            rejectButton.textContent = 'Refuser';
+            rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
+
+            li.appendChild(acceptButton);
+            li.appendChild(rejectButton);
+            list.appendChild(li);
+        });
+    })
+    .catch(error => console.error('Error fetching friend requests:', error));
+}
+
+// Accepter ou refuser une demande
+function respondToRequest(username, action) {
+    fetch(`/api/friend-request/${username}/`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        },
+        body: JSON.stringify({ action: action })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || data.error);
+        fetchFriendRequests();  // Rafraîchir la liste des demandes
+		fetchFriendList();
+    })
+    .catch(error => console.error('Error responding to friend request:', error));
+}
+
+// Getsionnaire de web socket
+const socket = new WebSocket(`ws://${window.location.host}/ws/friendship/`);
+
+socket.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    alert(data.message); // Affichez la notification ou rafraîchissez la liste
+    fetchFriendList();  // Rafraîchir la liste des amis
+    fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
+};
+
+socket.onclose = function () {
+    console.error("WebSocket connection closed.");
+};
