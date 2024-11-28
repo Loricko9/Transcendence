@@ -191,7 +191,7 @@ def find_username(request):
 		if username:
 			if User_tab.objects.filter(username=username).exists():
 				user = User_tab.objects.get(username=username)
-				return JsonResponse({'user': user.username})
+				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 	
@@ -202,7 +202,7 @@ def find_hostname(request):
 		try:
 			user = request.user
 			if user.is_authenticated:
-				return JsonResponse({'user': user.username})
+				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:

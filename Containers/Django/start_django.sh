@@ -1,14 +1,14 @@
 #!/bin/bash
 
-echo "Waiting for postgres..."
-function wait_for_postgres() {
-    until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME; do
-		sleep 2
-    done
-}
+# echo "Waiting for postgres..."
+# function wait_for_postgres() {
+#     until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER -d $DATABASE_NAME; do
+# 		sleep 2
+#     done
+# }
 
-wait_for_postgres
-# sleep 20
+# wait_for_postgres
+sleep 20
 python3 manage.py makemigrations api
 python3 manage.py makemigrations frontend
 python3 manage.py collectstatic --noinput
