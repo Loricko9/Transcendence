@@ -2,7 +2,6 @@ FROM debian:bookworm
 RUN apt update && \
 	apt install -y \
 	python3 \
-	python3-pip \
 	python3-django \
 	python3-psycopg2 \
 	postgresql-client \
@@ -10,11 +9,9 @@ RUN apt update && \
 	python3-pillow \
 	python3-djangorestframework \
 	python3-django-prometheus \
-	python3-requests
-
-RUN pip3 install \
-	channels \
-	channels-redis
+	python3-requests \
+	python3-channels-redis \
+	daphne
 
 COPY start_django.sh /start_django.sh
 COPY migrations.sh /migrations.sh
