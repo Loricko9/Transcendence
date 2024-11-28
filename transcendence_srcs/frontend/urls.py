@@ -1,4 +1,4 @@
-from django.urls import path # type: ignore
+from django.urls import path, include # type: ignore
 from django.conf import settings # type: ignore
 from django.conf.urls.static import static # type: ignore
 from . import views

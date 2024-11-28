@@ -159,6 +159,28 @@
 
 	<!-- temp connected -->
     <template id="temp_login">
+		<!-- friend list -->
+		<div>
+		    <h3>Mes Amis</h3>
+		    <ul id="friend-list">
+		        <!-- La liste des amis sera affichée ici -->
+		    </ul>
+		</div>
+
+		<div>
+		    <label for="username">Nom d'utilisateur de l'ami :</label>
+		    <input type="text" id="username" placeholder="Entrez le nom d'utilisateur">
+		    <button onclick="sendFriendRequest()">Envoyer une demande d'ami</button>
+		</div>
+
+		<div>
+			<h3>Demandes d'ami(e)s</h3>
+			<ul id="friend-request-list">
+				<!-- Les demandes seront affichées ici -->
+			</ul>
+		</div>
+		
+
 		<!-- stats -->
 		<div class="row align-items-center" id="stats" style="display: flex;">
 			<div class="container mt-5">
