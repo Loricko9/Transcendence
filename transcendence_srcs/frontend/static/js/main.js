@@ -1,4 +1,4 @@
-import { initAll } from './Game_JS/Gamemain.js';
+import { initAll } from './pong.js';
 
 window.Change_lang = Change_lang;
 window.handleFormChangeAvatar = handleFormChangeAvatar;

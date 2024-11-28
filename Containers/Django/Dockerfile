@@ -17,7 +17,9 @@ RUN pip3 install \
 	channels-redis
 
 COPY start_django.sh /start_django.sh
+COPY migrations.sh /migrations.sh
 RUN chmod 755 start_django.sh
+RUN chmod 755 migrations.sh
 
 WORKDIR /transcendence
 EXPOSE 8000
