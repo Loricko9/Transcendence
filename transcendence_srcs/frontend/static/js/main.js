@@ -480,6 +480,7 @@ function sendFriendRequest() {
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
+window.sendFriendRequest = sendFriendRequest;                                                                                                                              
 
 
 // Récupérer la liste des demandes d'amis
@@ -537,7 +538,7 @@ function respondToRequest(username, action) {
 }
 
 // Getsionnaire de web socket
-const socket = new WebSocket(`ws://${window.location.host}/ws/friendship/`);
+const socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
 
 socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
