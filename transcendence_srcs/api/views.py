@@ -263,24 +263,6 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return redirect('/')
 
-def login_view(request):
-	if request.method == 'POST':
-		email = request.POST.get('email')
-		password = request.POST.get('password')
-
-		user = authenticate(request, Email=email, password=password)
-        
-		if user is not None:
-			login(request, user)
-			user.connect()
-			data = {'success': True, 'message': 'Connexion reussie'}
-			response = JsonResponse(data)
-			response['Content-Type'] = 'application/json; charset=utf-8'
-			return response
-		else:
-			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
-	return redirect('/')
-
 @login_required
 def logout_view(request):
 	request.user.disconnect()
@@ -301,24 +283,20 @@ def check_authentication(request):
 		return response
 	else:
 		return JsonResponse({'is_authenticated': False})
-	
+
+@login_required
+@csrf_exempt
 def get_stats(request):
 	if request.method == 'POST':
-		data = json.loads(request.body)
-		result = data.get('result', True)
-		if result == True:
-			request.user.nb_win += 1
-		else:
-			request.user.nb_lose += 1
-		request.user.save()
-		response = JsonResponse({'success': True,
-					   		'message': 'Stats mises à jour',
-							'nb_win': request.user.nb_win,
-							'nb_lose': request.user.nb_lose
-		})
-		response['Content-Type'] = 'application/json; charset=utf-8'
-		return response
-	return redirect('/')
+		try:
+			user = request.user
+			if user.is_authenticated:
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose})
+			else:
+				return JsonResponse({'error': 'User not authenticated'})
+		except json.JSONDecodeError:
+			return JsonResponse({'error': 'Invalid JSON data'})
+	return (redirect('/'))
 
 def find_username(request):
 	if request.method == 'POST':

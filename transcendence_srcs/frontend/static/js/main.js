@@ -1,6 +1,6 @@
 import { initAll } from './pong.js';
+import { loadChart, ActChart, DestroyCharts, loadTemplate, Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
 
-window.Change_lang = Change_lang;
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
 // fonction pour gerer l'affichage en fonction de si un client est connecte
@@ -59,20 +59,18 @@ function redirect_to(url) {
 	router();
 }
 
-// Fonction pour charger les template dans les div
-function loadTemplate(appDiv, Id) {
-	const template = document.getElementById(Id);
-	appDiv.innerHTML = template ? template.innerHTML : "";
-}
+let blockage = false;
+document.addEventListener('keydown', (event) => {
+	if (blockage && (event.key === 'ArrowUp' || event.key === 'ArrowDown'))
+		event.preventDefault();
+});
 
 // Fonction pour rediriger et obtenir le contenu des pages
-let blockage = false;
-// document.addEventListener('keydown', (event) => {if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {event.preventDefault();}});
-document.addEventListener('keydown', (event) => {if (blockage && (event.key === 'ArrowUp' || event.key === 'ArrowDown')) {event.preventDefault();}});
 function router(){
 	const path = window.location.pathname.substring(3); //chemin demandé par le user
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
 	blockage = false;
+	DestroyCharts();
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
@@ -105,6 +103,14 @@ function router(){
 					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
+				} else
+					redirect_to("/");
+				break;
+			case "/stats/":
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "temp_stats");
+					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+					get_stats();
 				} else
 					redirect_to("/");
 				break;
@@ -165,12 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // gère le retour arrière/avant dans l'historique (les flèches)
 window.addEventListener('popstate', router);
 
-function Click_login() {
-    let dropdownElement = document.getElementById('dropdown_form');
-    const dropdown = new bootstrap.Dropdown(dropdownElement);
-    dropdown.show();
-}
-
 // fonction pour gerer les connexion avec fetch en mode dynamique
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
 	event.preventDefault();  // Empêche le rechargement de la page
@@ -222,50 +222,6 @@ document.getElementById('logout_btn').addEventListener('click', function() {
     })
     .catch(error => console.error('Erreur:', error));
 });
-
-function Change_lang(lang) {
-	const path = window.location.pathname.substring(3);
-	window.location.href = "/api/lang/" + lang + "?prev=" + path
-}
-
-// Fonction pour recuperer la valeur d'un cookie
-function Get_Cookie(name) {
-	let new_name = name + "=";
-	let tab = decodeURIComponent(document.cookie).split(';');
-	for (let i = 0; i < tab.length; i++) {
-		let cookie = tab[i].trim();
-		if (cookie.indexOf(new_name) == 0)
-			return (cookie.substring(new_name.length, cookie.length))
-	}
-	return null
-}
-
-// Fonction pour afficher le modal
-function showSuccessModal() {
-	var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-	successModal.show();
-
-	// Disparaît après 3 secondes (3000 ms)
-	setTimeout(function() {
-		successModal.hide();
-	}, 3000); // 3000 ms = 3 secondes
-}
-
-// Fonction pour rafraîchir le token CSR
-function refreshCSRFToken() {
-    fetch('/api/get-csrf-token/')
-        .then(response => response.json())
-        .then(data => {
-            document.querySelector('[name=csrf-token]').content = data.csrfToken;
-        })
-        .catch(error => console.error('Erreur lors du rafraîchissement du CSRF token:', error));
-}
-
-// Fonction pour vider les champs de connexion
-function clearFormFields() {
-    document.getElementById('Email_input').value = '';
-    document.getElementById('Passwd_input').value = '';
-}
 
 // delete account
 document.getElementById('deleteAccountBtn').addEventListener('click', function() {
@@ -402,6 +358,24 @@ function handleFormChangeAvatar() {
         }
     })
     .catch(error => console.error('Erreur:', error));
+}
+
+function get_stats() {
+	fetch('/api/get_stats/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken')
+		}
+	})
+	.then(response => response.json())
+    .then(data => {
+		loadChart(0, data.win, data.lose);
+		loadChart(1, 3, 8)
+		document.getElementById('Win_game').innerHTML = data.win
+		document.getElementById('Lose_game').innerHTML = data.lose
+	})
+	.catch(error => console.error('Error fetching stats', error));
 }
 
 // Récupération de la liste d'amis
