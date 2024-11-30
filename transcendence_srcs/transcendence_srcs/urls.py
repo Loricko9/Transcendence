@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin # type: ignore
 from django.urls import path, include # type: ignore
-from django_prometheus import urls, exports
+from django_prometheus import urls, exports # type: ignore
 
 urlpatterns = [
+	path('ws/', include('api.routing')),
     path('admin/', admin.site.urls),
 	path("prometheus/", include('django_prometheus.urls')),
 	path('api/', include('api.urls')),

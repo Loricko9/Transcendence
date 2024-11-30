@@ -1,6 +1,19 @@
 from channels.generic.websocket import AsyncWebsocketConsumer # type: ignore
 import json
 
+class FriendshipConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.group_name = f"user_{self.scope['user'].id}"
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+	# Envoyer la mise à jour au client WebSocket
+    async def send_friendship_update(self, event):
+        await self.send(text_data=json.dumps(event['data']))
+
 # class ChatConsumer(AsyncWebsocketConsumer):
 #     async def connect(self):
 #         self.room_name = self.scope['url_route']['kwargs']['room_name']
@@ -41,15 +54,3 @@ import json
 #             'message': message
 #         }))
 
-class FriendshipConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.group_name = f"user_{self.scope['user'].id}"
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.group_name, self.channel_name)
-
-	# Envoyer la mise à jour au client WebSocket
-    async def send_friendship_update(self, event):
-        await self.send(text_data=json.dumps(event['data']))

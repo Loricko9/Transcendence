@@ -538,7 +538,7 @@ function respondToRequest(username, action) {
 }
 
 // Getsionnaire de web socket
-const socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
+const socket = new WebSocket(`wss://${window.location.host}:8000/ws/friendship/`);
 
 socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
