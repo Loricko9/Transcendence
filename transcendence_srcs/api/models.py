@@ -98,3 +98,36 @@ class Friendship(models.Model):
 	
 class Meta:
 	unique_together = ('sender', 'receiver')
+
+class History(models.Model):
+	user = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name="game_history")
+	date = models.DateTimeField(auto_now_add=True)
+	enemy = models.CharField(max_length=255)
+	score = models.CharField(max_length=5)
+	result = models.CharField(max_length=10, choices=[('Victory', 'Victory'), ('Defeat', 'Defeat')])
+
+	def __str__(self):
+		return f"{self.date} : {self.user.username} vs {self.enemy} - {self.score} -> {self.result}"
+	
+	def Add_History(self, user, enemy, score_user, score_enemy):
+		score_forma = f"{score_user} - {score_enemy}"
+		if (score_user > score_enemy) :
+			result = 'Victory'
+		else :
+			result = 'Defeat'
+		if not User_tab.objects.filter(username=enemy).exists():
+			raise ValueError("L'ennemy n'existe pas !")
+		try :
+			user_instance = User_tab.objects.get(username=user)
+		except User_tab.DoesNotExist:
+			raise ValueError("Le User n'existe pas !")
+		new_history = self.model(
+			user=user_instance,
+			enemy=enemy,
+			score=score_forma,
+			result=result
+		)
+		new_history.save()
+
+		return new_history
+		
