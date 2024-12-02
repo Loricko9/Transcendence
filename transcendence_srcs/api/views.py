@@ -16,6 +16,9 @@ from django.conf import settings # type: ignore
 import os, requests, json, logging
 from asgiref.sync import async_to_sync # type: ignore
 from channels.layers import get_channel_layer # type: ignore
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -56,7 +59,7 @@ class FriendshipListView(APIView):
 				async_to_sync(channel_layer.group_send)(
 					f"friendship_updates_{other_user.id}",
 					{
-						"type": "friendship_update",
+						"type": "send_friendship_update",
 						"data": {"message": f"{request.user.username} has removed you as a friend."}
 					}
 				)
@@ -69,37 +72,40 @@ class FriendshipListView(APIView):
 
 @api_view(['POST'])
 def send_friend_request(request):
-    # Vérifier si un 'username' est passé dans la requête
-    receiver_username = request.data.get('receiver_username')
-    if not receiver_username:
-        return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
+	# Vérifier si un 'username' est passé dans la requête
+	receiver_username = request.data.get('receiver_username')
+	if not receiver_username:
+		return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        # Récupérer l'utilisateur destinataire de la demande
-        receiver = User.objects.get(username=receiver_username)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+	try:
+		# Récupérer l'utilisateur destinataire de la demande
+		receiver = User.objects.get(username=receiver_username)
+	except User.DoesNotExist:
+		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    # Ne pas permettre à un utilisateur de s'ajouter lui-même
-    if receiver == request.user:
-        return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
+	# Ne pas permettre à un utilisateur de s'ajouter lui-même
+	if receiver == request.user:
+		return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Vérifier si une amitié existe déjà
-    if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
-        return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
+	# Vérifier si une amitié existe déjà
+	if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
+		return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Créer une relation d'amitié
-    Friendship.objects.create(sender=request.user, receiver=receiver)
+	# Créer une relation d'amitié
+	Friendship.objects.create(sender=request.user, receiver=receiver)
 	# Notification via WebSocket
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"friendship_updates_{receiver.id}",
-        {
-            "type": "friendship_update",
-            "data": {"message": f"You have a new friend request from {request.user.username}"}
-        }
-    )
-    return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
+	channel_layer = get_channel_layer()
+	group_name = f"friendship_updates_{receiver.id}"
+	logger.info(f"Sending message to group: {group_name} with data: {request.user.username}")
+	async_to_sync(channel_layer.group_send)(
+	group_name,
+		{
+			"type": "send_friendship_update",
+			"data": {"message": f"You have a new friend request from {request.user.username}"}
+		}
+	)
+
+	return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
 
 # afficher la liste des demandes d'amis
 class FriendRequestListView(APIView):
@@ -143,7 +149,7 @@ def respond_to_friend_request(request, username):
 	async_to_sync(channel_layer.group_send)(
 		f"friendship_updates_{sender.id}",
 		{
-			"type": "friendship_update",
+			"type": "send_friendship_update",
 			"data": {"message": message}
 		}
 	)

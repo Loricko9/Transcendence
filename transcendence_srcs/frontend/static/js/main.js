@@ -538,9 +538,10 @@ function respondToRequest(username, action) {
 }
 
 // Getsionnaire de web socket
-const socket = new WebSocket(`wss://${window.location.host}:8000/ws/friendship/`);
+const socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
 
 socket.onmessage = function (event) {
+	console.log("WebSocket message received:", event.data); // Log des données brutes
     const data = JSON.parse(event.data);
     alert(data.message); // Affichez la notification ou rafraîchissez la liste
     fetchFriendList();  // Rafraîchir la liste des amis
