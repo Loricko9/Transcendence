@@ -343,6 +343,38 @@ export function initAll() {
 		softReset();
 	}
 
+	function updateScore(type, username) {
+		if (type === 'win') {
+			fetch('/api/add-win/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': Get_Cookie('csrftoken')
+				},
+				body: JSON.stringify({
+					'username': username
+				})
+			})
+			.catch(error => {
+				console.error('Erreur:', error);
+			});
+		} else if (type === 'loose') {
+			fetch('/api/add-lose/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': Get_Cookie('csrftoken')
+				},
+				body: JSON.stringify({
+					'username': username
+				})
+			})
+			.catch(error => {
+				console.error('Erreur:', error);
+			});
+		}
+	}
+	
 	function checkWin() {
 		WinnerIcon.style.backgroundColor = 'transparent';
 		document.getElementById("Draw").style.display = "none";
@@ -355,10 +387,26 @@ export function initAll() {
 				changeMenu("endGameMenu");
 				NextButton.style.display = 'none';
 				PlayAgainButton.style.display = 'block';
-				if (scoreleftplayer === 3) {setWinnerIcon(leftUserIcon.src); document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
+				if (scoreleftplayer === 3) {
+					setWinnerIcon(leftUserIcon.src);
+					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					updateScore('win', LeftPlayerUserNameContent.textContent); ////////////////////////
+					if (PVPMode !== 'none') {
+						updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
+					}
+				}
 				else if (scorerightplayer === 3) {
-					if (PVPMode === 'none') {setWinnerIcon('/media/avatars/Bot.png');document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
-					else {setWinnerIcon(rightUserIcon.src);document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
+					if (PVPMode === 'none') {
+						setWinnerIcon('/media/avatars/Bot.png');
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+						updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
+					}
+					else {
+						setWinnerIcon(rightUserIcon.src);
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+						updateScore('win', RightPlayerUserNameContent.textContent); ///////////
+						updateScore('loose', LeftPlayerUserNameContent.textContent); ///////////////
+					}
 				}
 			}
 			else if (PVPMode === '2vs2') {
@@ -366,14 +414,47 @@ export function initAll() {
 				if (round === 0) {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
-					if (scoreleftplayer === 3) {setWinnerIcon(leftUserIcon.src); redTeamScore++;document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
-					else if (scorerightplayer === 3) {setWinnerIcon(rightUserIcon.src); blueTeamScore++;document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
+					if (scoreleftplayer === 3) {
+						setWinnerIcon(leftUserIcon.src);
+						updateScore('win', LeftPlayerUserNameContent.textContent); /////////////
+						updateScore('loose', RightPlayerUserNameContent.textContent); /////////////
+						redTeamScore++;
+						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					}
+					else if (scorerightplayer === 3) {
+						setWinnerIcon(rightUserIcon.src);
+						updateScore('win', RightPlayerUserNameContent.textContent); /////////
+						updateScore('loose', LeftPlayerUserNameContent.textContent); //////
+						blueTeamScore++;
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					}
 				} else if (round === 1) {
-					if (scoreleftplayer === 3) {setWinnerIcon(leftUserIcon.src);redTeamScore++;document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
-					else if (scorerightplayer === 3) {setWinnerIcon(rightUserIcon.src);blueTeamScore++;document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
-					if (redTeamScore > blueTeamScore) {WinnerIcon.style.backgroundColor = 'red';document.getElementById("WinnerName").textContent = HostUserNameVar + " " + User1UserNameVar;}
-					else if (redTeamScore < blueTeamScore) {WinnerIcon.style.backgroundColor = 'blue';document.getElementById("WinnerName").textContent = User2UserNameVar + " " + User3UserNameVar;}
-					else {document.getElementById("WinnerName").style.display = "none";document.getElementById("Draw").style.display = "block";}
+					if (scoreleftplayer === 3) {
+						setWinnerIcon(leftUserIcon.src);
+						redTeamScore++;
+						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
+						updateScore('loose', RightPlayerUserNameContent.textContent); ///////////
+						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					}
+					else if (scorerightplayer === 3) {
+						setWinnerIcon(rightUserIcon.src);
+						updateScore('win', RightPlayerUserNameContent.textContent); /////////////
+						updateScore('loose', LeftPlayerUserNameContent.textContent); ////////////
+						blueTeamScore++;
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					}
+					if (redTeamScore > blueTeamScore) {
+						WinnerIcon.style.backgroundColor = 'red';
+						document.getElementById("WinnerName").textContent = HostUserNameVar + " " + User1UserNameVar;
+					}
+					else if (redTeamScore < blueTeamScore) {
+						WinnerIcon.style.backgroundColor = 'blue';
+						document.getElementById("WinnerName").textContent = User2UserNameVar + " " + User3UserNameVar;
+					}
+					else {
+						document.getElementById("WinnerName").style.display = "none";
+						document.getElementById("Draw").style.display = "block";
+					}
 
 					NextButton.style.display = 'none';
 					PlayAgainButton.style.display = 'block';
@@ -388,6 +469,8 @@ export function initAll() {
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound1 = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound1Icon = leftUserIcon.src;
+						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
+						updateScore('loose', RightPlayerUserNameContent.textContent); //////////
 						setWinnerIcon(leftUserIcon.src);
 					} else if (scorerightplayer === 3) {
 						player2score++;
@@ -395,6 +478,8 @@ export function initAll() {
 						tournamentWinnerRound1 = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound1Icon = rightUserIcon.src;
 						setWinnerIcon(rightUserIcon.src);
+						updateScore('win', RightPlayerUserNameContent.textContent); //////////
+						updateScore('loose', LeftPlayerUserNameContent.textContent); //////////
 					}
 				} else if (round === 1) {
 					NextButton.style.display = 'block';
@@ -405,6 +490,8 @@ export function initAll() {
 						tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound2Icon = leftUserIcon.src;
 						setWinnerIcon(leftUserIcon.src);
+						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
+						updateScore('loose', RightPlayerUserNameContent.textContent); //////////
 					}
 					else if (scorerightplayer === 3) {
 						player4score++;
@@ -412,6 +499,8 @@ export function initAll() {
 						tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound2Icon = rightUserIcon.src;
 						setWinnerIcon(rightUserIcon.src);
+						updateScore('win', RightPlayerUserNameContent.textContent); //////////
+						updateScore('loose', LeftPlayerUserNameContent.textContent); //////////
 					}
 				} else if (round === 2) {
 					if (player1score > player2score && player1score > player3score && player1score > player4score) {document.getElementById("WinnerName").textContent = HostUserNameVar;setWinnerIcon(HostUserIcon);NextButton.style.display = 'none';PlayAgainButton.style.display = 'block';}

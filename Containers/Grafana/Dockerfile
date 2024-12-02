@@ -11,4 +11,6 @@ COPY ./datasources.yaml /etc/grafana/provisioning/datasources/datasources.yaml
 COPY ./start.sh /start.sh
 COPY ./dashboards /etc/grafana/provisioning/dashboards
 
+RUN chmod +x /start.sh
+
 ENTRYPOINT [ "/start.sh" ]

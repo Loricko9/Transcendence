@@ -320,6 +320,28 @@ def get_stats(request):
 		return response
 	return redirect('/')
 
+def add_win(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		username = data.get('username')
+		if username:
+			if User_tab.objects.filter(username=username).exists():
+				user = User_tab.objects.get(username=username)
+				user.nb_win += 1
+		return JsonResponse({'username' : None})
+	return redirect('/')
+
+def add_loose(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		username = data.get('username')
+		if username:
+			if User_tab.objects.filter(username=username).exists():
+				user = User_tab.objects.get(username=username)
+				user.nb_lose += 1
+		return JsonResponse({'username' : None})
+	return redirect('/')
+
 def find_username(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
