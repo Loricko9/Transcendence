@@ -1,9 +1,9 @@
 all:
-	@docker-compose -f Docker-compose.yml up --build
+	@docker-compose -f Docker-compose.yml up -d --build
 
 stop:
 	@echo "Stopping the project..."
-	@docker-compose -f docker-compose.yml down
+	@docker-compose -f Docker-compose.yml down
 
 migrations:
 	@echo "Updating the database..."

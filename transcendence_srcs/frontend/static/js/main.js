@@ -1,5 +1,6 @@
 import { initAll } from './pong.js';
-import { loadChart, ActChart, DestroyCharts, loadTemplate, Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
+import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
+	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
@@ -10,6 +11,11 @@ async function checkAuthentification() {
 		const data = await response.json();
 		if (data.is_authenticated) {
 			// Affichage connecte
+			if (!socket)
+			{
+				InitializeWebsocket();
+				console.log("websocket init")
+			}
 			fetchFriendList();
 			fetchFriendRequests();
 			document.getElementById('option').style.display = 'flex';
@@ -80,8 +86,8 @@ function router(){
 					loadTemplate(appDiv, "temp_index");
 				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 				break;
-			case "/Game/":
-				if (isAuthenticated) {
+				case "/Game/":
+					if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
 					appDiv.className = "";
 					blockage = true;
@@ -89,7 +95,7 @@ function router(){
 				} else
 					redirect_to("/");
 				break;
-			case "/change-password/":
+				case "/change-password/":
 				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_password");
 					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
@@ -98,24 +104,24 @@ function router(){
 				else
 					redirect_to("/");
 				break;
-			case "/change-avatar/":
-				if (isAuthenticated && !is_user_42) {
+				case "/change-avatar/":
+					if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_avatar");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
 				} else
 					redirect_to("/");
-				break;
-			case "/stats/":
-				if (isAuthenticated) {
+					break;
+					case "/stats/":
+						if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_stats");
 					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
 					get_stats();
 				} else
-					redirect_to("/");
+				redirect_to("/");
 				break;
-			default:
-				loadTemplate(appDiv, "temp_notFound");
+				default:
+					loadTemplate(appDiv, "temp_notFound");
 				appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
 		}
 	});
@@ -132,18 +138,18 @@ document.addEventListener("DOMContentLoaded", () => {
 			case "en":
 				document.getElementById("btn_en").classList.add("active")
 				break;
-			case "es":
-				document.getElementById("btn_es").classList.add("active")
+				case "es":
+					document.getElementById("btn_es").classList.add("active")
 				break;
 			default:
 				break;
 		}
 	}
-
+	
 	// fermeture auto de la fenetre de droite
 	const offcanvasElement = document.getElementById('offcanvasRight');
 	const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
-
+	
 	document.getElementById('logout_btn').addEventListener('click', function () {
 		offcanvasInstance.hide();
 	});
@@ -174,11 +180,11 @@ window.addEventListener('popstate', router);
 // fonction pour gerer les connexion avec fetch en mode dynamique
 document.getElementById('dropdown_form').addEventListener('submit', function(event) {
 	event.preventDefault();  // Empêche le rechargement de la page
-
+	
 	const inputEmail = document.getElementById('Email_input').value;
 	const inputPwd = document.getElementById('Passwd_input').value;
 	const csrfToken = document.querySelector('[name=csrf-token]').content
-
+	
 	fetch('/api/login/', {
 		method: 'POST',
 		headers: {
@@ -205,10 +211,10 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
-    fetch('/api/logout/', {
-        method: 'POST',
+	fetch('/api/logout/', {
+		method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken')
         },
     })
@@ -218,6 +224,10 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 		clearFormFields()
 		refreshCSRFToken()
 		showSuccessModal()
+		if (socket){
+			socket.close()
+			console.log("websocket close")
+		}
 		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
@@ -226,7 +236,7 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 // delete account
 document.getElementById('deleteAccountBtn').addEventListener('click', function() {
     if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
-        fetch('/api/delete-account/', {
+		fetch('/api/delete-account/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -235,12 +245,12 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
+			if (data.success) {
                 document.getElementById('infoco').innerHTML = data.message
 				showSuccessModal()
 				redirect_to("/")
             } else {
-                alert("Erreur lors de la suppression du compte: " + data.message);
+				alert("Erreur lors de la suppression du compte: " + data.message);
             }
         })
         .catch(error => console.error('Erreur:', error));
@@ -268,11 +278,11 @@ function handleFormChangePassword() {
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
+	
     fetch('/api/change-password/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Type': 'application/x-www-form-urlencoded',
             'X-CSRFToken': csrfToken,
         },
         body: new URLSearchParams({
@@ -298,15 +308,15 @@ function loadChangeAvatar() {
     fetch('/media/avatars/')
         .then(response => response.text())
         .then(html => {
-            const parser = new DOMParser();
+			const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
             const avatarContainer = document.getElementById('avatar-container');
-
+			
             links.forEach(link => {
-                const href = link.getAttribute('href');
+				const href = link.getAttribute('href');
                 if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
-                    // Ajouter chaque image dans le conteneur
+					// Ajouter chaque image dans le conteneur
                     const img = document.createElement('img');
                     img.src = `/media/avatars/${href}`;
                     img.width = 120;
@@ -314,7 +324,7 @@ function loadChangeAvatar() {
                     img.style.cursor = 'pointer';
 					img.classList.add('avatar-img');
                     img.addEventListener('click', function() {
-                        document.querySelectorAll('.avatar-img.selected').forEach(el => el.classList.remove('selected'));
+						document.querySelectorAll('.avatar-img.selected').forEach(el => el.classList.remove('selected'));
                         img.classList.add('selected');
                         img.dataset.selected = true;
                     });
@@ -323,13 +333,13 @@ function loadChangeAvatar() {
             });
         })
         .catch(error => console.error('Erreur:', error));
-};
+	};
 
 // Fonction pour récupérer l'avatar sélectionné
 function handleFormChangeAvatar() {
     const selectedImg = document.querySelector('img.selected');
     if (!selectedImg) {
-        alert("Veuillez sélectionner un avatar.");
+		alert("Veuillez sélectionner un avatar.");
         return;
     }
 
@@ -340,7 +350,7 @@ function handleFormChangeAvatar() {
     fetch('/api/change-avatar/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Type': 'application/x-www-form-urlencoded',
             'X-CSRFToken': csrfToken,
         },
         body: new URLSearchParams({
@@ -349,7 +359,7 @@ function handleFormChangeAvatar() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById('infoco').innerHTML = data.message;
+		document.getElementById('infoco').innerHTML = data.message;
         if (data.success) {
             showSuccessModal();
 			redirect_to("/");
@@ -374,16 +384,17 @@ function get_stats() {
 		loadChart(1, 3, 8)
 		document.getElementById('Win_game').innerHTML = data.win
 		document.getElementById('Lose_game').innerHTML = data.lose
+		Fill_table(data.history)
 	})
 	.catch(error => console.error('Error fetching stats', error));
 }
 
 // Récupération de la liste d'amis
 function fetchFriendList() {
-    fetch('/api/friends/', {
-        method: 'GET',
+	fetch('/api/friends/', {
+		method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
+			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
         }
     })
@@ -393,17 +404,17 @@ function fetchFriendList() {
         list.innerHTML = '';
         data.friendships.forEach(friendship => {
 			if (friendship.status == 'accepted')
-			{
+				{
 	            const li = document.createElement('li');
 				if (friendship.sender_username == data.username)
 					li.textContent = `${friendship.receiver_username}`;
 				else
-					li.textContent = `${friendship.sender_username}`;
-				const deleteButton = document.createElement('button');
-				deleteButton.textContent = 'Remove';
-				deleteButton.style.marginLeft = '10px';
-				deleteButton.addEventListener('click', () => {
-					deleteFriendship(friendship.id); // Appel de la fonction de suppression
+				li.textContent = `${friendship.sender_username}`;
+			const deleteButton = document.createElement('button');
+			deleteButton.textContent = 'Remove';
+			deleteButton.style.marginLeft = '10px';
+			deleteButton.addEventListener('click', () => {
+				deleteFriendship(friendship.id); // Appel de la fonction de suppression
 				});
 				li.appendChild(deleteButton);
 				list.appendChild(li);
@@ -436,12 +447,12 @@ function deleteFriendship(friendshipId){
 
 // Envoyer une demande d'amis
 function sendFriendRequest() {
-    const username = document.getElementById('username').value;
+	const username = document.getElementById('username').value;
 	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
         },
         body: JSON.stringify({ receiver_username: username })
@@ -454,35 +465,36 @@ function sendFriendRequest() {
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
+window.sendFriendRequest = sendFriendRequest;                                                                                                                              
 
 
 // Récupérer la liste des demandes d'amis
 function fetchFriendRequests() {
     fetch('/api/friend-requests/', {
-        method: 'GET',
+		method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
+			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
         }
     })
     .then(response => response.json())
     .then(data => {
-        const list = document.getElementById('friend-request-list');
+		const list = document.getElementById('friend-request-list');
         list.innerHTML = '';  // Vide la liste avant de la remplir
         data.forEach(request => {
-            const li = document.createElement('li');
+			const li = document.createElement('li');
             li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
 
             // Bouton pour accepter
             const acceptButton = document.createElement('button');
             acceptButton.textContent = 'Accepter';
             acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
-
+			
             // Bouton pour refuser
             const rejectButton = document.createElement('button');
             rejectButton.textContent = 'Refuser';
             rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
-
+			
             li.appendChild(acceptButton);
             li.appendChild(rejectButton);
             list.appendChild(li);
@@ -496,7 +508,7 @@ function respondToRequest(username, action) {
     fetch(`/api/friend-request/${username}/`, {
         method: 'PATCH',
         headers: {
-            'Content-Type': 'application/json',
+			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
         },
         body: JSON.stringify({ action: action })
@@ -511,15 +523,20 @@ function respondToRequest(username, action) {
 }
 
 // Getsionnaire de web socket
-const socket = new WebSocket(`ws://${window.location.host}/ws/friendship/`);
-
-socket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    alert(data.message); // Affichez la notification ou rafraîchissez la liste
-    fetchFriendList();  // Rafraîchir la liste des amis
-    fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
+function InitializeWebsocket(){
+	socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
+	
+	socket.onmessage = function (event) {
+		console.log("WebSocket message received:", event.data); // Log des données brutes
+		const data = JSON.parse(event.data);
+		alert(data.message); // Affichez la notification ou rafraîchissez la liste
+		fetchFriendList();  // Rafraîchir la liste des amis
+		fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
+	};
+	
+	socket.onclose = function () {
+		console.error("WebSocket connection closed.");
+	};
 };
 
-socket.onclose = function () {
-    console.error("WebSocket connection closed.");
-};
+let socket;

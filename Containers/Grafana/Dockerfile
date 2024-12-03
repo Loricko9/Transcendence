@@ -9,6 +9,7 @@ RUN dpkg -i grafana_11.3.0+security~01_amd64.deb && \
 COPY ./grafana.ini /etc/grafana/grafana.ini
 COPY ./datasources.yaml /etc/grafana/provisioning/datasources/datasources.yaml
 COPY ./start.sh /start.sh
+RUN chmod 755 start.sh
 COPY ./dashboards /etc/grafana/provisioning/dashboards
 
 RUN chmod +x /start.sh

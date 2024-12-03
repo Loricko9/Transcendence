@@ -18,7 +18,12 @@ def index(request):
 		return redirect('/fr/')
 
 def index_lang(request, lang, any=None):
-	
+
+	# # Vérifie si la requête est une tentative de connexion WebSocket
+	# if request.headers.get('Upgrade', '').lower() == 'websocket':
+	# 	# Laisse Django Channels gérer la requête WebSocket
+	# 	return
+
 	lang_cookie = request.COOKIES.get('language', None)
 	lang_accepted = ['fr', 'en', 'es']
 

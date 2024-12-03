@@ -16,6 +16,9 @@ from django.conf import settings # type: ignore
 import os, requests, json, logging
 from asgiref.sync import async_to_sync # type: ignore
 from channels.layers import get_channel_layer # type: ignore
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -32,6 +35,7 @@ def set_lang(request, lang):
 	return reponse
 
 # Afficher la liste des amis
+# @login_required
 class FriendshipListView(APIView):
 	permission_classes = [IsAuthenticated]
      
@@ -56,7 +60,7 @@ class FriendshipListView(APIView):
 				async_to_sync(channel_layer.group_send)(
 					f"friendship_updates_{other_user.id}",
 					{
-						"type": "friendship_update",
+						"type": "send_friendship_update",
 						"data": {"message": f"{request.user.username} has removed you as a friend."}
 					}
 				)
@@ -66,40 +70,43 @@ class FriendshipListView(APIView):
 		except Friendship.DoesNotExist:
 			return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
 
-
+# @login_required
 @api_view(['POST'])
 def send_friend_request(request):
-    # Vérifier si un 'username' est passé dans la requête
-    receiver_username = request.data.get('receiver_username')
-    if not receiver_username:
-        return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
+	# Vérifier si un 'username' est passé dans la requête
+	receiver_username = request.data.get('receiver_username')
+	if not receiver_username:
+		return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        # Récupérer l'utilisateur destinataire de la demande
-        receiver = User.objects.get(username=receiver_username)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+	try:
+		# Récupérer l'utilisateur destinataire de la demande
+		receiver = User.objects.get(username=receiver_username)
+	except User.DoesNotExist:
+		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    # Ne pas permettre à un utilisateur de s'ajouter lui-même
-    if receiver == request.user:
-        return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
+	# Ne pas permettre à un utilisateur de s'ajouter lui-même
+	if receiver == request.user:
+		return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Vérifier si une amitié existe déjà
-    if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
-        return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
+	# Vérifier si une amitié existe déjà
+	if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
+		return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Créer une relation d'amitié
-    Friendship.objects.create(sender=request.user, receiver=receiver)
+	# Créer une relation d'amitié
+	Friendship.objects.create(sender=request.user, receiver=receiver)
 	# Notification via WebSocket
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"friendship_updates_{receiver.id}",
-        {
-            "type": "friendship_update",
-            "data": {"message": f"You have a new friend request from {request.user.username}"}
-        }
-    )
-    return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
+	channel_layer = get_channel_layer()
+	group_name = f"friendship_updates_{receiver.id}"
+	logger.info(f"Sending message to group: {group_name} with data: {request.user.username}")
+	async_to_sync(channel_layer.group_send)(
+	group_name,
+		{
+			"type": "send_friendship_update",
+			"data": {"message": f"You have a new friend request from {request.user.username}"}
+		}
+	)
+
+	return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
 
 # afficher la liste des demandes d'amis
 class FriendRequestListView(APIView):
@@ -130,32 +137,31 @@ def respond_to_friend_request(request, username):
 	if action == 'accepted':
 		friendship.status = 'accepted'
 		message = f"{request.user.username} has accepted your friend request."
+		friendship.save()
 	elif action == 'rejected':
-		friendship.status = 'rejected'
+		friendship.delete()
 		message = f"{request.user.username} has rejected your friend request."
 	else:
 		return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
-
-	friendship.save()
 
 	# Notifier l'utilisateur qui a envoyé la demande
 	channel_layer = get_channel_layer()
 	async_to_sync(channel_layer.group_send)(
 		f"friendship_updates_{sender.id}",
 		{
-			"type": "friendship_update",
+			"type": "send_friendship_update",
 			"data": {"message": message}
 		}
 	)
 	return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
 
-def friend_delete(request, username):
-	friend = User.objects.get(username=username)
-	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
-		Friendship.objects.delete(sender=request.user, receiver=friend)
-	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
-		Friendship.objects.delete(sender=friend, receiver=request.user)
-	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
+# def friend_delete(request, username):
+# 	friend = User.objects.get(username=username)
+# 	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
+# 		Friendship.objects.delete(sender=request.user, receiver=friend)
+# 	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
+# 		Friendship.objects.delete(sender=friend, receiver=request.user)
+# 	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
 
 def log_42(request):
 	code = request.GET.get('code')
@@ -263,6 +269,24 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return redirect('/')
 
+def login_view(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		user = authenticate(request, Email=email, password=password)
+        
+		if user is not None:
+			login(request, user)
+			user.connect()
+			data = {'success': True, 'message': 'Connexion reussie'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
+		else:
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return redirect('/')
+
 @login_required
 def logout_view(request):
 	request.user.disconnect()
@@ -274,7 +298,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
-						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar.url}" alt="Avatar" width="65">',
 					   		'user': request.user.username,
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -283,15 +307,14 @@ def check_authentication(request):
 		return response
 	else:
 		return JsonResponse({'is_authenticated': False})
-
-@login_required
-@csrf_exempt
+	
 def get_stats(request):
 	if request.method == 'POST':
 		try:
 			user = request.user
 			if user.is_authenticated:
-				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose})
+				history_data = History.objects.filter(user=user).values('date', 'enemy', 'score', 'result')
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'history': list(history_data)})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:
