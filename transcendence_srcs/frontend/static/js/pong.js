@@ -78,7 +78,6 @@ export function initAll() {
 	let ballSpeed = 6;
 
 	let scoreleftplayer = 0, scorerightplayer = 0, redTeamScore = 0, blueTeamScore = 0;
-	let player1score = 0, player2score = 0, player3score = 0, player4score = 0;
 
 	let tournamentWinnerRound1 = null;
 	let tournamentWinnerRound1Icon = null;
@@ -143,7 +142,7 @@ export function initAll() {
 			UserName = data.user;
 			UserIcon = data.userIcon;
 			UserIcon = UserIcon.replace('/media/media/', '/media/');
-			if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
+			if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/https%3A', 'https:/');}
 			if (UserName === undefined || UserName === null) {
 				alert('User not found');
 				return ;
@@ -272,10 +271,6 @@ export function initAll() {
 		ScorePlayerRightElement.textContent = scorerightplayer;
 		redTeamScore = 0;
 		blueTeamScore = 0;
-		player1score = 0;
-		player2score = 0;
-		player3score = 0;
-		player4score = 0;
 		tournamentWinnerRound1 = null;
 		tournamentWinnerRound2 = null;
 		tournamentWinnerRound1Icon = null;
@@ -333,46 +328,31 @@ export function initAll() {
 	function playAgain() {
 		scoreleftplayer = 0;
 		scorerightplayer = 0;
-		player1score = 0;
-		player2score = 0;
-		player3score = 0;
-		player4score = 0;
 		ScorePlayerLeftElement.textContent = scoreleftplayer;
 		ScorePlayerRightElement.textContent = scorerightplayer;
 		round = 0;
 		softReset();
 	}
 
-	function updateScore(type, username) {
-		if (type === 'win') {
-			fetch('/api/add-win/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': Get_Cookie('csrftoken')
-				},
-				body: JSON.stringify({
-					'username': username
-				})
+	function updateScore(winner, loser, winnerScore, loserScore, isTournament) {
+		console.log('UpdateScoreTests [', 'winner:', winner, 'loser:', loser, 'winnerScore:', winnerScore, 'loserScore:', loserScore, 'isTournament:', isTournament, ']');
+		fetch('/api/update-score/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+			body: JSON.stringify({
+				'winner': winner,
+				'loser': loser,
+				'winnerScore': winnerScore,
+				'loserScore': loserScore,
+				'isTournament': isTournament
 			})
-			.catch(error => {
-				console.error('Erreur:', error);
-			});
-		} else if (type === 'loose') {
-			fetch('/api/add-lose/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': Get_Cookie('csrftoken')
-				},
-				body: JSON.stringify({
-					'username': username
-				})
-			})
-			.catch(error => {
-				console.error('Erreur:', error);
-			});
-		}
+		})
+		.catch(error => {
+			console.error('Erreur:', error);
+		});
 	}
 	
 	function checkWin() {
@@ -390,23 +370,27 @@ export function initAll() {
 				if (scoreleftplayer === 3) {
 					setWinnerIcon(leftUserIcon.src);
 					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
-					updateScore('win', LeftPlayerUserNameContent.textContent); ////////////////////////
-					if (PVPMode !== 'none') {
-						updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
-					}
+					updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					
+					// if (PVPMode === 'none') {
+					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					// } else if (PVPMode !== 'none') {
+					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					// }
 				}
 				else if (scorerightplayer === 3) {
-					if (PVPMode === 'none') {
-						setWinnerIcon('/media/avatars/Bot.png');
-						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
-						updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
-					}
-					else {
-						setWinnerIcon(rightUserIcon.src);
-						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
-						updateScore('win', RightPlayerUserNameContent.textContent); ///////////
-						updateScore('loose', LeftPlayerUserNameContent.textContent); ///////////////
-					}
+					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					setWinnerIcon(rightUserIcon.src);
+					// if (PVPMode === 'none') {
+					// 	setWinnerIcon('/media/avatars/Bot.png');
+					// 	// document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					// 	// updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
+					// }
+					// else {
+					// 	// updateScore('win', RightPlayerUserNameContent.textContent); ///////////
+					// 	// updateScore('loose', LeftPlayerUserNameContent.textContent); ///////////////
+					// }
+					updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
 				}
 			}
 			else if (PVPMode === '2vs2') {
@@ -416,15 +400,13 @@ export function initAll() {
 					PlayAgainButton.style.display = 'none';
 					if (scoreleftplayer === 3) {
 						setWinnerIcon(leftUserIcon.src);
-						updateScore('win', LeftPlayerUserNameContent.textContent); /////////////
-						updateScore('loose', RightPlayerUserNameContent.textContent); /////////////
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
 						redTeamScore++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 					}
 					else if (scorerightplayer === 3) {
 						setWinnerIcon(rightUserIcon.src);
-						updateScore('win', RightPlayerUserNameContent.textContent); /////////
-						updateScore('loose', LeftPlayerUserNameContent.textContent); //////
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
 						blueTeamScore++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 					}
@@ -432,14 +414,12 @@ export function initAll() {
 					if (scoreleftplayer === 3) {
 						setWinnerIcon(leftUserIcon.src);
 						redTeamScore++;
-						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
-						updateScore('loose', RightPlayerUserNameContent.textContent); ///////////
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 					}
 					else if (scorerightplayer === 3) {
 						setWinnerIcon(rightUserIcon.src);
-						updateScore('win', RightPlayerUserNameContent.textContent); /////////////
-						updateScore('loose', LeftPlayerUserNameContent.textContent); ////////////
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
 						blueTeamScore++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 					}
@@ -465,48 +445,50 @@ export function initAll() {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
 					if (scoreleftplayer === 3) {
-						player1score++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound1 = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound1Icon = leftUserIcon.src;
-						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
-						updateScore('loose', RightPlayerUserNameContent.textContent); //////////
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
 						setWinnerIcon(leftUserIcon.src);
 					} else if (scorerightplayer === 3) {
-						player2score++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound1 = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound1Icon = rightUserIcon.src;
 						setWinnerIcon(rightUserIcon.src);
-						updateScore('win', RightPlayerUserNameContent.textContent); //////////
-						updateScore('loose', LeftPlayerUserNameContent.textContent); //////////
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
 					}
 				} else if (round === 1) {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
 					if (scoreleftplayer === 3) {
-						player3score++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound2Icon = leftUserIcon.src;
 						setWinnerIcon(leftUserIcon.src);
-						updateScore('win', LeftPlayerUserNameContent.textContent); //////////
-						updateScore('loose', RightPlayerUserNameContent.textContent); //////////
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
 					}
 					else if (scorerightplayer === 3) {
-						player4score++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound2Icon = rightUserIcon.src;
 						setWinnerIcon(rightUserIcon.src);
-						updateScore('win', RightPlayerUserNameContent.textContent); //////////
-						updateScore('loose', LeftPlayerUserNameContent.textContent); //////////
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
 					}
 				} else if (round === 2) {
-					if (player1score > player2score && player1score > player3score && player1score > player4score) {document.getElementById("WinnerName").textContent = HostUserNameVar;setWinnerIcon(HostUserIcon);NextButton.style.display = 'none';PlayAgainButton.style.display = 'block';}
-					else if (player2score > player1score && player2score > player3score && player2score > player4score) {document.getElementById("WinnerName").textContent = User1UserNameVar;setWinnerIcon(User1Icon.src);NextButton.style.display = 'none';PlayAgainButton.style.display = 'block';}
-					else if (player3score > player1score && player3score > player2score && player3score > player4score) {document.getElementById("WinnerName").textContent = User2UserNameVar;setWinnerIcon(User2Icon.src);NextButton.style.display = 'none';PlayAgainButton.style.display = 'block';}
-					else if (player4score > player1score && player4score > player2score && player4score > player3score) {document.getElementById("WinnerName").textContent = User3UserNameVar;setWinnerIcon(User3Icon.src);}
+					if (scoreleftplayer === 3) {
+						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = leftUserIcon.src;
+						setWinnerIcon(leftUserIcon.src);
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
+					}
+					else if (scorerightplayer === 3) {
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = rightUserIcon.src;
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
+					}
 					NextButton.style.display = 'none';
 					PlayAgainButton.style.display = 'block';
 				}

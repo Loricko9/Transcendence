@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.http import JsonResponse, HttpResponse # type: ignore
-from .models import User_tab, Friendship
+from .models import User_tab, Friendship, History
 from django.shortcuts import get_object_or_404, render, redirect # type: ignore
 from rest_framework.views import APIView # type: ignore
 from rest_framework.decorators import api_view # type: ignore
@@ -298,25 +298,49 @@ def get_stats(request):
 			return JsonResponse({'error': 'Invalid JSON data'})
 	return (redirect('/'))
 
-def add_win(request):
+def update_score(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
-		username = data.get('username')
-		if username:
-			if User_tab.objects.filter(username=username).exists():
-				user = User_tab.objects.get(username=username)
-				user.nb_win += 1
-		return JsonResponse({'username' : None})
-	return redirect('/')
+		user_win = data.get('winner')
+		user_win_score = data.get('winnerScore')
 
-def add_loose(request):
-	if request.method == 'POST':
-		data = json.loads(request.body)
-		username = data.get('username')
-		if username:
-			if User_tab.objects.filter(username=username).exists():
-				user = User_tab.objects.get(username=username)
-				user.nb_lose += 1
+		user_lose = data.get('loser')
+		user_lose_score = data.get('loserScore')
+
+		isTournament = data.get('isTournament')
+
+		if user_win and user_win != 'AI':
+			if User_tab.objects.filter(username=user_win).exists():
+				Wuser = User_tab.objects.get(username=user_win)
+				Wuser.nb_win += 1
+				if isTournament:
+					Wuser.nb_tournament_win += 1
+				Wuser.save()
+
+		if user_lose and user_lose != 'AI':
+			if User_tab.objects.filter(username=user_lose).exists():
+				Luser = User_tab.objects.get(username=user_lose)
+				Luser.nb_lose += 1
+				if isTournament:
+					Luser.nb_tournament_lose += 1
+				Luser.save() # i forgot to save the user lol
+			
+		# if user_win and user_lose:
+		# 	if User_tab.objects.filter(username=user_win).exists() and User_tab.objects.filter(username=user_lose).exists():
+		# 		Wuser = User_tab.objects.get(username=user_win)
+		# 		Luser = User_tab.objects.get(username=user_lose)
+		# 		Wuser.nb_win += 1
+		# 		Luser.nb_lose += 1
+		# 		if isTournament:
+		# 			Wuser.nb_tournament_win += 1
+		# 			Luser.nb_tournament_lose += 1
+				try:
+					if (user_win != 'AI'):
+						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
+					if (user_lose != 'AI'):
+						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
+				except ValueError as e:
+					return JsonResponse({'error': str(e)})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 

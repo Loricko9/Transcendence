@@ -51,6 +51,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	verification_token = models.UUIDField(default=uuid.uuid4, editable=False) # génère un UUID de type 4 aleatoire
 	nb_win = models.IntegerField(default=0)
 	nb_lose = models.IntegerField(default=0)
+	nb_tournament_win = models.IntegerField(default=0)
+	nb_tournament_lose = models.IntegerField(default=0)
 	friends = models.ManyToManyField('self', blank=True, symmetrical=True)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
 	#Mais a rajouter pour un hash de mdp manuel
@@ -115,7 +117,7 @@ class History(models.Model):
 			result = 'Victory'
 		else :
 			result = 'Defeat'
-		if not User_tab.objects.filter(username=enemy).exists():
+		if not User_tab.objects.filter(username=enemy).exists() and not enemy == 'AI':
 			raise ValueError("L'ennemy n'existe pas !")
 		try :
 			user_instance = User_tab.objects.get(username=user)

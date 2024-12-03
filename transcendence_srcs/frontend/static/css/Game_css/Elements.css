@@ -2,6 +2,16 @@
  //                   Containers Elements                  //
 ////////////////////////////////////////////////////////////*/
 
+/* .dark-mode {
+    background-color: black;
+    color: white;
+}
+
+.white-mode {
+    background-color: white;
+    color: black;
+} */
+
 #game-container {
     display: flex;
     position: absolute;
