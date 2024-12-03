@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.http import JsonResponse, HttpResponse # type: ignore
-from .models import User_tab, Friendship
+from .models import User_tab, Friendship, History
 from django.shortcuts import get_object_or_404, render, redirect # type: ignore
 from rest_framework.views import APIView # type: ignore
 from rest_framework.decorators import api_view # type: ignore
@@ -291,7 +291,8 @@ def get_stats(request):
 		try:
 			user = request.user
 			if user.is_authenticated:
-				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose})
+				history_data = History.objects.filter(user=user).values('date', 'enemy', 'score', 'result')
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'history': list(history_data)})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:

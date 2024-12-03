@@ -115,6 +115,33 @@ export function clearFormFields() {
     document.getElementById('Passwd_input').value = '';
 }
 
+export function Fill_table(history) {
+	const table = document.getElementById("table_history");
+	if (history.length == 0) {
+		document.getElementById("no_data_txt").style.display = 'block';
+		return ;
+	}
+	document.getElementById("no_data_txt").style.display = 'none';
+	table.innerHTML = '';
+	history.forEach(game => {
+		const tr = document.createElement('tr')
+		const tdDate = document.createElement('td');
+		tdDate.textContent = new Date(game.date).toLocaleString();
+		const tdEnemy = document.createElement('td');
+		tdEnemy.textContent = game.enemy;
+		const tdScore = document.createElement('td');
+		tdScore.textContent = game.score;
+		const tdResult = document.createElement('td');
+		tdResult.textContent = game.result;
+
+		tr.appendChild(tdDate);
+		tr.appendChild(tdEnemy);
+		tr.appendChild(tdScore);
+		tr.appendChild(tdResult);
+		table.appendChild(tr);
+	});
+}
+
 window.Click_login = Click_login;
 window.Change_lang = Change_lang;
 
