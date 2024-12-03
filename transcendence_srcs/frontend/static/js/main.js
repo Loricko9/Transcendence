@@ -228,6 +228,11 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 			socket.close()
 			console.log("websocket close")
 		}
+		if (chatSocket)
+		{
+			chatSocket.close()
+			console.log("Chat websocket close")
+		}
 		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
@@ -522,7 +527,11 @@ function respondToRequest(username, action) {
     .catch(error => console.error('Error responding to friend request:', error));
 }
 
-// Getsionnaire de web socket
+// Variables globales Websocket
+let socket;
+let chatSocket;
+
+// Gestionnaire Friendship web socket
 function InitializeWebsocket(){
 	socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
 	
@@ -539,4 +548,44 @@ function InitializeWebsocket(){
 	};
 };
 
-let socket;
+// Afficher ou fermer le Chat
+function toggleChat(roomName) {
+    const chatContainer = document.querySelector('#chat-container');
+    if (chatContainer.style.display === 'none') {
+        chatContainer.style.display = 'block';
+		if (!chatSocket)
+		{
+        	initializeChatWebSocket(roomName); // Initialise la connexion WebSocket pour le chat
+			console.log("Chat websocket init")
+		}
+    } else {
+        chatContainer.style.display = 'none';
+    }
+}
+window.toggleChat = toggleChat;
+
+// Gestionnaire Chat websocket
+function initializeChatWebSocket(roomName) {
+    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomName}/`);
+
+    // Réception des messages
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+        const chatLog = document.querySelector('#chat-log');
+        chatLog.innerHTML += `<p>${data.message}</p>`;
+        chatLog.scrollTop = chatLog.scrollHeight; // Scroll automatique
+    };
+
+    // Gestion de l'envoi des messages
+    document.querySelector('#chat-message-submit').onclick = function () {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({ message: message }));
+        messageInputDom.value = ''; // Efface le champ après envoi
+    };
+
+    // Gestion des erreurs
+    chatSocket.onclose = function (e) {
+        console.error('WebSocket closed unexpectedly');
+    };
+}

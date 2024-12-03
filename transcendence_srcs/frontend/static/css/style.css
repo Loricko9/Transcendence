@@ -311,3 +311,37 @@ span {
 .modal-header {
     border-bottom: none;
 }
+
+#chat-container {
+	display: none; /* Masqué par défaut */
+	border: 1px solid #ccc;
+	padding: 10px;
+	width: 300px;
+	height: 400px;
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	background: white;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	overflow-y: auto;
+}
+
+#chat-log {
+	height: 300px;
+	overflow-y: auto;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 10px;
+}
+
+#chat-input {
+	display: flex;
+}
+
+#chat-message-input {
+	flex: 1;
+	padding: 5px;
+}
+
+#chat-message-submit {
+	padding: 5px 10px;
+}
