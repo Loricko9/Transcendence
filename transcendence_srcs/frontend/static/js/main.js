@@ -1,5 +1,6 @@
 import { initAll } from './pong.js';
-import { loadChart, ActChart, DestroyCharts, loadTemplate, Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
+import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
+	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
@@ -383,6 +384,7 @@ function get_stats() {
 		loadChart(1, 3, 8)
 		document.getElementById('Win_game').innerHTML = data.win
 		document.getElementById('Lose_game').innerHTML = data.lose
+		Fill_table(data.history)
 	})
 	.catch(error => console.error('Error fetching stats', error));
 }

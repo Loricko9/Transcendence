@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.http import JsonResponse, HttpResponse # type: ignore
-from .models import User_tab, Friendship
+from .models import User_tab, Friendship, History
 from django.shortcuts import get_object_or_404, render, redirect # type: ignore
 from rest_framework.views import APIView # type: ignore
 from rest_framework.decorators import api_view # type: ignore
@@ -310,21 +310,16 @@ def check_authentication(request):
 	
 def get_stats(request):
 	if request.method == 'POST':
-		data = json.loads(request.body)
-		result = data.get('result', True)
-		if result == True:
-			request.user.nb_win += 1
-		else:
-			request.user.nb_lose += 1
-		request.user.save()
-		response = JsonResponse({'success': True,
-					   		'message': 'Stats mises à jour',
-							'nb_win': request.user.nb_win,
-							'nb_lose': request.user.nb_lose
-		})
-		response['Content-Type'] = 'application/json; charset=utf-8'
-		return response
-	return redirect('/')
+		try:
+			user = request.user
+			if user.is_authenticated:
+				history_data = History.objects.filter(user=user).values('date', 'enemy', 'score', 'result')
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'history': list(history_data)})
+			else:
+				return JsonResponse({'error': 'User not authenticated'})
+		except json.JSONDecodeError:
+			return JsonResponse({'error': 'Invalid JSON data'})
+	return (redirect('/'))
 
 def find_username(request):
 	if request.method == 'POST':
