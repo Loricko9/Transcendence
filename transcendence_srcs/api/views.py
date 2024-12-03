@@ -35,6 +35,7 @@ def set_lang(request, lang):
 	return reponse
 
 # Afficher la liste des amis
+# @login_required
 class FriendshipListView(APIView):
 	permission_classes = [IsAuthenticated]
      
@@ -69,7 +70,7 @@ class FriendshipListView(APIView):
 		except Friendship.DoesNotExist:
 			return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
 
-
+# @login_required
 @api_view(['POST'])
 def send_friend_request(request):
 	# Vérifier si un 'username' est passé dans la requête
@@ -136,13 +137,12 @@ def respond_to_friend_request(request, username):
 	if action == 'accepted':
 		friendship.status = 'accepted'
 		message = f"{request.user.username} has accepted your friend request."
+		friendship.save()
 	elif action == 'rejected':
-		friendship.status = 'rejected'
+		friendship.delete()
 		message = f"{request.user.username} has rejected your friend request."
 	else:
 		return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
-
-	friendship.save()
 
 	# Notifier l'utilisateur qui a envoyé la demande
 	channel_layer = get_channel_layer()
@@ -155,13 +155,13 @@ def respond_to_friend_request(request, username):
 	)
 	return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
 
-def friend_delete(request, username):
-	friend = User.objects.get(username=username)
-	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
-		Friendship.objects.delete(sender=request.user, receiver=friend)
-	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
-		Friendship.objects.delete(sender=friend, receiver=request.user)
-	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
+# def friend_delete(request, username):
+# 	friend = User.objects.get(username=username)
+# 	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
+# 		Friendship.objects.delete(sender=request.user, receiver=friend)
+# 	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
+# 		Friendship.objects.delete(sender=friend, receiver=request.user)
+# 	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
 
 def log_42(request):
 	code = request.GET.get('code')
@@ -269,6 +269,24 @@ def login_view(request):
 			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return redirect('/')
 
+def login_view(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		user = authenticate(request, Email=email, password=password)
+        
+		if user is not None:
+			login(request, user)
+			user.connect()
+			data = {'success': True, 'message': 'Connexion reussie'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
+		else:
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return redirect('/')
+
 @login_required
 def logout_view(request):
 	request.user.disconnect()
@@ -289,20 +307,24 @@ def check_authentication(request):
 		return response
 	else:
 		return JsonResponse({'is_authenticated': False})
-
-@login_required
-@csrf_exempt
+	
 def get_stats(request):
 	if request.method == 'POST':
-		try:
-			user = request.user
-			if user.is_authenticated:
-				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose})
-			else:
-				return JsonResponse({'error': 'User not authenticated'})
-		except json.JSONDecodeError:
-			return JsonResponse({'error': 'Invalid JSON data'})
-	return (redirect('/'))
+		data = json.loads(request.body)
+		result = data.get('result', True)
+		if result == True:
+			request.user.nb_win += 1
+		else:
+			request.user.nb_lose += 1
+		request.user.save()
+		response = JsonResponse({'success': True,
+					   		'message': 'Stats mises à jour',
+							'nb_win': request.user.nb_win,
+							'nb_lose': request.user.nb_lose
+		})
+		response['Content-Type'] = 'application/json; charset=utf-8'
+		return response
+	return redirect('/')
 
 def find_username(request):
 	if request.method == 'POST':

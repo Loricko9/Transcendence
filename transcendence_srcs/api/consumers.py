@@ -9,11 +9,11 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
         self.group_name = f"friendship_updates_{self.scope['user'].id}"
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
-        await self.send(text_data=json.dumps({"message": "Test message from server"}))
-        await self.send_friendship_update({
-            "type": "friendship_update",
-            "data": {"message": "This is a test friendship update"}
-        })
+        # await self.send(text_data=json.dumps({"message": "Test message from server"}))
+        # await self.send_friendship_update({
+        #     "type": "friendship_update",
+        #     "data": {"message": "This is a test friendship update"}
+        # })
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
