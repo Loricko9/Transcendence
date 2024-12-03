@@ -79,6 +79,11 @@ body {
 	color: #0d1a65;
 }
 
+.Diagram {
+	width: 60%;
+	height: auto;
+}
+
 #signin_btn_index {
 	background-color: darkred;
 	color: white;
