@@ -226,11 +226,13 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 		showSuccessModal()
 		if (socket){
 			socket.close()
+			socket = null
 			console.log("websocket close")
 		}
 		if (chatSocket)
 		{
 			chatSocket.close()
+			chatSocket = null
 			console.log("Chat websocket close")
 		}
 		redirect_to("/")
@@ -549,10 +551,16 @@ function InitializeWebsocket(){
 };
 
 // Afficher ou fermer le Chat
-function toggleChat(roomName) {
+function toggleChat(roomName, event) {
+	if (event) {
+        event.preventDefault(); // Empêche le comportement par défaut de navigation
+    }
+	console.log("togglechat called")
     const chatContainer = document.querySelector('#chat-container');
+	console.log("Current display style:", chatContainer.style.display);
     if (chatContainer.style.display === 'none') {
         chatContainer.style.display = 'block';
+		console.log("Chat container opened");
 		if (!chatSocket)
 		{
         	initializeChatWebSocket(roomName); // Initialise la connexion WebSocket pour le chat
@@ -560,6 +568,13 @@ function toggleChat(roomName) {
 		}
     } else {
         chatContainer.style.display = 'none';
+		console.log("Chat container closed");
+		if (chatSocket)
+		{
+			chatSocket.close()
+			chatSocket = null
+			console.log("Chat websocket closed")
+		}
     }
 }
 window.toggleChat = toggleChat;
@@ -586,6 +601,13 @@ function initializeChatWebSocket(roomName) {
 
     // Gestion des erreurs
     chatSocket.onclose = function (e) {
-        console.error('WebSocket closed unexpectedly');
+        console.error('WebSocket connection closed');
     };
 }
+
+// Fermer le WebSocket lorsque la page est déchargée
+window.addEventListener('beforeunload', function () {
+    if (chatSocket) {
+        chatSocket.close();
+    }
+});
