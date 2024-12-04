@@ -1,7 +1,7 @@
 from django.db import models # type: ignore
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager # type: ignore
 import uuid # permet de générer des identifiants uniques appelés UUIDs (Universally Unique Identifiers, ou identifiants universellement uniques).
-# Create your models here.
+from django.utils.timezone import now # type: ignore
 
 #Class permetant de gérer le tableau User_tab (fonctions ajout, modif et suppr User)
 class User_tabManager(BaseUserManager):
@@ -131,3 +131,11 @@ class History(models.Model):
 
 		return new_history
 		
+class ChatMessage(models.Model):
+    room_name = models.CharField(max_length=100)  # Identifiant de la salle
+    sender = models.CharField(max_length=100)  # Par exemple, le nom d'utilisateur
+    content = models.TextField()  # Message
+    timestamp = models.DateTimeField(default=now)  # Date et heure d'envoi
+
+    def __str__(self):
+        return f"[{self.timestamp}] {self.sender}: {self.content}"

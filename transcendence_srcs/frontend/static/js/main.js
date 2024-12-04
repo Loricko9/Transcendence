@@ -583,12 +583,15 @@ window.toggleChat = toggleChat;
 function initializeChatWebSocket(roomName) {
     chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomName}/`);
 
+	const chatLog = document.querySelector('#chat-log');
+
     // Réception des messages
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        const chatLog = document.querySelector('#chat-log');
-        chatLog.innerHTML += `<p>${data.message}</p>`;
-        chatLog.scrollTop = chatLog.scrollHeight; // Scroll automatique
+		const messageElement = document.createElement('p');
+        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message} <small>(${data.timestamp || ''})</small>`;
+        chatLog.appendChild(messageElement);
+		chatLog.scrollTop = chatLog.scrollHeight; // Scroll automatique
     };
 
     // Gestion de l'envoi des messages
