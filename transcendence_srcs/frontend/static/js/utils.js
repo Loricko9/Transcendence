@@ -17,7 +17,7 @@ export function loadChart(chart_num, win, lose) {
 			],
             datasets: [{
                 data: [win, lose],
-                backgroundColor: ['red', 'green'],
+                backgroundColor: ['green', 'red'],
 				hoverOffset: 4
             }]
         },

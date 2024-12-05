@@ -41,7 +41,7 @@ class User_tabManager(BaseUserManager):
 class User_tab(AbstractBaseUser, PermissionsMixin):
 	Email = models.EmailField(unique=True)
 	username = models.CharField(max_length=255, null=True, unique=True)
-	avatar = models.ImageField(upload_to='avatars/', default='avatars/avatar_1.png')
+	avatar = models.ImageField(upload_to='avatars/', default='/media/avatars/avatar_1.png')
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)

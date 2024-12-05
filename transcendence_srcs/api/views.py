@@ -250,24 +250,6 @@ def change_avatar(request):
 			request.user.save()
 			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
 		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
-	
-def login_view(request):
-	if request.method == 'POST':
-		email = request.POST.get('email')
-		password = request.POST.get('password')
-
-		user = authenticate(request, Email=email, password=password)
-        
-		if user is not None:
-			login(request, user)
-			user.connect()
-			data = {'success': True, 'message': 'Connexion reussie'}
-			response = JsonResponse(data)
-			response['Content-Type'] = 'application/json; charset=utf-8'
-			return response
-		else:
-			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
-	return redirect('/')
 
 def login_view(request):
 	if request.method == 'POST':
@@ -298,7 +280,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
-						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar.url}" alt="Avatar" width="65">',
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
 					   		'user': request.user.username,
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -366,7 +348,7 @@ def find_username(request):
 		if username:
 			if User_tab.objects.filter(username=username).exists():
 				user = User_tab.objects.get(username=username)
-				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
+				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 	
@@ -376,8 +358,10 @@ def find_hostname(request):
 	if request.method == 'POST':
 		try:
 			user = request.user
+			print("Host name", flush=True)
+			print(user.avatar, flush=True)
 			if user.is_authenticated:
-				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
+				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:

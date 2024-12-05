@@ -114,8 +114,6 @@ export function initAll() {
 		.then(data => {
 			if (data.user) {
 				UserIcon = data.userIcon;
-				UserIcon = UserIcon.replace('/media/media/', '/media/');
-				if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
 				HostUserNameVar = data.user;
 				RoomHostName.textContent = data.user;
 				setHostImage(UserIcon);
@@ -142,8 +140,6 @@ export function initAll() {
 		.then(data => {
 			UserName = data.user;
 			UserIcon = data.userIcon;
-			UserIcon = UserIcon.replace('/media/media/', '/media/');
-			if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/https%3A', 'https:/');}
 			if (UserName === undefined || UserName === null) {
 				alert('User not found');
 				return ;
