@@ -24,6 +24,7 @@ export function initAll() {
 	const ReadyButton = document.getElementById('ready');
 	const NextButton = document.getElementById('NextButton');
 	const PlayAgainButton = document.getElementById('PlayAgain');
+	const DMswitch = document.getElementById('darkModeSwitch');
 
 	const MainMenu = document.getElementById('main-menu');
 	const AIMenu = document.getElementById('AIMenu');
@@ -98,7 +99,7 @@ export function initAll() {
 	function setUser3UserName(value) {if (value === null) {User3UserNameVar = null;RoomUser3Name.textContent = '...';}else {User3UserNameVar = value;RoomUser3Name.textContent = value;}}
 	function resetFight() {fight = [null, null];}
 	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
-	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
+	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-170px';} else {OptnMenu.style.bottom = '-650px';}}
 	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
 	function setHostUserName() {
 		let UserIcon;
@@ -510,9 +511,11 @@ export function initAll() {
 		if (PVPMode === 'none') {setFight(HostUserNameVar, 'AI');setFightIcons(HostUserIcon.src, '/media/avatars/Bot.png');}
 		else if (PVPMode === '1vs1') {setFight(HostUserNameVar, User1UserNameVar);setFightIcons(HostUserIcon.src, User1Icon.src);}
 		else if (PVPMode === '2vs2') {
+			if (HostUserNameVar === null || User1UserNameVar === null || User2UserNameVar === null || User3UserNameVar === null) {console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 			if (round === 0) {setFight(HostUserNameVar, User2UserNameVar);setFightIcons(HostUserIcon.src, User2Icon.src);}
 			else if (round === 1) {setFight(User1UserNameVar, User3UserNameVar);setFightIcons(User1Icon.src, User3Icon.src);}
 		} else if (PVPMode === 'Tournament') {
+			if (HostUserNameVar === null || User1UserNameVar === null || User2UserNameVar === null || User3UserNameVar === null) {console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 			if (round === 0) {setFight(HostUserNameVar, User1UserNameVar);setFightIcons(HostUserIcon.src, User1Icon.src);}
 			else if (round === 1) {setFight(User2UserNameVar, User3UserNameVar);setFightIcons(User2Icon.src, User3Icon.src);}
 			else if (round === 2) {setFight(tournamentWinnerRound1, tournamentWinnerRound2);setFightIcons(tournamentWinnerRound1Icon, tournamentWinnerRound2Icon);}
@@ -591,7 +594,6 @@ export function initAll() {
 	PVPStartButton.addEventListener('click', () => {changeMenu('Game');});
 	ReadyButton.addEventListener('click', () => {if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}if (AIDifficulty === 'Easy') {PaddingRight.style.transition = '1.5s linear';}if (AIDifficulty === 'Meduim') {PaddingRight.style.transition = '1s linear';}if (AIDifficulty === 'Hard') {PaddingRight.style.transition = '0.8s linear';}ReadyButton.style.display = 'none';startGame();});
 	NextButton.addEventListener('click', () => {round++;scorerightplayer = 0;scoreleftplayer = 0;ScorePlayerLeftElement.textContent = scoreleftplayer;ScorePlayerRightElement.textContent = scorerightplayer;softReset();changeMenu('Game');});
-
 	Player1SearchButton.addEventListener('click', () => {searchUser(User1SearchBox.value, 'user1');});
 	Player2SearchButton.addEventListener('click', () => {searchUser(User2SearchBox.value, 'user2');});
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
@@ -599,6 +601,14 @@ export function initAll() {
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
 	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
+
+	function toggleDarkMode() {
+		console.log('test');
+		document.getElementById('game-container').classList.toggle('dark-mode');
+	}
+
+	DMswitch.removeEventListener('click', toggleDarkMode);
+    DMswitch.addEventListener('click', toggleDarkMode);
 
 	function init() {
 		changeMenu('MainMenu');

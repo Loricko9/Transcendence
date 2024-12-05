@@ -2,17 +2,27 @@
  //                   Containers Elements                  //
 ////////////////////////////////////////////////////////////*/
 
-/* .dark-mode {
-    background-color: black;
-    color: white;
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --border-color: #000000;
+    /* --primary-color: #007bff; */
+    /* --secondary-color: #6c757d; */
+  }
+  
+  /* Dark mode colors */
+  .dark-mode {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --border-color: #ffffff;
+    /* --primary-color: #1a73e8;
+    --secondary-color: #9e9e9e; */
+  }
+  
+#game-container * {
+    transition: background-color 0.3s, color 0.3s, border-color, 0.3s;
 }
-
-.white-mode {
-    background-color: white;
-    color: black;
-} */
-
-#game-container {
+#game-container { 
     display: flex;
     position: absolute;
     top: 60%;
@@ -27,12 +37,12 @@
 }
 
 #game-area {
-	background-color: black;
+	background-color: var(--background-color);
 	position: absolute;
 	bottom: 98px;
 	height: 400px;
 	width: 700px;
-	border: solid 3px white;
+	border: solid 3px var(--border-color);
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 	z-index: 0;
@@ -43,16 +53,16 @@
 ////////////////////////////////////////////////////////////*/
 
 #LeftPlayer {
-    color: white;
+    color: var(--text-color);
     left: 0%;
 	top: 8px;
     position: absolute;
     height: 120px;
     width: 200px;
-    background-color: black;
+    background-color: var(--background-color);
 
 
-    border: solid 3px white;
+    border: solid 3px var(--border-color);
     transform: translate(0px, -8px);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -63,7 +73,7 @@
 	left: 9px;
 	width: 90px;
 	text-align: center;
-	border : solid 1px white;
+	border : solid 1px var(--border-color);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -86,7 +96,8 @@
 	height: 80px;
 	left: 15px;
 	top :6px;
-    border : solid 1px white;
+    border-radius: 50%;
+    border : solid 1px var(--border-color);
 
 }
 
@@ -95,14 +106,14 @@
 ////////////////////////////////////////////////////////////*/
 
 #RightPlayer {
-    color: white;
+    color: var(--text-color);
     right: 0px;
 	top: 8px;
     position: absolute;
     height: 120px;
     width: 200px;
-    background-color: black;
-    border: solid 3px white;
+    background-color: var(--background-color);
+    border: solid 3px var(--border-color);
     transform: translate(0px, -8px);
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -115,7 +126,7 @@
     right: 9px;
     width: 90px;
     text-align: center;
-    border : solid 1px white;
+    border : solid 1px var(--border-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -139,7 +150,8 @@
     height: 80px;
     right: 15px;
     top :6px;
-    border : solid 1px white;
+    border-radius: 50%;
+    border : solid 1px var(--border-color);
 }
 
 /*////////////////////////////////////////////////////////////
@@ -149,7 +161,7 @@
 #left-paddle, #right-paddle {
 	top: 50%;
 	position: absolute;
-	background: white;
+	background-color: var(--border-color);
 	height: 150px;
 	width: 15px;
 	border-radius: 50px;
@@ -168,20 +180,21 @@
 #ball {
 	height: 20px;
 	width: 20px;
-	background : white;
+	background-color: var(--border-color);
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	border-radius: 50%;
 	z-index: 1;
+    transition: none;
 }
 
 #delimiter {
     height: 99%;
     top: 0;
     left: 50%;
-	border: 2px dashed white;
+	border: 2px dashed var(--border-color);
 	transform: translateX(-50%);
 	position: absolute;
 	z-index: 0;
@@ -194,17 +207,17 @@
     top: 60px;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: black;
-    border: solid 3px white;
+    background-color: var(--background-color);
+    border: solid 3px var(--border-color);
     border-radius: 10px;
     text-align: center;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: var(--text-color);
 }
 
 #tips1, #tips2 {
-	color: white;
+	color: var(--text-color);
     width: 400px;
 	/* border: solid 3px white; */
     position: absolute;
@@ -222,7 +235,7 @@
 }
 
 #DarkModeText {
-	color: white;
+	color: var(--text-color);
 	position: absolute;
 	font-size: 25px;
 	left: 80px;
@@ -257,13 +270,13 @@
 #Host, #User1, #User2, #User3 {
     display: flex;
     flex-direction: column;
-    background-color: transparent;
+    /* background-color: transparent; */
     width: 150px;
     height: 150px;
     position: relative;
     border-radius: 40px;
-    border : solid 3px white;
-    background-color: lightgrey;
+    border : solid 3px var(--border-color);
+    background-color: var(--background-color);
     z-index: 1;
 }
 #User1SearchBox, #User2SearchBox, #User3SearchBox {
@@ -281,9 +294,10 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    border-radius: 30px;
+    border-radius: 50%;
+    overflow: hidden;
     transform: translate(-50%, -50%);
-    border : solid 1px white;
+    border : solid 1px var(--border-color);
 }
 #HostName, #User1Name, #User2Name, #User3Name {
     position: absolute;
@@ -300,7 +314,7 @@
 }
 
 #Winner {
-    color: white;
+    color: var(--text-color);
     position: absolute;
     font-size: 50px;
     top: 10%;
@@ -315,13 +329,14 @@
     height: 150px;
     right: 50%;
     top: 35%;
+    border-radius: 50%;
     transform: translate(50%, -50%);
-    border : solid 1px white;
+    border : solid 1px var(--text-color);
 }
 
 #WinnerName, #Draw{
     position: absolute;
-    color: white;
+    color: var(--text-color);
     font-size: 50px;
     text-align: center;
     top: 60%;
@@ -341,10 +356,10 @@
 	top: 50%;
 	width: 140px;
 	border-radius: 50%;
-	background-color: black;
+	background-color: var(--background-color);
 	/* height: 100px; */
 	text-align: center;
-	border: solid 3px white;
+	border: solid 3px var(--border-color);
 	left: 50%;
 	transform: translate(-50%, -50%);
 	font-size: 120px;

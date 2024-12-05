@@ -326,7 +326,8 @@ def update_score(request):
 		data = json.loads(request.body)
 		user_win = data.get('winner')
 		user_win_score = data.get('winnerScore')
-
+		Wuser = 'AI'
+		Luser = 'AI'
 		user_lose = data.get('loser')
 		user_lose_score = data.get('loserScore')
 
@@ -346,22 +347,13 @@ def update_score(request):
 				Luser.nb_lose += 1
 				if isTournament:
 					Luser.nb_tournament_lose += 1
-				Luser.save() # i forgot to save the user lol
-			
-		# if user_win and user_lose:
-		# 	if User_tab.objects.filter(username=user_win).exists() and User_tab.objects.filter(username=user_lose).exists():
-		# 		Wuser = User_tab.objects.get(username=user_win)
-		# 		Luser = User_tab.objects.get(username=user_lose)
-		# 		Wuser.nb_win += 1
-		# 		Luser.nb_lose += 1
-		# 		if isTournament:
-		# 			Wuser.nb_tournament_win += 1
-		# 			Luser.nb_tournament_lose += 1
+				Luser.save()
+				
 				try:
 					if (user_win != 'AI'):
-						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
+						History.Add_History(History(), Wuser, Luser, user_win_score, user_lose_score)
 					if (user_lose != 'AI'):
-						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
+						History.Add_History(History(), Luser, Wuser, user_lose_score, user_win_score)
 				except ValueError as e:
 					return JsonResponse({'error': str(e)})
 		return JsonResponse({'username' : None})

@@ -1,6 +1,16 @@
-/* #game-container button:hover {
-    background-color: lightgrey;
-} */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --border-color: #000000;
+	--hover-color: grey;
+}
+.dark-mode {
+	--background-color: #121212;
+	--text-color: #ffffff;
+	--border-color: #ffffff;
+	--hover-color: #f0f0f0;
+}
+
 #main-menu button:hover, #AIMenu button:hover, #Room button:hover, #EndGameMenu button:hover, #BackMainMenuButton:hover {
 	background-color: lightgrey;
 }
@@ -15,10 +25,10 @@
 	
 }
 
-#main-menu button {background-color: white; width: 240px;}
+#main-menu button {background-color: var(--text-color); color: var(--background-color); width: 240px;}
 #AIMenu button {width: 200px;}
 
-#AIEasyButton {background-color: white;}
+#AIEasyButton {background-color: white; border: solid 1px var(--border-color);}
 #AIMediumButton {background-color: lightgreen;}
 #AIHardButton {background-color: lightcoral;}
 
@@ -29,6 +39,12 @@
     width: 350px;
     margin: 10px;
 }
+
+/* #PlayAgain, #NextButton{
+	background-color: var(--text-color);
+	background-color: yellow;
+	color: var(--background-color);
+} */
 
 #PlayAgain {
 	/* border: solid 5px white; */
@@ -55,7 +71,7 @@
 	right: 12px;
 	bottom: 5px;
 	margin: 10px;
-	z-index: 3;
+	z-index: 1002;
 	transition: right 0.5s ease;
 }
 
@@ -71,7 +87,7 @@
 	width: 250px;
 	font-size: 30px;
 	border-radius: 20px;
-	border: solid 5px black;
+	border: solid 5px var(--border-color);
 	left: 70%;
 	transform: translate(-50%, -50%);
 	bottom: 10px;
@@ -80,22 +96,25 @@
 
 #Room button {
 	cursor: pointer;
-    background-color: white;
+    background-color: var(--text-color);
+	color: var(--background-color);
     border-radius: 10px;
 }
 #Host button, #User1 button, #User2 button, #User3 button {
 	width: 100px;
     height: 30px;
     position: absolute;
+	background-color: var(--text-color);
+	color: var(--background-color);
     bottom: -70px;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 #EndGameMenu button {
+	background-color: var(--text-color);
+	color: var(--background-color);
 	font-size: 48px;
-    color: white;
-    background-color: black;
-    border: solid 5px white;
+    border: solid 5px var(--background-color);
     border-radius: 20px;
     display: flex;
     text-align: center;
@@ -149,9 +168,10 @@
 #ready {
 	position: absolute;
 	right: 50%;
-	top: 92%;
+	top: 90%;
 	font-size: 50px;
-	background-color: white;
+	background-color: var(--text-color);
+	color: var(--background-color);
 	border-radius: 30px;
 	cursor: pointer;
 	transform: translate(50%, -50%);
@@ -161,72 +181,4 @@
 
 #ready:hover {
 	background-color: lightgrey;
-}
-
-/* sliders Dark mode */
-
-.switch {
-	position: absolute;
-	display: inline-block;
-	width: 60px;
-	height: 34px;
-	top: 23px;
-	right: 60px;
-	transform: translate(50%, -50%);
-	/* top: 1px; */
-}
-
-/* Hide default HTML checkbox */
-.switch input {
-	opacity: 0;
-	width: 0;
-	height: 0;
-}
-
-/* The slider */
-.slider {
-	position: absolute;
-	cursor: pointer;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #ccc;
-	-webkit-transition: .4s;
-	transition: .4s;
-}
-
-.slider:before {
-	position: absolute;
-	content: "";
-	height: 26px;
-	width: 26px;
-	left: 4px;
-	bottom: 4px;
-	background-color: white;
-	-webkit-transition: .4s;
-	transition: .4s;
-}
-
-input:checked + .slider {
-	background-color: #2196F3;
-}
-
-input:focus + .slider {
-	box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-	-webkit-transform: translateX(26px);
-	-ms-transform: translateX(26px);
-	transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-	border-radius: 34px;
-}
-
-.slider.round:before {
-	border-radius: 50%;
 }

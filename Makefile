@@ -1,5 +1,5 @@
 all:
-	@docker-compose -f Docker-compose.yml up -d --build
+	@docker-compose -f Docker-compose.yml up --build
 
 stop:
 	@echo "Stopping the project..."
