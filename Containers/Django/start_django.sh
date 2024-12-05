@@ -17,6 +17,10 @@ python3 manage.py setup_translation
 
 python3 create_superuser.py
 
+export DJANGO_SETTINGS_MODULE=transcendence_srcs.settings
+
 # exec python3 manage.py runserver 0.0.0.0:8000
 echo "Démarrage de Daphne..."
-exec daphne -b 0.0.0.0 -p 8000 transcendence_srcs.asgi:application
+exec daphne -b 0.0.0.0 -p 8000 transcendence_srcs.asgi:application &
+	# Garde le conteneur actif
+	tail -f /dev/null
