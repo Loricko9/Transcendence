@@ -79,6 +79,10 @@ body {
 	color: #0d1a65;
 }
 
+.div-grey {
+	background-color: #e7e7e7;
+}
+
 .Diagram {
 	width: 60%;
 	height: auto;

@@ -42,21 +42,17 @@
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-md-end pe-3" id="dropdown_lang">
-                    <li><button class="dropdown-item px-3 mx-2" id="btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2" id="btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                 </ul>
             </div>
         </div>
         
 		<!-- options button when connected-->
 		<button class="btn btn-outline-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: none;">
-            <div id="user_avatar" style="display: none;">
-                <!-- script dyhnamique -->
-            </div>
-            <span id="user_connected" style="display: none;">
-                <!-- script dyhnamique -->
-            </span>
+            <div id="user_avatar" style="display: none;"><!-- script dyhnamique --></div>
+            <span id="user_connected" style="display: none;"><!-- script dyhnamique --></span>
 		</button>
 
 		<!-- sign-in / login buttons -->
@@ -93,11 +89,12 @@
     <!--Offcanva Menu (petit ecran)-->
     <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="OffcanvasNavBar" aria-labelledby="OffcanvasNavBarLabel">
         <div class="offcanvas-header">
-            <h1 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+            <h1 class="offcanvas-title fw-bolder" id="offcanvasNavbarLabel">Menu</h1>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link" style="display: none;"></ul>
+            <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link">
+                <li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>Accueil</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>Game</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>Statistiques</a></li>
             </ul>
@@ -107,9 +104,9 @@
                         <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-lg-end pe-3" id="dropdown_lang">
-                        <li><button class="dropdown-item px-3 mx-2" id="btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
-                        <li><button class="dropdown-item px-3 mx-2" id="btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
-                        <li><button class="dropdown-item px-3 mx-2" id="btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                     </ul>
                 </div>
                 <a href="/sign_in/" id="signin_btn_little" class="btn btn-outline-light mt-2 w-100 rounded-5" style="display: block;">{{ texts.Sign_in }}</a>
@@ -131,7 +128,7 @@
     {% endfor %}
     {% endif %}
 
-    <!--Template injecter par le js dans le div app-->
+    <!--Templates injecter par le js dans le div app-->
     <template id="temp_index">
 		{% if messages %}
 			{% for message in messages %}
@@ -156,51 +153,37 @@
         </div>
 	</template>
 
-	<!-- temp connected -->
     <template id="temp_login">
-		<!-- friend list -->
-		<div>
-		    <h3>Mes Amis</h3>
-		    <ul id="friend-list">
-		        <!-- La liste des amis sera affichée ici -->
-		    </ul>
-		</div>
-
-		<div>
-		    <label for="username">Nom d'utilisateur de l'ami :</label>
-		    <input type="text" id="username" placeholder="Entrez le nom d'utilisateur">
-		    <button onclick="sendFriendRequest()">Envoyer une demande d'ami</button>
-		</div>
-
-		<div>
-			<h3>Demandes d'ami(e)s</h3>
-			<ul id="friend-request-list">
-				<!-- Les demandes seront affichées ici -->
-			</ul>
-		</div>
-		
-
-		<!-- stats -->
-		<div class="row align-items-center" id="stats" style="display: flex;">
-			<div class="container mt-5">
-				<p class="fs-3 fw-bold m-0 txt-blue text-center">Stats</p>
-				<table class="table table-bordered">
-					<thead class="thead-dark">
-						<tr>
-							<th class="fs-3 fw-bold m-0 txt-blue text-center" scope="col">Wins</th>
-							<th class="fs-3 fw-bold m-0 txt-red text-center" scope="col">Loses</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="fs-5 txt-blue text-center" id="nbWin">{{ request.user.nb_win }}</td>
-							<td class="fs-5 txt-red text-center" id="nbLose">{{ request.user.nb_lose }}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
+        <div class="d-flex justify-content-center my-1"><span class="txt-blue fs-1 text-center py-1 px-2">Bienvenue</span><span id="username_login" class="txt-blue fs-1 text-center py-1 px-2"></span></div>
+        <div class="row d-flex align-items-center">
+            <a class="col btn btn-danger rounded-5 m-2 fs-0" href="/Game/" data-link>Jouer</a>
+            <a class="col btn btn-primary rounded-5 m-2 fs-0" href="/stat/" data-link>Mes Perf</a>
+        </div>
+        <div class="row d-flex align-items-center"><span class="txt-blue fs-2 text-center py-1">Tchat</span></div>
+        <div class="div-grey rounded-3 mx-2 mb-2">
+            text-reset
+        </div>
     </template>
+    <!-- friend list
+    <div>
+        <h3>Mes Amis</h3>
+        <ul id="friend-list">
+            La liste des amis sera affichée ici
+        </ul>
+    </div>
+
+    <div>
+        <label for="username">Nom d'utilisateur de l'ami :</label>
+        <input type="text" id="username" placeholder="Entrez le nom d'utilisateur">
+        <button onclick="sendFriendRequest()">Envoyer une demande d'ami</button>
+    </div>
+
+    <div>
+        <h3>Demandes d'ami(e)s</h3>
+        <ul id="friend-request-list">
+            Les demandes seront affichées ici
+        </ul>
+    </div> -->
 
     <template id="Game">
         <div id="game-container">
@@ -254,8 +237,6 @@
                         <input id="User3SearchBox" type="SearchBox">
                         <button id="User3Search">{{ texts.GameUserSearch }}</button>
                     </div>
-                    <!-- <script>function clearInput(id) {document.getElementById(id).value = "";}</script> -->
-                    <!-- <script></script> -->
                 </div>
                 <button id="StartGame">{{ texts.StartGame }}</button>
             </div> 
@@ -407,8 +388,5 @@
     <script type="module" defer src="{% static 'js/main.js' %}"></script>
 	<script defer src="{% static 'js/pong.js' %}"></script>
     <script defer src="{% static 'js/utils.js' %}"></script>
-
-	<!-- <script defer src="{% static 'js/pong.js' %}"></script> -->
-	<!-- <script defer src="{% static 'css/style.css' %}"></script> -->
 </body>
 </html>

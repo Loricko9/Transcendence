@@ -80,8 +80,10 @@ function router(){
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
-				if (isAuthenticated)
+				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_login");
+					document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
+				}
 				else
 					loadTemplate(appDiv, "temp_index");
 				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
@@ -133,13 +135,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (lang != null) {
 		switch (lang) {
 			case "fr":
-				document.getElementById("btn_fr").classList.add("active")
+				document.getElementsByClassName("btn_fr")[0].classList.add("active")
+				document.getElementsByClassName("btn_fr")[1].classList.add("active")
 				break;
 			case "en":
-				document.getElementById("btn_en").classList.add("active")
+				document.getElementsByClassName("btn_en")[0].classList.add("active")
+				document.getElementsByClassName("btn_en")[1].classList.add("active")
 				break;
-				case "es":
-					document.getElementById("btn_es").classList.add("active")
+			case "es":
+				document.getElementsByClassName("btn_es")[0].classList.add("active")
+				document.getElementsByClassName("btn_es")[1].classList.add("active")
 				break;
 			default:
 				break;
