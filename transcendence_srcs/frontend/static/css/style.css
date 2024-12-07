@@ -19,6 +19,22 @@ body {
 	color: white;
 }
 
+.btn-red {
+	background-color: #9c0101;
+	color: white;
+}
+
+.btn-blue {
+	background-color: #0d1a65;
+	border-color: #0d1a65;
+	color: white;
+}
+
+#friends-list {
+	margin-inline-start: -1%;
+	background-color: #eeeeee;
+}
+
 #dropdown_lang {
 	width: 15rem;
 }
@@ -83,9 +99,25 @@ body {
 	background-color: #e7e7e7;
 }
 
+.div-white {
+	background-color: white;
+}
+
 .Diagram {
 	width: 60%;
 	height: auto;
+}
+
+.border-green {
+	border: 4px solid green;
+}
+
+.border-red {
+	border: 4px solid darkred;
+}
+
+#div-tchat {
+	height: 450px;
 }
 
 #signin_btn_index {

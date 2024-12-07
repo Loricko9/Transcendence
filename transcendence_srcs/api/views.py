@@ -41,13 +41,22 @@ class FriendshipListView(APIView):
      
 	def get(self, request):
 		# Récupérer tous les amis de l'utilisateur connecté
-		friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
-		serializer = FriendshipSerializer(friendships, many=True)
-		response_data = {
-			"username": request.user.username,
-			"friendships": serializer.data
-		}
-		return Response(response_data)
+		username = request.user
+		friendships = Friendship.objects.filter(sender=username) | Friendship.objects.filter(receiver=username)
+		lst = []
+		for friendship in friendships:
+			if (friendship.sender == username):
+				friend = friendship.receiver
+			else :
+				friend = friendship.sender
+			lst.append({
+				"id": friendship.id,
+				"username": friend.username,
+				"avatar": f"{friend.avatar}",
+				"status": friendship.status,
+				"is_active": friend.is_active
+			})
+		return JsonResponse({"friendships": lst})
 
 	def delete(self, request, id):
 		try:

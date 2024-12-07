@@ -1,5 +1,5 @@
 import { initAll } from './pong.js';
-import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
+import { loadChart, ActChart, DestroyCharts, loadTemplate, AppendTemplateFriends, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
@@ -10,14 +10,11 @@ async function checkAuthentification() {
 		const response = await fetch('/api/check-auth/');
 		const data = await response.json();
 		if (data.is_authenticated) {
-			// Affichage connecte
 			if (!socket)
 			{
 				InitializeWebsocket();
 				console.log("websocket init")
 			}
-			fetchFriendList();
-			fetchFriendRequests();
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -27,20 +24,11 @@ async function checkAuthentification() {
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
 			document.getElementById('signin_btn_little').style.display = 'none';
-			const nbWinElement = document.getElementById('nbWin');
-			const nbLoseElement = document.getElementById('nbLose');
-			if (nbWinElement && nbLoseElement) {
-				nbWinElement.textContent = data.nb_win;
-				nbLoseElement.textContent = data.nb_lose;
-			}
 			if (data.is_user_42)
 				return [true, true];
 			return [true, false];
 		}
 		else {
-			// Affichage deconnecte
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_index");
 			document.getElementById('option').style.display = 'none';
 			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
@@ -82,7 +70,7 @@ function router(){
 			case "/":
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_login");
-					document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
+					loadIndexLogin();
 				}
 				else
 					loadTemplate(appDiv, "temp_index");
@@ -262,6 +250,12 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
     }
 });
 
+function loadIndexLogin() {
+	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
+	fetchFriendList();
+	fetchFriendRequests();
+}
+
 // change password
 function loadChangePassword() {
 	refreshCSRFToken()
@@ -407,23 +401,8 @@ function fetchFriendList() {
     .then(data => {
         const list = document.getElementById('friend-list');
         list.innerHTML = '';
-        data.friendships.forEach(friendship => {
-			if (friendship.status == 'accepted')
-				{
-	            const li = document.createElement('li');
-				if (friendship.sender_username == data.username)
-					li.textContent = `${friendship.receiver_username}`;
-				else
-				li.textContent = `${friendship.sender_username}`;
-			const deleteButton = document.createElement('button');
-			deleteButton.textContent = 'Remove';
-			deleteButton.style.marginLeft = '10px';
-			deleteButton.addEventListener('click', () => {
-				deleteFriendship(friendship.id); // Appel de la fonction de suppression
-				});
-				li.appendChild(deleteButton);
-				list.appendChild(li);
-			}
+        data.friendships.forEach(friend => {
+			AppendTemplateFriends(list, friend)
         });
     })
     .catch(error => console.error('Error fetching friend list:', error));
