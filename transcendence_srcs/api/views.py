@@ -53,7 +53,7 @@ class FriendshipListView(APIView):
 				"username": friend.username,
 				"avatar": f"{friend.avatar}",
 				"status": friendship.status,
-				"is_active": friend.is_active
+				"is_connected": friend.is_connected
 			})
 		return JsonResponse({"friendships": lst})
 

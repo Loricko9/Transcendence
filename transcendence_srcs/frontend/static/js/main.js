@@ -439,6 +439,7 @@ function deleteFriendship(friendshipId){
 // Envoyer une demande d'amis
 function sendFriendRequest() {
 	const username = document.getElementById('AddFriend_input').value;
+	document.getElementById('AddFriend_input').value = '';
 	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',

@@ -30,9 +30,13 @@ body {
 	color: white;
 }
 
-#friends-list {
-	margin-inline-start: -1%;
-	background-color: #eeeeee;
+.txt-grey {
+	color: #777777;
+}
+
+#friend-list {
+	overflow-y: auto;
+	max-height: 360px;
 }
 
 #dropdown_lang {

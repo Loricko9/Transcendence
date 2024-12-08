@@ -92,7 +92,7 @@ export function AppendTemplateFriends(appDiv, friend) {
 	button.classList.add('btn-light');
 	span.textContent = friend.username;
 	img.src = friend.avatar;
-	if (friend.is_active == true)
+	if (friend.is_connected == true)
 		img.classList.add('border-green');
 	else
 		img.classList.add('border-red')
