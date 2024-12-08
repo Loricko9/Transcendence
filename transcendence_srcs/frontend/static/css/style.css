@@ -65,6 +65,7 @@ body {
 	gap: 10px;
 	border: 0;
 }
+
 .log_form {
 	width: 35rem;
 	max-width: 97vw;
@@ -72,6 +73,15 @@ body {
 	position: absolute;
 	top: 100%;
     transform: translateY(10px);
+}
+
+#dropdown_AddFriend {
+	width: 20rem;
+	max-width: 40vw;
+	overflow-x: hidden;
+	position: absolute;
+	top: 100%;
+    transform: translateY(1px);
 }
 
 .offcanvas {

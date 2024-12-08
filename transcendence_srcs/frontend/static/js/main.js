@@ -253,7 +253,15 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
 function loadIndexLogin() {
 	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
 	fetchFriendList();
-	fetchFriendRequests();
+	const form_AddFriend = document.getElementById('dropdown_AddFriend');
+	if (form_AddFriend) {
+		form_AddFriend.addEventListener('submit', function(event) {
+			event.preventDefault();
+			sendFriendRequest();
+		});
+	}
+	else
+		console.error("form_AddFriend not found")
 }
 
 // change password
@@ -414,13 +422,13 @@ function deleteFriendship(friendshipId){
 		method: 'DELETE',
 		headers: {
 			'Content-Type': 'application/json',
-			'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+			'X-CSRFToken': Get_Cookie('csrftoken')
 		}
 	})
 	.then(response => {
 		if (response.ok) {
 			console.log('Friendship deleted successfully.');
-			fetchFriendList(); // Rafraîchir la liste
+			fetchFriendList();
 		} else {
 			console.error('Failed to delete friendship.');
 		}
@@ -428,10 +436,9 @@ function deleteFriendship(friendshipId){
 	.catch(error => console.error('Error deleting friendship:', error));
 }
 
-
 // Envoyer une demande d'amis
 function sendFriendRequest() {
-	const username = document.getElementById('username').value;
+	const username = document.getElementById('AddFriend_input').value;
 	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
@@ -449,43 +456,6 @@ function sendFriendRequest() {
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
-window.sendFriendRequest = sendFriendRequest;                                                                                                                              
-
-
-// Récupérer la liste des demandes d'amis
-function fetchFriendRequests() {
-    fetch('/api/friend-requests/', {
-		method: 'GET',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-		const list = document.getElementById('friend-request-list');
-        list.innerHTML = '';  // Vide la liste avant de la remplir
-        data.forEach(request => {
-			const li = document.createElement('li');
-            li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
-
-            // Bouton pour accepter
-            const acceptButton = document.createElement('button');
-            acceptButton.textContent = 'Accepter';
-            acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
-			
-            // Bouton pour refuser
-            const rejectButton = document.createElement('button');
-            rejectButton.textContent = 'Refuser';
-            rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
-			
-            li.appendChild(acceptButton);
-            li.appendChild(rejectButton);
-            list.appendChild(li);
-        });
-    })
-    .catch(error => console.error('Error fetching friend requests:', error));
-}
 
 // Accepter ou refuser une demande
 function respondToRequest(username, action) {
@@ -500,7 +470,6 @@ function respondToRequest(username, action) {
     .then(response => response.json())
     .then(data => {
         alert(data.message || data.error);
-        fetchFriendRequests();  // Rafraîchir la liste des demandes
 		fetchFriendList();
     })
     .catch(error => console.error('Error responding to friend request:', error));
@@ -515,7 +484,6 @@ function InitializeWebsocket(){
 		const data = JSON.parse(event.data);
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
 		fetchFriendList();  // Rafraîchir la liste des amis
-		fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
 	};
 	
 	socket.onclose = function () {

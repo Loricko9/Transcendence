@@ -8,7 +8,6 @@ urlpatterns = [
 	path('friends/', views.FriendshipListView.as_view(), name='friendship-list'),  # Liste des amis
 	path('friends/<int:id>/', views.FriendshipListView.as_view(), name='friendship-list'),  # Supprimer l'ami
     path('friend-request/', views.send_friend_request, name='send-friend-request'),  # Envoyer une demande d'ami
-	path('friend-requests/', views.FriendRequestListView.as_view(), name='friend-request-list'),  # Liste des demandes
     path('friend-request/<str:username>/', views.respond_to_friend_request, name='respond-to-friend-request'),  # Répondre à une demande
 	path('log-42/', views.log_42, name='log_42'),
 	path('change-password/', views.change_password, name='change_password'),
