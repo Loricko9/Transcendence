@@ -1,4 +1,8 @@
 FROM debian:bookworm
+
+# Créer un utilisateur et un groupe non-root
+RUN useradd -ms /bin/bash gauthdev
+
 RUN apt update && \
 	apt install -y \
 	python3 \
@@ -18,7 +22,12 @@ COPY migrations.sh /migrations.sh
 RUN chmod 755 start_django.sh
 RUN chmod 755 migrations.sh
 
+# COPY . /transcendence
+# RUN chown -R gauthdev /transcendence
+
 WORKDIR /transcendence
 EXPOSE 8000
+
+USER gauthdev
 
 ENTRYPOINT [ "/start_django.sh" ]
