@@ -1,7 +1,7 @@
 FROM debian:bookworm
 
-# Créer un utilisateur et un groupe non-root
-RUN useradd -ms /bin/bash gauthdev
+# Créer un utilisateur
+# RUN useradd -ms /bin/bash gauthdev
 
 RUN apt update && \
 	apt install -y \
@@ -27,7 +27,5 @@ RUN chmod 755 migrations.sh
 
 WORKDIR /transcendence
 EXPOSE 8000
-
-USER gauthdev
 
 ENTRYPOINT [ "/start_django.sh" ]

@@ -530,8 +530,8 @@ function respondToRequest(username, action) {
 }
 
 // Variables globales Websocket
-let socket;
-let chatSocket;
+let socket = null;
+let chatSocket = null;
 
 // Gestionnaire Friendship web socket
 function InitializeWebsocket(){
@@ -571,6 +571,7 @@ function toggleChat(roomName, event) {
 		console.log("Chat container closed");
 		if (chatSocket)
 		{
+			chatSocket.send(JSON.stringify({command: 'delete_messages'}));
 			chatSocket.close()
 			chatSocket = null
 			console.log("Chat websocket closed")
@@ -598,7 +599,7 @@ function initializeChatWebSocket(roomName) {
     document.querySelector('#chat-message-submit').onclick = function () {
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({ message: message }));
+        chatSocket.send(JSON.stringify({message: message}));
         messageInputDom.value = ''; // Efface le champ après envoi
     };
 
