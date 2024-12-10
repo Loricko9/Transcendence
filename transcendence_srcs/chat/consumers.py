@@ -15,16 +15,16 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		await self.accept()  # Accepter la connexion WebSocket
 
 		# Charger les messages existants depuis la base de données
-		# Charger le modèle dynamiquement
-		ChatMessage = apps.get_model('chat', 'ChatMessage')
+		ChatMessage = apps.get_model('chat', 'ChatMessage') # Charger le modèle dynamiquement
 
 		# Utiliser sync_to_async pour exécuter une requête synchrone
-		messages = await sync_to_async(lambda: list(ChatMessage.objects.filter(room_name=self.room_name).order_by('timestamp')))()
+		messages = await sync_to_async(lambda: list(ChatMessage.objects.filter(room=self.room_name).order_by('timestamp')))()
 
 		for message in messages:
+			sender = await sync_to_async(lambda: message.sender)()  # Récupérer l'objet utilisateur
 			await self.send(text_data=json.dumps({
 				'message': message.content,
-				'sender': message.sender,
+				'sender': sender.username,
 				'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
 			}))
 
@@ -42,9 +42,13 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		# Charger le modèle dynamiquement
 		ChatMessage = apps.get_model('chat', 'ChatMessage')
 
+		# recuperer la room
+		Friendship = apps.get_model('api', 'Friendship')
+		room = await sync_to_async(Friendship.objects.get)(id=self.room_name)
+
 		if command == 'delete_messages':
 			# Supprimer les messages de la salle
-			deleted_count, _ = await sync_to_async(ChatMessage.objects.filter(room_name=self.room_name).delete)()
+			deleted_count, _ = await sync_to_async(ChatMessage.objects.filter(room=room).delete)()
 			# Informer l'utilisateur de la suppression
 			await self.send(text_data=json.dumps({
 				'status': 'success',
@@ -52,12 +56,16 @@ class ChatConsumers(AsyncWebsocketConsumer):
 			}))
 		else:	
 			message = data['message']
-			sender = self.scope['user'].username if self.scope['user'].is_authenticated else 'Anonymous'
 			timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+			if self.scope['user'].is_authenticated:
+				sender = self.scope['user']
+			else:
+				raise ValueError("User must be authenticated to send messages.")
 
 			# Sauvegarder le message dans la base de données
 			await sync_to_async(ChatMessage.objects.create)(
-				room_name=self.room_name, sender=sender, content=message
+				room=room, sender=sender, content=message
 			)
 
 			# Envoyer le message à tout le groupe
@@ -66,7 +74,7 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				{
 					'type': 'chat_message',
 					'message': message,
-					'sender': sender,
+					'sender': sender.username,
 					'timestamp': timestamp
 				}
 			)

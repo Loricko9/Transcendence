@@ -411,18 +411,25 @@ function fetchFriendList() {
         list.innerHTML = '';
         data.friendships.forEach(friendship => {
 			if (friendship.status == 'accepted')
-				{
+			{
 	            const li = document.createElement('li');
 				if (friendship.sender_username == data.username)
 					li.textContent = `${friendship.receiver_username}`;
 				else
-				li.textContent = `${friendship.sender_username}`;
-			const deleteButton = document.createElement('button');
-			deleteButton.textContent = 'Remove';
-			deleteButton.style.marginLeft = '10px';
-			deleteButton.addEventListener('click', () => {
-				deleteFriendship(friendship.id); // Appel de la fonction de suppression
+					li.textContent = `${friendship.sender_username}`;
+				const deleteButton = document.createElement('button');
+				deleteButton.textContent = 'Remove';
+				deleteButton.style.marginLeft = '10px';
+				deleteButton.addEventListener('click', () => {
+					deleteFriendship(friendship.id); // Appel de la fonction de suppression
 				});
+				const chatButton = document.createElement('button');
+				chatButton.textContent = 'Begin chat';
+				chatButton.style.marginLeft = '10px';
+				chatButton.addEventListener('click', () => {
+					toggleChat(friendship.id);
+				});
+				li.appendChild(chatButton);
 				li.appendChild(deleteButton);
 				list.appendChild(li);
 			}
@@ -551,10 +558,10 @@ function InitializeWebsocket(){
 };
 
 // Afficher ou fermer le Chat
-function toggleChat(roomName, event) {
-	if (event) {
-        event.preventDefault(); // Empêche le comportement par défaut de navigation
-    }
+function toggleChat(roomId) {
+	// if (event) {
+    //     event.preventDefault(); // Empêche le comportement par défaut de navigation
+    // }
 	console.log("togglechat called")
     const chatContainer = document.querySelector('#chat-container');
 	console.log("Current display style:", chatContainer.style.display);
@@ -563,7 +570,7 @@ function toggleChat(roomName, event) {
 		console.log("Chat container opened");
 		if (!chatSocket)
 		{
-        	initializeChatWebSocket(roomName); // Initialise la connexion WebSocket pour le chat
+        	initializeChatWebSocket(roomId); // Initialise la connexion WebSocket pour le chat
 			console.log("Chat websocket init")
 		}
     } else {
@@ -581,8 +588,8 @@ function toggleChat(roomName, event) {
 window.toggleChat = toggleChat;
 
 // Gestionnaire Chat websocket
-function initializeChatWebSocket(roomName) {
-    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomName}/`);
+function initializeChatWebSocket(roomId) {
+    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
 
 	const chatLog = document.querySelector('#chat-log');
 

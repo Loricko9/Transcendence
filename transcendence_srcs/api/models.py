@@ -83,8 +83,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 
 
 class Friendship(models.Model):
-    sender = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='sent_requests')
-    receiver = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='received_requests')
+    sender = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='sent_requests')
+    receiver = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='received_requests')
     status = models.CharField(
         max_length=10,
         choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
@@ -129,12 +129,3 @@ class History(models.Model):
 		new_history.save()
 
 		return new_history
-		
-# class ChatMessage(models.Model):
-# 	room_name = models.CharField(max_length=100)  # Identifiant de la salle
-# 	sender = models.CharField(max_length=100)  # Par exemple, le nom d'utilisateur
-# 	content = models.TextField()  # Message
-# 	timestamp = models.DateTimeField(default=now)  # Date et heure d'envoi
-
-# 	def __str__(self):
-# 		return f"[{self.timestamp}] {self.sender}: {self.content}"
