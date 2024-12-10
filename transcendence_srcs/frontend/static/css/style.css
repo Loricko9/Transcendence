@@ -34,6 +34,10 @@ body {
 	color: #777777;
 }
 
+.border-blue {
+	border: 5px solid #007bff;
+}
+
 #friend-list {
 	overflow-y: auto;
 	max-height: 360px;

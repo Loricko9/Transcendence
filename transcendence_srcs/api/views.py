@@ -48,13 +48,16 @@ class FriendshipListView(APIView):
 				friend = friendship.receiver
 			else :
 				friend = friendship.sender
-			lst.append({
+			res = {
 				"id": friendship.id,
 				"username": friend.username,
 				"avatar": f"{friend.avatar}",
 				"status": friendship.status,
 				"is_connected": friend.is_connected
-			})
+			}
+			if (friendship.status == "pending" and friendship.sender == username):
+				res['wait_pending'] = True
+			lst.append(res)
 		return JsonResponse({"friendships": lst})
 
 	def delete(self, request, id):
@@ -107,15 +110,14 @@ def send_friend_request(request):
 
 # repondre a la demande d'amis
 @api_view(['PATCH'])
-def respond_to_friend_request(request, username):
+def respond_to_friend_request(request, id):
 	try:
-		# Trouver l'utilisateur qui a envoyé la demande
-		sender = User.objects.get(username=username)
+		sender = User.objects.get(username=request.data.get('username'))
 	except User.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 	# Vérifier s'il y a une demande d'ami en attente
-	friendship = Friendship.objects.filter(sender=sender, receiver=request.user, status='pending').first()
+	friendship = Friendship.objects.filter(id=id, sender=sender, status='pending').first()
 	if not friendship:
 		return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
 

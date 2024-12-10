@@ -1,6 +1,8 @@
 import { initAll } from './pong.js';
-import { loadChart, ActChart, DestroyCharts, loadTemplate, AppendTemplateFriends, Fill_table,
-	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
+import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
+	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields,
+	fetchFriendList, loadfriendinput,
+	loadfriendmessage} from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
@@ -156,16 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		offcanvasInstance.hide();
 	});
 	
-	// partie pour gerer empecher les <a data-link> de recharger la page
 	document.querySelectorAll('a[data-link]').forEach(link => {
 		link.addEventListener('click', (event) => {
-			event.preventDefault(); // evite le rechargement de la page
+			event.preventDefault();
 			const target = event.currentTarget.getAttribute('href');
-			redirect_to(target); // vers la nouvelle page
+			redirect_to(target);
 		});
 	});
-	router(); // gère la cas pour rafraichir la page
+	router();
 });
+
 
 // gère le retour arrière/avant dans l'historique (les flèches)
 window.addEventListener('popstate', router);
@@ -253,6 +255,13 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
 function loadIndexLogin() {
 	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
 	fetchFriendList();
+	document.querySelectorAll('a[data-link]').forEach(link => {
+		link.addEventListener('click', (event) => {
+			event.preventDefault();
+			const target = event.currentTarget.getAttribute('href');
+			redirect_to(target);
+		});
+	});
 	const form_AddFriend = document.getElementById('dropdown_AddFriend');
 	if (form_AddFriend) {
 		form_AddFriend.addEventListener('submit', function(event) {
@@ -396,46 +405,6 @@ function get_stats() {
 	.catch(error => console.error('Error fetching stats', error));
 }
 
-// Récupération de la liste d'amis
-function fetchFriendList() {
-	fetch('/api/friends/', {
-		method: 'GET',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const list = document.getElementById('friend-list');
-        list.innerHTML = '';
-        data.friendships.forEach(friend => {
-			AppendTemplateFriends(list, friend)
-        });
-    })
-    .catch(error => console.error('Error fetching friend list:', error));
-}
-
-// delete a friend
-function deleteFriendship(friendshipId){
-	fetch(`/api/friends/${friendshipId}/`, { // URL pour la suppression
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': Get_Cookie('csrftoken')
-		}
-	})
-	.then(response => {
-		if (response.ok) {
-			console.log('Friendship deleted successfully.');
-			fetchFriendList();
-		} else {
-			console.error('Failed to delete friendship.');
-		}
-	})
-	.catch(error => console.error('Error deleting friendship:', error));
-}
-
 // Envoyer une demande d'amis
 function sendFriendRequest() {
 	const username = document.getElementById('AddFriend_input').value;
@@ -458,24 +427,6 @@ function sendFriendRequest() {
     .catch(error => console.error('Error sending friend request:', error));
 }
 
-// Accepter ou refuser une demande
-function respondToRequest(username, action) {
-    fetch(`/api/friend-request/${username}/`, {
-        method: 'PATCH',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        },
-        body: JSON.stringify({ action: action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message || data.error);
-		fetchFriendList();
-    })
-    .catch(error => console.error('Error responding to friend request:', error));
-}
-
 // Getsionnaire de web socket
 function InitializeWebsocket(){
 	socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
@@ -484,7 +435,10 @@ function InitializeWebsocket(){
 		console.log("WebSocket message received:", event.data); // Log des données brutes
 		const data = JSON.parse(event.data);
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
-		fetchFriendList();  // Rafraîchir la liste des amis
+		fetchFriendList(() => {
+			loadfriendinput();
+			loadfriendmessage();
+		});
 	};
 	
 	socket.onclose = function () {

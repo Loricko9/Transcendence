@@ -9,14 +9,14 @@ export function loadChart(chart_num, win, lose) {
 	else
 		ctx = document.getElementById(`Diag_tournament`).getContext('2d');
 	charts[chart_num] = new Chart(ctx, {
-        type: 'doughnut',
+		type: 'doughnut',
         data: {
             labels: [
 				'Win',
 				'Lose'
 			],
             datasets: [{
-                data: [win, lose],
+				data: [win, lose],
                 backgroundColor: ['green', 'red'],
 				hoverOffset: 4
             }]
@@ -44,13 +44,13 @@ export function loadChart(chart_num, win, lose) {
 					const hasData = datasets.some(dataset =>
 						dataset.data.some(value => value > 0)
 					);
-			  
+					
 					if (!hasData) {
 						const {chartArea: {left, top, right, bottom}, ctx} = chart;
 						const centerX = (left + right) / 2;
 						const centerY = (top + bottom) / 2;
 						const r = Math.min(right - left, bottom - top) / 2;
-			  
+						
 						ctx.beginPath();
 						ctx.lineWidth = width || 2;
 						ctx.strokeStyle = color || 'rgba(255, 128, 0, 0.5)';
@@ -80,6 +80,27 @@ export function loadTemplate(appDiv, Id) {
 	appDiv.innerHTML = template ? template.innerHTML : "";
 }
 
+export async function fetchFriendList(callback) {
+	fetch('/api/friends/', {
+		method: 'GET',
+        headers: {
+			'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const list = document.getElementById('friend-list');
+        list.innerHTML = '';
+		friendship_lst = data.friendships;
+        data.friendships.forEach(friend => {
+			AppendTemplateFriends(list, friend)
+        });
+		if (callback) callback();
+    })
+    .catch(error => console.error('Error fetching friend list:', error));
+}
+
 export function AppendTemplateFriends(appDiv, friend) {
 	const tempDiv = document.createElement("div")
 	tempDiv.innerHTML =	document.getElementById("temp_friend").innerHTML;
@@ -97,6 +118,26 @@ export function AppendTemplateFriends(appDiv, friend) {
 	else
 		img.classList.add('border-red')
 	appDiv.appendChild(tempDiv.firstElementChild);
+	button.addEventListener('click', () => {
+		id_friend_active = friend.id;
+		const elements = document.getElementsByClassName("friend_btn");
+		for (const btn of elements)
+			btn.classList.remove("border-blue");
+		button.classList.add("border-blue");
+		loadfriendinput();
+		loadfriendmessage();
+	});
+	if (friend.id == id_friend_active)
+		button.classList.add("border-blue");
+}
+
+export function loadfriendmessage() {
+	const div = document.getElementById("message_lst");
+	const friend = friendship_lst.find(line => line.id == id_friend_active);
+	if (friend)
+		div.innerHTML = "";
+	else
+		div.innerHTML = document.getElementById("temp_no_friend").innerHTML;
 }
 
 export function Get_Cookie(name) {
@@ -161,8 +202,37 @@ export function Fill_table(history) {
 	});
 }
 
+export function loadfriendinput() {
+	const div = document.getElementById("message_input");
+	div.style.display = "block";
+	const friend = friendship_lst.find(line => line.id == id_friend_active);
+	if (friend) {
+		if (friend.status == "accepted") {
+			div.innerHTML = document.getElementById("temp_send_message").innerHTML;
+			document.getElementById("delete_friend").addEventListener('click', () => {
+				deleteFriendship(id_friend_active);
+			});
+		}
+		else if (friend.status == "pending" && friend.wait_pending)
+			div.innerHTML = document.getElementById("temp_wait_Friend_Request").innerHTML;
+		else {
+			div.innerHTML = document.getElementById("temp_Friend_Request").innerHTML;
+			document.getElementById("accept_friend").addEventListener('click', () => {
+				respondToRequest('accepted');
+			})
+			document.getElementById("refuse_friend").addEventListener('click', () => {
+				respondToRequest('rejected');
+			})
+		}
+	}
+	else
+		div.style.display = "none";
+}
+
 window.Click_login = Click_login;
 window.Change_lang = Change_lang;
+var friendship_lst;
+var id_friend_active = -1;
 
 function Click_login() {
     let dropdownElement = document.getElementById('dropdown_form');
@@ -173,4 +243,49 @@ function Click_login() {
 function Change_lang(lang) {
 	const path = window.location.pathname.substring(3);
 	window.location.href = "/api/lang/" + lang + "?prev=" + path
+}
+
+function deleteFriendship(friendshipId){
+	fetch(`/api/friends/${friendshipId}/`, {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken')
+		}
+	})
+	.then(response => {
+		if (response.ok) {
+			console.log('Friendship deleted successfully.');
+			friendshipId = -1;
+			fetchFriendList(() => {
+				loadfriendinput();
+				loadfriendmessage();
+			});
+		} else {
+			console.error('Failed to delete friendship.');
+		}
+	})
+	.catch(error => console.error('Error deleting friendship:', error));
+}
+
+function respondToRequest(action) {
+    const friend = friendship_lst.find(line => line.id == id_friend_active).username;
+	fetch(`/api/friend-request/${id_friend_active}/`, {
+        method: 'PATCH',
+        headers: {
+			'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken')
+        },
+        body: JSON.stringify({ action: action, username: friend})
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message || data.error);
+		fetchFriendList(() => {
+			console.log(friendship_lst);
+			loadfriendinput();
+			loadfriendmessage();
+		});
+    })
+    .catch(error => console.error('Error responding to friend request:', error));
 }
