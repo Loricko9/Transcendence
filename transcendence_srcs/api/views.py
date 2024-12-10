@@ -7,7 +7,6 @@ from rest_framework.decorators import api_view # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework.permissions import IsAuthenticated # type: ignore
 from rest_framework import status # type: ignore
-from .serializers import FriendshipSerializer
 from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash # type: ignore
 from django.views.decorators.csrf import csrf_protect, csrf_exempt # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
@@ -41,13 +40,22 @@ class FriendshipListView(APIView):
      
 	def get(self, request):
 		# Récupérer tous les amis de l'utilisateur connecté
-		friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
-		serializer = FriendshipSerializer(friendships, many=True)
-		response_data = {
-			"username": request.user.username,
-			"friendships": serializer.data
-		}
-		return Response(response_data)
+		username = request.user
+		friendships = Friendship.objects.filter(sender=username) | Friendship.objects.filter(receiver=username)
+		lst = []
+		for friendship in friendships:
+			if (friendship.sender == username):
+				friend = friendship.receiver
+			else :
+				friend = friendship.sender
+			lst.append({
+				"id": friendship.id,
+				"username": friend.username,
+				"avatar": f"{friend.avatar}",
+				"status": friendship.status,
+				"is_connected": friend.is_connected
+			})
+		return JsonResponse({"friendships": lst})
 
 	def delete(self, request, id):
 		try:
@@ -73,28 +81,18 @@ class FriendshipListView(APIView):
 # @login_required
 @api_view(['POST'])
 def send_friend_request(request):
-	# Vérifier si un 'username' est passé dans la requête
 	receiver_username = request.data.get('receiver_username')
 	if not receiver_username:
 		return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
-
 	try:
-		# Récupérer l'utilisateur destinataire de la demande
 		receiver = User.objects.get(username=receiver_username)
 	except User.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-	# Ne pas permettre à un utilisateur de s'ajouter lui-même
 	if receiver == request.user:
 		return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
-
-	# Vérifier si une amitié existe déjà
 	if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
 		return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
-
-	# Créer une relation d'amitié
 	Friendship.objects.create(sender=request.user, receiver=receiver)
-	# Notification via WebSocket
 	channel_layer = get_channel_layer()
 	group_name = f"friendship_updates_{receiver.id}"
 	logger.info(f"Sending message to group: {group_name} with data: {request.user.username}")
@@ -105,18 +103,7 @@ def send_friend_request(request):
 			"data": {"message": f"You have a new friend request from {request.user.username}"}
 		}
 	)
-
 	return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
-
-# afficher la liste des demandes d'amis
-class FriendRequestListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # Récupérer toutes les demandes d'ami en attente (status = 'pending')
-        pending_requests = Friendship.objects.filter(receiver=request.user, status='pending')
-        serializer = FriendshipSerializer(pending_requests, many=True)
-        return Response(serializer.data)
 
 # repondre a la demande d'amis
 @api_view(['PATCH'])

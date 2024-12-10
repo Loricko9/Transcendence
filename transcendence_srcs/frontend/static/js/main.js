@@ -1,5 +1,5 @@
 import { initAll } from './pong.js';
-import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
+import { loadChart, ActChart, DestroyCharts, loadTemplate, AppendTemplateFriends, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
@@ -10,14 +10,11 @@ async function checkAuthentification() {
 		const response = await fetch('/api/check-auth/');
 		const data = await response.json();
 		if (data.is_authenticated) {
-			// Affichage connecte
 			if (!socket)
 			{
 				InitializeWebsocket();
 				console.log("websocket init")
 			}
-			fetchFriendList();
-			fetchFriendRequests();
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -27,20 +24,11 @@ async function checkAuthentification() {
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
 			document.getElementById('signin_btn_little').style.display = 'none';
-			const nbWinElement = document.getElementById('nbWin');
-			const nbLoseElement = document.getElementById('nbLose');
-			if (nbWinElement && nbLoseElement) {
-				nbWinElement.textContent = data.nb_win;
-				nbLoseElement.textContent = data.nb_lose;
-			}
 			if (data.is_user_42)
 				return [true, true];
 			return [true, false];
 		}
 		else {
-			// Affichage deconnecte
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_index");
 			document.getElementById('option').style.display = 'none';
 			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
@@ -80,8 +68,10 @@ function router(){
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
-				if (isAuthenticated)
+				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_login");
+					loadIndexLogin();
+				}
 				else
 					loadTemplate(appDiv, "temp_index");
 				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
@@ -133,13 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (lang != null) {
 		switch (lang) {
 			case "fr":
-				document.getElementById("btn_fr").classList.add("active")
+				document.getElementsByClassName("btn_fr")[0].classList.add("active")
+				document.getElementsByClassName("btn_fr")[1].classList.add("active")
 				break;
 			case "en":
-				document.getElementById("btn_en").classList.add("active")
+				document.getElementsByClassName("btn_en")[0].classList.add("active")
+				document.getElementsByClassName("btn_en")[1].classList.add("active")
 				break;
-				case "es":
-					document.getElementById("btn_es").classList.add("active")
+			case "es":
+				document.getElementsByClassName("btn_es")[0].classList.add("active")
+				document.getElementsByClassName("btn_es")[1].classList.add("active")
 				break;
 			default:
 				break;
@@ -256,6 +249,20 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
         .catch(error => console.error('Erreur:', error));
     }
 });
+
+function loadIndexLogin() {
+	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
+	fetchFriendList();
+	const form_AddFriend = document.getElementById('dropdown_AddFriend');
+	if (form_AddFriend) {
+		form_AddFriend.addEventListener('submit', function(event) {
+			event.preventDefault();
+			sendFriendRequest();
+		});
+	}
+	else
+		console.error("form_AddFriend not found")
+}
 
 // change password
 function loadChangePassword() {
@@ -402,23 +409,8 @@ function fetchFriendList() {
     .then(data => {
         const list = document.getElementById('friend-list');
         list.innerHTML = '';
-        data.friendships.forEach(friendship => {
-			if (friendship.status == 'accepted')
-				{
-	            const li = document.createElement('li');
-				if (friendship.sender_username == data.username)
-					li.textContent = `${friendship.receiver_username}`;
-				else
-				li.textContent = `${friendship.sender_username}`;
-			const deleteButton = document.createElement('button');
-			deleteButton.textContent = 'Remove';
-			deleteButton.style.marginLeft = '10px';
-			deleteButton.addEventListener('click', () => {
-				deleteFriendship(friendship.id); // Appel de la fonction de suppression
-				});
-				li.appendChild(deleteButton);
-				list.appendChild(li);
-			}
+        data.friendships.forEach(friend => {
+			AppendTemplateFriends(list, friend)
         });
     })
     .catch(error => console.error('Error fetching friend list:', error));
@@ -430,13 +422,13 @@ function deleteFriendship(friendshipId){
 		method: 'DELETE',
 		headers: {
 			'Content-Type': 'application/json',
-			'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+			'X-CSRFToken': Get_Cookie('csrftoken')
 		}
 	})
 	.then(response => {
 		if (response.ok) {
 			console.log('Friendship deleted successfully.');
-			fetchFriendList(); // Rafraîchir la liste
+			fetchFriendList();
 		} else {
 			console.error('Failed to delete friendship.');
 		}
@@ -444,10 +436,10 @@ function deleteFriendship(friendshipId){
 	.catch(error => console.error('Error deleting friendship:', error));
 }
 
-
 // Envoyer une demande d'amis
 function sendFriendRequest() {
-	const username = document.getElementById('username').value;
+	const username = document.getElementById('AddFriend_input').value;
+	document.getElementById('AddFriend_input').value = '';
 	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
@@ -465,43 +457,6 @@ function sendFriendRequest() {
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
-window.sendFriendRequest = sendFriendRequest;                                                                                                                              
-
-
-// Récupérer la liste des demandes d'amis
-function fetchFriendRequests() {
-    fetch('/api/friend-requests/', {
-		method: 'GET',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-		const list = document.getElementById('friend-request-list');
-        list.innerHTML = '';  // Vide la liste avant de la remplir
-        data.forEach(request => {
-			const li = document.createElement('li');
-            li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
-
-            // Bouton pour accepter
-            const acceptButton = document.createElement('button');
-            acceptButton.textContent = 'Accepter';
-            acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
-			
-            // Bouton pour refuser
-            const rejectButton = document.createElement('button');
-            rejectButton.textContent = 'Refuser';
-            rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
-			
-            li.appendChild(acceptButton);
-            li.appendChild(rejectButton);
-            list.appendChild(li);
-        });
-    })
-    .catch(error => console.error('Error fetching friend requests:', error));
-}
 
 // Accepter ou refuser une demande
 function respondToRequest(username, action) {
@@ -516,7 +471,6 @@ function respondToRequest(username, action) {
     .then(response => response.json())
     .then(data => {
         alert(data.message || data.error);
-        fetchFriendRequests();  // Rafraîchir la liste des demandes
 		fetchFriendList();
     })
     .catch(error => console.error('Error responding to friend request:', error));
@@ -531,7 +485,6 @@ function InitializeWebsocket(){
 		const data = JSON.parse(event.data);
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
 		fetchFriendList();  // Rafraîchir la liste des amis
-		fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
 	};
 	
 	socket.onclose = function () {

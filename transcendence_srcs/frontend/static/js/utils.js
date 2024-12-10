@@ -80,6 +80,25 @@ export function loadTemplate(appDiv, Id) {
 	appDiv.innerHTML = template ? template.innerHTML : "";
 }
 
+export function AppendTemplateFriends(appDiv, friend) {
+	const tempDiv = document.createElement("div")
+	tempDiv.innerHTML =	document.getElementById("temp_friend").innerHTML;
+	const button = tempDiv.querySelector("button");
+	const span = tempDiv.querySelector("span");
+	const img = tempDiv.querySelector("img");
+	if (friend.status == "pending")
+		button.classList.add('btn-warning');
+	else
+	button.classList.add('btn-light');
+	span.textContent = friend.username;
+	img.src = friend.avatar;
+	if (friend.is_connected == true)
+		img.classList.add('border-green');
+	else
+		img.classList.add('border-red')
+	appDiv.appendChild(tempDiv.firstElementChild);
+}
+
 export function Get_Cookie(name) {
 	let new_name = name + "=";
 	let tab = decodeURIComponent(document.cookie).split(';');
