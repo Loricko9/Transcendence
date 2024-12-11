@@ -167,12 +167,20 @@ export function Get_Cookie(name) {
 }
 
 export function showSuccessModal() {
-	var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-	successModal.show();
+	var modalElement = document.getElementById('successModal');
+    var successModal = new bootstrap.Modal(modalElement);
+
+    // Supprimer aria-hidden et déplacer le focus sur la modale
+    modalElement.removeAttribute('aria-hidden');
+    modalElement.querySelector('.modal-content').focus();
+
+    // Afficher la modale
+    successModal.show();
 
 	// Disparaît après 3 secondes (3000 ms)
 	setTimeout(function() {
 		successModal.hide();
+		modalElement.setAttribute('aria-hidden', 'true');
 	}, 3000); // 3000 ms = 3 secondes
 }
 

@@ -9,14 +9,26 @@ function wait_for_postgres() {
 
 wait_for_postgres
 # sleep 20
+
+export DJANGO_SETTINGS_MODULE=transcendence_srcs.settings
+
+# python3 manage.py startapp chat
+
 python3 manage.py makemigrations api
 python3 manage.py makemigrations frontend
-python3 manage.py collectstatic --noinput
+python3 manage.py makemigrations chat
 python3 manage.py migrate --noinput
+
+python3 manage.py collectstatic --noinput
+
 python3 manage.py setup_translation
 
 python3 create_superuser.py
 
+
 # exec python3 manage.py runserver 0.0.0.0:8000
 echo "Démarrage de Daphne..."
 exec daphne -b 0.0.0.0 -p 8000 transcendence_srcs.asgi:application
+# &
+# 	# Garde le conteneur actif
+# 	tail -f /dev/null

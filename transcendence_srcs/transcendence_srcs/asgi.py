@@ -19,21 +19,16 @@ import os
 from django.core.asgi import get_asgi_application # type: ignore
 from channels.routing import ProtocolTypeRouter, URLRouter # type: ignore
 from channels.auth import AuthMiddlewareStack # type: ignore
-from api.routing import websocket_urlpatterns # type: ignore
-import logging
-
-logger = logging.getLogger(__name__)
+from api.routing import websocket_urlpatterns as api_websocket_urlpatterns
+from chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'transcendence_srcs.settings')
-
-logger.info("ASGI application starting...")  # Log pour déboguer
-logger.info(f"Loaded WebSocket patterns: {websocket_urlpatterns}")  # Vérifie le contenu
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
-            websocket_urlpatterns
+            api_websocket_urlpatterns + chat_websocket_urlpatterns
         )
     ),
 })

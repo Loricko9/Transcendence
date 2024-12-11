@@ -1,7 +1,6 @@
 from django.db import models # type: ignore
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager # type: ignore
 import uuid # permet de générer des identifiants uniques appelés UUIDs (Universally Unique Identifiers, ou identifiants universellement uniques).
-# Create your models here.
 
 #Class permetant de gérer le tableau User_tab (fonctions ajout, modif et suppr User)
 class User_tabManager(BaseUserManager):
@@ -86,8 +85,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 
 
 class Friendship(models.Model):
-    sender = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='sent_requests')
-    receiver = models.ForeignKey('User_tab', on_delete=models.CASCADE, related_name='received_requests')
+    sender = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='sent_requests')
+    receiver = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='received_requests')
     status = models.CharField(
         max_length=10,
         choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
@@ -132,4 +131,3 @@ class History(models.Model):
 		new_history.save()
 
 		return new_history
-		
