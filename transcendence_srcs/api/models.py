@@ -1,6 +1,7 @@
 from django.db import models # type: ignore
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager # type: ignore
 import uuid # permet de générer des identifiants uniques appelés UUIDs (Universally Unique Identifiers, ou identifiants universellement uniques).
+from asgiref.sync import sync_to_async  # type: ignore
 
 #Class permetant de gérer le tableau User_tab (fonctions ajout, modif et suppr User)
 class User_tabManager(BaseUserManager):
@@ -83,17 +84,22 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 
 
 class Friendship(models.Model):
-    sender = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='sent_requests')
-    receiver = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='received_requests')
-    status = models.CharField(
-        max_length=10,
-        choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
-        default='pending'
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
+	sender = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='sent_requests')
+	receiver = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name='received_requests')
+	status = models.CharField(
+		max_length=10,
+		choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
+		default='pending'
+	)
+	created_at = models.DateTimeField(auto_now_add=True)
+	blocked_users = models.ManyToManyField(User_tab, blank=True, related_name="blocked_by")
 
-    def __str__(self):
-        return f"{self.sender.username} to {self.receiver.username} - Status: {self.status}"
+	async def is_blocked(self, user):
+		"""Vérifie si un utilisateur est bloqué"""
+		return await sync_to_async(self.blocked_users.filter(id=user.id).exists)()
+
+	def __str__(self):
+		return f"{self.sender.username} to {self.receiver.username} - Status: {self.status}"
 	
 class Meta:
 	unique_together = ('sender', 'receiver')

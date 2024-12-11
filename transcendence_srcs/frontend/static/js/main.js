@@ -412,11 +412,13 @@ function fetchFriendList() {
         data.friendships.forEach(friendship => {
 			if (friendship.status == 'accepted')
 			{
-	            const li = document.createElement('li');
+				const li = document.createElement('li');
+				let username;
 				if (friendship.sender_username == data.username)
-					li.textContent = `${friendship.receiver_username}`;
+					username = `${friendship.receiver_username}`;
 				else
-					li.textContent = `${friendship.sender_username}`;
+					username = `${friendship.sender_username}`;
+				li.textContent = username;
 				const deleteButton = document.createElement('button');
 				deleteButton.textContent = 'Remove';
 				deleteButton.style.marginLeft = '10px';
@@ -429,6 +431,13 @@ function fetchFriendList() {
 				chatButton.addEventListener('click', () => {
 					toggleChat(friendship.id);
 				});
+				const blockButton = document.createElement('button');
+				blockButton.textContent = 'Block';
+				blockButton.style.marginLeft = '10px';
+				blockButton.addEventListener('click', () => {
+					chatSocket.send(JSON.stringify({command: 'block', username: username}));
+				});
+				li.appendChild(blockButton);
 				li.appendChild(chatButton);
 				li.appendChild(deleteButton);
 				list.appendChild(li);

@@ -3,6 +3,8 @@ import json
 from django.apps import apps # type: ignore
 from asgiref.sync import sync_to_async  # type: ignore # Pour exécuter des fonctions synchrones dans un contexte asynchrone
 from datetime import datetime
+from django.contrib.auth import get_user_model # type: ignore
+
 
 class ChatConsumers(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -33,6 +35,9 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
 	async def receive(self, text_data):
+		# Recuperer le modele de User
+		User = get_user_model()
+
 		# Recevoir un message du client
 		data = json.loads(text_data)
 
@@ -54,7 +59,31 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				'status': 'success',
 				'deleted_count': deleted_count
 			}))
-		else:	
+			return
+		elif command == 'block':
+			username = data.get('username')
+			user = await sync_to_async(User.objects.get)(username=username)
+			if await room.is_blocked(user):
+				await sync_to_async(room.blocked_users.remove)(user)
+				await self.send(text_data=json.dumps({
+					'status': 'success',
+					'message': f'{user.username} a été débloqué.'
+				}))
+			else:
+				# Ajouter l'utilisateur bloqué
+				await sync_to_async(room.blocked_users.add)(user)
+				await self.send(text_data=json.dumps({
+					'status': 'success',
+					'message': f'{user.username} a été bloqué.'
+				}))
+			return
+		else:
+			if await room.is_blocked(self.scope['user']):
+				await self.send(text_data=json.dumps({
+					'status': 'error',
+					'message': 'Vous êtes bloqué par cet utilisateur.'
+				}))
+				return
 			message = data['message']
 			timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
