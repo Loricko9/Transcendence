@@ -134,10 +134,25 @@ export function AppendTemplateFriends(appDiv, friend) {
 export function loadfriendmessage() {
 	const div = document.getElementById("message_lst");
 	const friend = friendship_lst.find(line => line.id == id_friend_active);
-	if (friend)
+	if (friend && friend.status == "accepted") {
 		div.innerHTML = "";
-	else
+		div.className = "d-flex flex-column flex-grow-1"
+		Add_message("prout", true);
+		Add_message("caca", true);
+		Add_message("rgrgdfgtezgr", false);
+		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
+		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
+		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
+		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
+	}
+	else if (friend) {
+		div.innerHTML = "";
+		div.className = "d-flex align-items-center justify-content-center flex-grow-1 px-0"
+	}
+	else {
+		div.className = "d-flex align-items-center justify-content-center flex-grow-1 px-0"
 		div.innerHTML = document.getElementById("temp_no_friend").innerHTML;
+	}
 }
 
 export function Get_Cookie(name) {
@@ -227,6 +242,25 @@ export function loadfriendinput() {
 	}
 	else
 		div.style.display = "none";
+}
+
+function Add_message(txt, bool) {
+	const tempDiv = document.createElement("div");
+	const tempDivtxt = document.createElement("div");
+	const span = document.createElement("span");
+	span.innerHTML = txt;
+	span.className = "text-break"
+	tempDivtxt.appendChild(span);
+	if (bool) {
+		tempDivtxt.className = "w-auto rounded-4 m-1 ms-4 px-2 py-1 message div-blank";
+		tempDiv.className = "d-flex justify-content-end";
+	}
+	else {
+		tempDivtxt.className = "w-auto rounded-4 m-1 me-4 px-2 py-1 message div-blue";
+		tempDiv.className = "d-flex justify-content-start";
+	}
+	tempDiv.appendChild(tempDivtxt);
+	document.getElementById("message_lst").appendChild(tempDiv);
 }
 
 window.Click_login = Click_login;

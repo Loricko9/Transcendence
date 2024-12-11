@@ -121,6 +121,14 @@ body {
 	background-color: white;
 }
 
+.div-blank {
+	background-color: #defffe;
+}
+
+.div-blue {
+	background-color: #007bff;
+}
+
 .Diagram {
 	width: 60%;
 	height: auto;
@@ -136,6 +144,17 @@ body {
 
 #div-tchat {
 	height: 450px;
+}
+
+#message_lst {
+	overflow-y: auto;
+	max-height: 360px;
+	width: 100%;
+}
+
+.message {
+	display: inline-block;
+	max-width: auto;
 }
 
 #signin_btn_index {
