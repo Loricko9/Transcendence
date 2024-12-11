@@ -131,19 +131,22 @@ export function AppendTemplateFriends(appDiv, friend) {
 		button.classList.add("border-blue");
 }
 
+let chatSocket = null;
+
 export function loadfriendmessage() {
 	const div = document.getElementById("message_lst");
 	const friend = friendship_lst.find(line => line.id == id_friend_active);
+	if (chatSocket) {
+		// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
+		chatSocket.close()
+		chatSocket = null
+		console.log("Chat websocket closed")
+	}
 	if (friend && friend.status == "accepted") {
 		div.innerHTML = "";
 		div.className = "d-flex flex-column flex-grow-1"
-		Add_message("prout", true);
-		Add_message("caca", true);
-		Add_message("rgrgdfgtezgr", false);
-		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
-		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
-		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
-		Add_message("rgrgdfgtezgrgghtgdgdrffssdgfghergdfbfgdsvfgezfvfvbsdfdfgsfefdftezrfesffgtze", false);
+		if (!chatSocket)
+			initializeChatWebSocket(id_friend_active);
 	}
 	else if (friend) {
 		div.innerHTML = "";
@@ -249,7 +252,7 @@ export function loadfriendinput() {
 		}
 	}
 	else
-		div.style.display = "none";
+	div.style.display = "none";
 }
 
 function Add_message(txt, bool) {
@@ -268,7 +271,9 @@ function Add_message(txt, bool) {
 		tempDiv.className = "d-flex justify-content-start";
 	}
 	tempDiv.appendChild(tempDivtxt);
-	document.getElementById("message_lst").appendChild(tempDiv);
+	const Div = document.getElementById("message_lst");
+	Div.scrollTop = Div.scrollHeight;
+	Div.appendChild(tempDiv);
 }
 
 window.Click_login = Click_login;
@@ -330,4 +335,32 @@ function respondToRequest(action) {
 		});
     })
     .catch(error => console.error('Error responding to friend request:', error));
+}
+
+// Gestionnaire Chat websocket
+function initializeChatWebSocket(roomId) {
+    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
+
+    // Réception des messages
+    chatSocket.onmessage = function (e) {
+        const data = JSON.parse(e.data);
+		const username = document.getElementById("user_connected").innerText;
+		if (data.sender == username)
+			Add_message(data.message, true)
+		else
+			Add_message(data.message, false)
+    };
+
+    // Gestion de l'envoi des messages
+    document.querySelector('#chat-message-submit').onclick = function () {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({message: message}));
+        messageInputDom.value = ''; // Efface le champ après envoi
+    };
+
+    // Gestion des erreurs
+    chatSocket.onclose = function (e) {
+        console.error('WebSocket connection closed');
+    };
 }

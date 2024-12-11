@@ -436,7 +436,6 @@ function sendFriendRequest() {
 
 // Variables globales Websocket
 let socket = null;
-let chatSocket = null;
 
 // Gestionnaire Friendship web socket
 function InitializeWebsocket(){
@@ -456,65 +455,6 @@ function InitializeWebsocket(){
 		console.error("WebSocket connection closed.");
 	};
 };
-
-// Afficher ou fermer le Chat
-function toggleChat(roomId) {
-	// if (event) {
-    //     event.preventDefault(); // Empêche le comportement par défaut de navigation
-    // }
-	console.log("togglechat called")
-    const chatContainer = document.querySelector('#chat-container');
-	console.log("Current display style:", chatContainer.style.display);
-    if (chatContainer.style.display === 'none') {
-        chatContainer.style.display = 'block';
-		console.log("Chat container opened");
-		if (!chatSocket)
-		{
-        	initializeChatWebSocket(roomId); // Initialise la connexion WebSocket pour le chat
-			console.log("Chat websocket init")
-		}
-    } else {
-        chatContainer.style.display = 'none';
-		console.log("Chat container closed");
-		if (chatSocket)
-		{
-			chatSocket.send(JSON.stringify({command: 'delete_messages'}));
-			chatSocket.close()
-			chatSocket = null
-			console.log("Chat websocket closed")
-		}
-    }
-}
-window.toggleChat = toggleChat;
-
-// Gestionnaire Chat websocket
-function initializeChatWebSocket(roomId) {
-    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
-
-	const chatLog = document.querySelector('#chat-log');
-
-    // Réception des messages
-    chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-		const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message} <small>(${data.timestamp || ''})</small>`;
-        chatLog.appendChild(messageElement);
-		chatLog.scrollTop = chatLog.scrollHeight; // Scroll automatique
-    };
-
-    // Gestion de l'envoi des messages
-    document.querySelector('#chat-message-submit').onclick = function () {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({message: message}));
-        messageInputDom.value = ''; // Efface le champ après envoi
-    };
-
-    // Gestion des erreurs
-    chatSocket.onclose = function (e) {
-        console.error('WebSocket connection closed');
-    };
-}
 
 // Fermer le WebSocket lorsque la page est déchargée
 window.addEventListener('beforeunload', function () {
