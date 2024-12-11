@@ -8,7 +8,6 @@ export function initAll() {
 	const RoomUser1Info = document.getElementById('User1');
 	const RoomUser2Info = document.getElementById('User2');
 	const RoomUser3Info = document.getElementById('User3');
-	// const GameTypeHeader = document.getElementById('GameTypeHeader');
 	const Ltips = document.getElementById('tips1');
 	const Rtips = document.getElementById('tips2');
 
@@ -40,30 +39,31 @@ export function initAll() {
 	const rightUserIcon = document.getElementById('rightUserIcon');
 
 	const RoomHostName = document.getElementById('HostName');
-	const HostUserIcon = document.getElementById('HostIcon');
+	const HostUserIcon = document.getElementById('hostUserIcon');
 	let HostUserNameVar = null;
 
 
 	const RoomUser1Name = document.getElementById('User1Name');
 	const Player1SearchButton = document.getElementById('User1Search');
 	const User1SearchBox = document.getElementById('User1SearchBox');
-	const User1Icon = document.getElementById('User1Icon');
+	const User1Icon = document.getElementById('user1Icon');
 	let User1UserNameVar = null;
 
 
 	const RoomUser2Name = document.getElementById('User2Name');
 	const Player2SearchButton = document.getElementById('User2Search');
 	const User2SearchBox = document.getElementById('User2SearchBox');
-	const User2Icon = document.getElementById('User2Icon');
+	const User2Icon = document.getElementById('user2Icon');
 	let User2UserNameVar = null;
 
 
 	const RoomUser3Name = document.getElementById('User3Name');
 	const Player3SearchButton = document.getElementById('User3Search');
 	const User3SearchBox = document.getElementById('User3SearchBox');
-	const User3Icon = document.getElementById('User3Icon');
+	const User3Icon = document.getElementById('user3Icon');
 	let User3UserNameVar = null;
 
+	const WinnerIcon = document.getElementById('WinnerIcon');
 
 	const keyPressed = {};
 
@@ -78,13 +78,53 @@ export function initAll() {
 	let ballSpeed = 6;
 
 	let scoreleftplayer = 0, scorerightplayer = 0, redTeamScore = 0, blueTeamScore = 0;
-	let player1score = 0, player2score = 0, player3score = 0, player4score = 0;
 
 	let tournamentWinnerRound1 = null;
+	let tournamentWinnerRound1Icon = null;
 	let tournamentWinnerRound2 = null;
+	let tournamentWinnerRound2Icon = null;
+
+	//////////////////////////////////////////////////////////////////////////////////
+	////                             functions                                    ///
+	////////////////////////////////////////////////////////////////////////////////
+
+	function setHostImage(value) {if (value === null) {HostUserIcon.src = '/media/avatars/DefaultIcon.png';}else {HostUserIcon.src = value;}}
+	function setUser1Image(value) {if (value === null) {User1Icon.src = '/media/avatars/DefaultIcon.png';}else {User1Icon.src = value;}}
+	function setUser2Image(value) {if (value === null) {User2Icon.src = '/media/avatars/DefaultIcon.png';}else {User2Icon.src = value;}}
+	function setUser3Image(value) {if (value === null) {User3Icon.src = '/media/avatars/DefaultIcon.png';}else {User3Icon.src = value;}}
+	function setWinnerIcon(value) {if (value === null) {WinnerIcon.src = '/media/avatars/DefaultIcon.png';}else {WinnerIcon.src = value;}}
+	function setUser1UserName(value) {if (value === null) {User1UserNameVar = null;RoomUser1Name.textContent = '...';} else {User1UserNameVar = value;RoomUser1Name.textContent = value;}}
+	function setUser2UserName(value) {if (value === null) {User2UserNameVar = null;RoomUser2Name.textContent = '...';} else {User2UserNameVar = value;RoomUser2Name.textContent = value;}}
+	function setUser3UserName(value) {if (value === null) {User3UserNameVar = null;RoomUser3Name.textContent = '...';}else {User3UserNameVar = value;RoomUser3Name.textContent = value;}}
+	function resetFight() {fight = [null, null];}
+	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
+	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
+	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
+	function setHostUserName() {
+		let UserIcon;
+		fetch('/api/find-hostname/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.user) {
+				UserIcon = data.userIcon;
+				HostUserNameVar = data.user;
+				RoomHostName.textContent = data.user;
+				setHostImage(UserIcon);
+			} else {
+				console.error('Error:', data.error);
+			}
+		})
+	}
 
 	function searchUser(username, user_id) {
 		let UserName;
+		let UserIcon;
 		fetch('/api/find-username/', {
 			method: 'POST',
 			headers: {
@@ -92,40 +132,39 @@ export function initAll() {
 				'X-CSRFToken': Get_Cookie('csrftoken')
 			},
 			body: JSON.stringify({
-				'username': username
+				'username': username 
 			})
 		})
 		.then(response => response.json())
 		.then(data => {
 			UserName = data.user;
+			UserIcon = data.userIcon;
 			if (UserName === undefined || UserName === null) {
 				alert('User not found');
 				return ;
 			}
-			if (UserName!== User1UserNameVar && UserName !== User2UserNameVar && UserName !== User3UserNameVar) {
+			if (UserName!== User1UserNameVar && UserName !== User2UserNameVar && UserName !== User3UserNameVar && UserName !== HostUserNameVar) {
 				if (user_id == 'user1') {
 					setUser1UserName(UserName);
-					// setUser1Image(user.db.image);
+					setUser1Image(UserIcon);
 					return ;
 				}
 				else if (user_id == 'user2') {
 					setUser2UserName(UserName);
-					// setUser2Image(user.db.image);
+					setUser2Image(UserIcon);
 					return ;
 				}
 				else if (user_id == 'user3') {
 					setUser3UserName(UserName);
-					// setUser3Image(user.db.image);
+					setUser3Image(UserIcon);
 					return ;
 				}
 			}
 			alert('User already in the room');
-			// console.log('data.user: ', data.user)
 		})
 		.catch(error => {
 			console.error('Erreur:', error);
 		});
-		// console.log('username: ', UserName)
 		return;
 	}
 
@@ -140,81 +179,30 @@ export function initAll() {
 		return null
 	}
 
-	function setHostImage(value) {
-		// if (value === null) {HostUserIcon.src = 'avatar/default.png';}
-		// else {HostUserIcon.src = value;}
-	}
-	function setUser1Image(value) {} //////////
-	function setUser2Image(value) {} //////////
-	function setUser3Image(value) {} //////////
-	function setHostUserName() {
-		fetch('/api/find-hostname/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': Get_Cookie('csrftoken')
-			}
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.user) {
-				console.log('User:', data.user);
-				HostUserNameVar = data.user;
-				RoomHostName.textContent = data.user;
-			} else {
-				console.error('Error:', data.error);
-			}
-		})
-	}
-
-	function setUser1UserName(value) {
-		if (value === null) {
-			User1UserNameVar = null;
-			RoomUser1Name.textContent = '...';
-		} else {
-			User1UserNameVar = value;
-			RoomUser1Name.textContent = value;
-		}}
-	function setUser2UserName(value) {
-		if (value === null) {
-			User2UserNameVar = null;
-			RoomUser2Name.textContent = '...';
-		} else {
-			User2UserNameVar = value;
-			RoomUser2Name.textContent = value;
-		}}
-	function setUser3UserName(value) {
-		if (value === null) {
-			User3UserNameVar = null;
-			RoomUser3Name.textContent = '...';
-		} else {
-			User3UserNameVar = value;
-			RoomUser3Name.textContent = value;}}
-
-	function resetFight() {fight = [null, null];}
-	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
-	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-200px';} else {OptnMenu.style.bottom = '-650px';}}
-
 	function setFight(value1, value2) {
 		fight[0] = value1;fight[1] = value2;
 		if (value1 === null || value2 === null) {
 			console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 		LeftPlayerUserNameContent.textContent = value1;
-		RightPlayerUserNameContent.textContent = value2;}
+		RightPlayerUserNameContent.textContent = value2;
+	}
 
 	function setFightIcons(value1, value2) {
-		if (value1 === null) {leftUserIcon.src = 'avatar/default.png';}
+		if (value1 === null) {leftUserIcon.src = '/media/avatars/DefaultIcon.png';}
 		else {leftUserIcon.src = value1;}
-		if (value2 === null) {rightUserIcon.src = 'avatar/default.png';}
-		else {rightUserIcon.src = value2;}}
+		if (value2 === null) {rightUserIcon.src = '/media/avatars/DefaultIcon.png';}
+		else {rightUserIcon.src = value2;}
+	}
 
 	function AnimationMainMenu(mode) {
 		if (mode === 'in') {PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';}
-		else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}}
+		else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}
+	}
 
 	function AnimationAIMenu(mode) {
 		if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';}
-		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}}
+		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}
+	}
 
 	function changeMenu(menu) {
 		hideOptnMenu();
@@ -263,7 +251,6 @@ export function initAll() {
 			console.error('Menu not found');
 	}
 
-
 	function resetAllData() {
 		gameStarted = false;
 		AIDifficulty = "none";
@@ -280,27 +267,24 @@ export function initAll() {
 		ScorePlayerRightElement.textContent = scorerightplayer;
 		redTeamScore = 0;
 		blueTeamScore = 0;
-		player1score = 0;
-		player2score = 0;
-		player3score = 0;
-		player4score = 0;
 		tournamentWinnerRound1 = null;
 		tournamentWinnerRound2 = null;
+		tournamentWinnerRound1Icon = null;
+		tournamentWinnerRound2Icon = null;
 		LeftPlayerUserNameContent.textContent = '...';
 		RightPlayerUserNameContent.textContent = '...';
+		leftUserIcon.src = '/media/avatars/DefaultIcon.png';
+		rightUserIcon.src = '/media/avatars/DefaultIcon.png';
+		WinnerIcon.src = '/media/avatars/DefaultIcon.png';
 		round = 0;
+		if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}
 		setHostUserName(); ///////////////////////
-		// setHostUserName(current_logged_user_name);
-		// setHostImage(curent_logged_user_icon);
 		setUser1UserName(null); ////////////
-		// setUser1UserName();
-		// setUser1Image();
+		setUser1Image(null);
 		setUser2UserName(null); ////////////
-		// setUser2UserName();
-		// setUser2Image();
+		setUser2Image(null);
 		setUser3UserName(null); ////////////
-		// setUser3UserName();
-		// setUser3Image();
+		setUser3Image(null);
 		resetFight();
 	}
 
@@ -340,45 +324,35 @@ export function initAll() {
 	function playAgain() {
 		scoreleftplayer = 0;
 		scorerightplayer = 0;
-		player1score = 0;
-		player2score = 0;
-		player3score = 0;
-		player4score = 0;
 		ScorePlayerLeftElement.textContent = scoreleftplayer;
 		ScorePlayerRightElement.textContent = scorerightplayer;
 		round = 0;
 		softReset();
 	}
 
+	function updateScore(winner, loser, winnerScore, loserScore, isTournament) {
+		console.log('UpdateScoreTests [', 'winner:', winner, 'loser:', loser, 'winnerScore:', winnerScore, 'loserScore:', loserScore, 'isTournament:', isTournament, ']');
+		fetch('/api/update-score/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+			body: JSON.stringify({
+				'winner': winner,
+				'loser': loser,
+				'winnerScore': winnerScore,
+				'loserScore': loserScore,
+				'isTournament': isTournament
+			})
+		})
+		.catch(error => {
+			console.error('Erreur:', error);
+		});
+	}
+	
 	function checkWin() {
-		// fetch('/api/stat/', {
-		// 		method: 'POST',
-		// 		headers: {
-		// 			'Content-Type': 'application/json',
-		// 			'X-CSRFToken': Get_Cookie('csrftoken')
-		// 		},
-		// 		body: JSON.stringify({
-		// 			'result': result
-		// 		})
-		// 	})
-		// 	.then(response => response.json())
-		// 	.then(data => {
-		// 		if (data.success) {
-		// 			document.getElementById('infoco').innerHTML = data.message
-
-		// 			const nbWinElement = document.getElementById('nbWin');
-		// 			const nbLoseElement = document.getElementById('nbLose');
-					
-		// 			nbWinElement.textContent = data.nb_win;
-		// 			nbLoseElement.textContent = data.nb_lose;
-		// 			showSuccessModal()
-		// 		}
-		// 	})
-		// 	.catch(error => {
-		// 		console.error('Erreur:', error);
-		// 	});
-		// 	setTimeout(resetGame, 3000);
-		// }
+		WinnerIcon.style.backgroundColor = 'transparent';
 		document.getElementById("Draw").style.display = "none";
 		document.getElementById("WinnerName").style.display = "block";
 		document.getElementById("WinnerIcon").style.display = "block";
@@ -389,29 +363,70 @@ export function initAll() {
 				changeMenu("endGameMenu");
 				NextButton.style.display = 'none';
 				PlayAgainButton.style.display = 'block';
-				if (scoreleftplayer === 3) {document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
-				else if (scorerightplayer === 3){document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
+				if (scoreleftplayer === 3) {
+					setWinnerIcon(leftUserIcon.src);
+					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					
+					// if (PVPMode === 'none') {
+					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					// } else if (PVPMode !== 'none') {
+					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+					// }
+				}
+				else if (scorerightplayer === 3) {
+					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					setWinnerIcon(rightUserIcon.src);
+					// if (PVPMode === 'none') {
+					// 	setWinnerIcon('/media/avatars/Bot.png');
+					// 	// document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					// 	// updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
+					// }
+					// else {
+					// 	// updateScore('win', RightPlayerUserNameContent.textContent); ///////////
+					// 	// updateScore('loose', LeftPlayerUserNameContent.textContent); ///////////////
+					// }
+					updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
+				}
 			}
 			else if (PVPMode === '2vs2') {
 				changeMenu("endGameMenu");
 				if (round === 0) {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
-					if (scoreleftplayer === 3) {redTeamScore++;document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;}
-					else if (scorerightplayer === 3) {blueTeamScore++;document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;}
-				} else if (round === 1) {
 					if (scoreleftplayer === 3) {
+						setWinnerIcon(leftUserIcon.src);
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
 						redTeamScore++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 					}
 					else if (scorerightplayer === 3) {
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
 						blueTeamScore++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 					}
-					if (redTeamScore > blueTeamScore)
+				} else if (round === 1) {
+					if (scoreleftplayer === 3) {
+						setWinnerIcon(leftUserIcon.src);
+						redTeamScore++;
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
+						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+					}
+					else if (scorerightplayer === 3) {
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
+						blueTeamScore++;
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+					}
+					if (redTeamScore > blueTeamScore) {
+						WinnerIcon.style.backgroundColor = 'red';
 						document.getElementById("WinnerName").textContent = HostUserNameVar + " " + User1UserNameVar;
-					else if (redTeamScore < blueTeamScore)
+					}
+					else if (redTeamScore < blueTeamScore) {
+						WinnerIcon.style.backgroundColor = 'blue';
 						document.getElementById("WinnerName").textContent = User2UserNameVar + " " + User3UserNameVar;
+					}
 					else {
 						document.getElementById("WinnerName").style.display = "none";
 						document.getElementById("Draw").style.display = "block";
@@ -426,42 +441,49 @@ export function initAll() {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
 					if (scoreleftplayer === 3) {
-						player1score++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound1 = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound1Icon = leftUserIcon.src;
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
+						setWinnerIcon(leftUserIcon.src);
 					} else if (scorerightplayer === 3) {
-						player2score++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound1 = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound1Icon = rightUserIcon.src;
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
 					}
 				} else if (round === 1) {
 					NextButton.style.display = 'block';
 					PlayAgainButton.style.display = 'none';
 					if (scoreleftplayer === 3) {
-						player3score++;
 						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 						tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = leftUserIcon.src;
+						setWinnerIcon(leftUserIcon.src);
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
 					}
 					else if (scorerightplayer === 3) {
-						player4score++;
 						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 						tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = rightUserIcon.src;
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
 					}
 				} else if (round === 2) {
-					if (player1score > player2score && player1score > player3score && player1score > player4score) {
-						document.getElementById("WinnerName").textContent = User1UserNameVar;
-						NextButton.style.display = 'none';
-						PlayAgainButton.style.display = 'block';
-					} else if (player2score > player1score && player2score > player3score && player2score > player4score) {
-						document.getElementById("WinnerName").textContent = User2UserNameVar;
-						NextButton.style.display = 'none';
-						PlayAgainButton.style.display = 'block';
-					} else if (player3score > player1score && player3score > player2score && player3score > player4score) {
-						document.getElementById("WinnerName").textContent = User3UserNameVar;
-						NextButton.style.display = 'none';
-						PlayAgainButton.style.display = 'block';
-					} else if (player4score > player1score && player4score > player2score && player4score > player3score) {
-						document.getElementById("WinnerName").textContent = "round 1 winner";
+					if (scoreleftplayer === 3) {
+						document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound2 = LeftPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = leftUserIcon.src;
+						setWinnerIcon(leftUserIcon.src);
+						updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, true);
+					}
+					else if (scorerightplayer === 3) {
+						document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound2 = RightPlayerUserNameContent.textContent;
+						tournamentWinnerRound2Icon = rightUserIcon.src;
+						setWinnerIcon(rightUserIcon.src);
+						updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, true);
 					}
 					NextButton.style.display = 'none';
 					PlayAgainButton.style.display = 'block';
@@ -469,8 +491,6 @@ export function initAll() {
 			}
 		}
 	}
-
-	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
 
 	function gameLoop() {
 		if (gameStarted === true) {	
@@ -483,15 +503,15 @@ export function initAll() {
 	}
 
 	function defineWhoFight() {
-		if (PVPMode === 'none') {setFight(HostUserNameVar, 'AI');}
-		else if (PVPMode === '1vs1') {setFight(HostUserNameVar, User1UserNameVar);}
+		if (PVPMode === 'none') {setFight(HostUserNameVar, 'AI');setFightIcons(HostUserIcon.src, '/media/avatars/Bot.png');}
+		else if (PVPMode === '1vs1') {setFight(HostUserNameVar, User1UserNameVar);setFightIcons(HostUserIcon.src, User1Icon.src);}
 		else if (PVPMode === '2vs2') {
-			if (round === 0) {setFight(HostUserNameVar, User2UserNameVar);}
-			else if (round === 1) {setFight(User1UserNameVar, User3UserNameVar);}
+			if (round === 0) {setFight(HostUserNameVar, User2UserNameVar);setFightIcons(HostUserIcon.src, User2Icon.src);}
+			else if (round === 1) {setFight(User1UserNameVar, User3UserNameVar);setFightIcons(User1Icon.src, User3Icon.src);}
 		} else if (PVPMode === 'Tournament') {
-			if (round === 0) {setFight(HostUserNameVar, User1UserNameVar);}
-			else if (round === 1) {setFight(User2UserNameVar, User3UserNameVar);}
-			else if (round === 2) {setFight(tournamentWinnerRound1, tournamentWinnerRound2);}
+			if (round === 0) {setFight(HostUserNameVar, User1UserNameVar);setFightIcons(HostUserIcon.src, User1Icon.src);}
+			else if (round === 1) {setFight(User2UserNameVar, User3UserNameVar);setFightIcons(User2Icon.src, User3Icon.src);}
+			else if (round === 2) {setFight(tournamentWinnerRound1, tournamentWinnerRound2);setFightIcons(tournamentWinnerRound1Icon, tournamentWinnerRound2Icon);}
 		}
 	}
 
@@ -510,9 +530,26 @@ export function initAll() {
 				if (parseInt(window.getComputedStyle(PaddingRight).top) - 30 > 80) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) - 30) + "px";}
 				else {PaddingRight.style.top = 80 + "px";}
 			}
-		}// else {AI();}
+		} else {AI();}
 	}
 
+	function AI() {
+		let ballTop = parseInt(window.getComputedStyle(Ball).top) + ballSpeed * ballDirectionY;
+		let result = parseInt(window.getComputedStyle(PaddingRight).top);
+		let diff = (700 - 400) - parseInt(window.getComputedStyle(Ball).left);
+		if (ballTop <= Ball.offsetHeight / 2 || ballTop >= 400 - Ball.offsetHeight) {
+			if (diff < 0) {diff *= -1;}
+			
+			if (ballTop <= Ball.offsetHeight / 2) //top
+				result = 400 - diff;
+			if (ballTop >= 400 - Ball.offsetHeight) //bottom
+				result = diff;
+
+			if (result < 80) {result = 80;}
+			if (result > 314) {result = 314;}
+			PaddingRight.style.top = result + "px";
+		}
+	}
 
 	function moveBall() {
 		const paddingLeftRect = PaddingLeft.getBoundingClientRect();
@@ -542,42 +579,28 @@ export function initAll() {
 	PVP2v2Button.addEventListener('click', () => {PVPMode = '2vs2';changeMenu('RoomMenu');});
 	TournamentButton.addEventListener('click', () => {PVPMode = 'Tournament';changeMenu('RoomMenu');});
 	PVAButton.addEventListener('click', () => {changeMenu('AIMenu');});
-	PvAIeasyButton.addEventListener('click', () => {AIDifficulty = 'Easy';changeMenu('Game');});
-	PvAImediumButton.addEventListener('click', () => {AIDifficulty = 'Medium';changeMenu('Game');});
-	PvAIhardButton.addEventListener('click', () => {AIDifficulty = 'Hard';changeMenu('Game');});
+	PvAIeasyButton.addEventListener('click', () => {AIDifficulty = 'Easy'; PaddingRight.style.transition = '1.5s linear'; changeMenu('Game');});
+	PvAImediumButton.addEventListener('click', () => {AIDifficulty = 'Medium'; PaddingRight.style.transition = '1s linear'; changeMenu('Game');});
+	PvAIhardButton.addEventListener('click', () => {AIDifficulty = 'Hard'; PaddingRight.style.transition = '0.8s linear'; changeMenu('Game');});
 	BackToMainMenuButton.addEventListener('click', () => {changeMenu('MainMenu');resetAllData();});
-	OptnButton.addEventListener('click', () => {console.log('OptnButton clicked');ToggleOptnMenu();});
+	OptnButton.addEventListener('click', () => {ToggleOptnMenu();});
 	PVPStartButton.addEventListener('click', () => {changeMenu('Game');});
-	ReadyButton.addEventListener('click', () => {ReadyButton.style.display = 'none';startGame();});
-	NextButton.addEventListener('click', () => {
-		round++;
-		scorerightplayer = 0;
-		scoreleftplayer = 0;
-		ScorePlayerLeftElement.textContent = scoreleftplayer;
-		ScorePlayerRightElement.textContent = scorerightplayer;
-		softReset();
-		changeMenu('Game');
-	});
+	ReadyButton.addEventListener('click', () => {if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}if (AIDifficulty === 'Easy') {PaddingRight.style.transition = '1.5s linear';}if (AIDifficulty === 'Meduim') {PaddingRight.style.transition = '1s linear';}if (AIDifficulty === 'Hard') {PaddingRight.style.transition = '0.8s linear';}ReadyButton.style.display = 'none';startGame();});
+	NextButton.addEventListener('click', () => {round++;scorerightplayer = 0;scoreleftplayer = 0;ScorePlayerLeftElement.textContent = scoreleftplayer;ScorePlayerRightElement.textContent = scorerightplayer;softReset();changeMenu('Game');});
 
 	Player1SearchButton.addEventListener('click', () => {searchUser(User1SearchBox.value, 'user1');});
 	Player2SearchButton.addEventListener('click', () => {searchUser(User2SearchBox.value, 'user2');});
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
 
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
-	document.addEventListener("keydown", (e) => {
-		keyPressed[e.key] = true;
-	});
-	document.addEventListener("keyup", (e) => {
-		keyPressed[e.key] = false;
-	});
+	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
+	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
 
 	function init() {
 		changeMenu('MainMenu');
 		resetAllData();
 		setHostUserName();
 	}
-
-
 
 	init();
 };

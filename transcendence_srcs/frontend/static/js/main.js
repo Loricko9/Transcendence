@@ -1,6 +1,8 @@
 import { initAll } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
-	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields } from './utils.js';
+	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields,
+	fetchFriendList, loadfriendinput,
+	loadfriendmessage} from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
 
@@ -10,14 +12,11 @@ async function checkAuthentification() {
 		const response = await fetch('/api/check-auth/');
 		const data = await response.json();
 		if (data.is_authenticated) {
-			// Affichage connecte
 			if (!socket)
 			{
 				InitializeWebsocket();
 				console.log("websocket init")
 			}
-			fetchFriendList();
-			fetchFriendRequests();
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -27,20 +26,11 @@ async function checkAuthentification() {
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
 			document.getElementById('signin_btn_little').style.display = 'none';
-			const nbWinElement = document.getElementById('nbWin');
-			const nbLoseElement = document.getElementById('nbLose');
-			if (nbWinElement && nbLoseElement) {
-				nbWinElement.textContent = data.nb_win;
-				nbLoseElement.textContent = data.nb_lose;
-			}
 			if (data.is_user_42)
 				return [true, true];
 			return [true, false];
 		}
 		else {
-			// Affichage deconnecte
-			const appDiv = document.getElementById("app");
-			loadTemplate(appDiv, "temp_index");
 			document.getElementById('option').style.display = 'none';
 			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
@@ -80,8 +70,10 @@ function router(){
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
-				if (isAuthenticated)
+				if (isAuthenticated) {
 					loadTemplate(appDiv, "temp_login");
+					loadIndexLogin();
+				}
 				else
 					loadTemplate(appDiv, "temp_index");
 				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
@@ -133,13 +125,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	if (lang != null) {
 		switch (lang) {
 			case "fr":
-				document.getElementById("btn_fr").classList.add("active")
+				document.getElementsByClassName("btn_fr")[0].classList.add("active")
+				document.getElementsByClassName("btn_fr")[1].classList.add("active")
 				break;
 			case "en":
-				document.getElementById("btn_en").classList.add("active")
+				document.getElementsByClassName("btn_en")[0].classList.add("active")
+				document.getElementsByClassName("btn_en")[1].classList.add("active")
 				break;
-				case "es":
-					document.getElementById("btn_es").classList.add("active")
+			case "es":
+				document.getElementsByClassName("btn_es")[0].classList.add("active")
+				document.getElementsByClassName("btn_es")[1].classList.add("active")
 				break;
 			default:
 				break;
@@ -163,16 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
 		offcanvasInstance.hide();
 	});
 	
-	// partie pour gerer empecher les <a data-link> de recharger la page
 	document.querySelectorAll('a[data-link]').forEach(link => {
 		link.addEventListener('click', (event) => {
-			event.preventDefault(); // evite le rechargement de la page
+			event.preventDefault();
 			const target = event.currentTarget.getAttribute('href');
-			redirect_to(target); // vers la nouvelle page
+			redirect_to(target);
 		});
 	});
-	router(); // gère la cas pour rafraichir la page
+	router();
 });
+
 
 // gère le retour arrière/avant dans l'historique (les flèches)
 window.addEventListener('popstate', router);
@@ -263,6 +258,27 @@ document.getElementById('deleteAccountBtn').addEventListener('click', function()
         .catch(error => console.error('Erreur:', error));
     }
 });
+
+function loadIndexLogin() {
+	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
+	fetchFriendList();
+	document.querySelectorAll('a[data-link]').forEach(link => {
+		link.addEventListener('click', (event) => {
+			event.preventDefault();
+			const target = event.currentTarget.getAttribute('href');
+			redirect_to(target);
+		});
+	});
+	const form_AddFriend = document.getElementById('dropdown_AddFriend');
+	if (form_AddFriend) {
+		form_AddFriend.addEventListener('submit', function(event) {
+			event.preventDefault();
+			sendFriendRequest();
+		});
+	}
+	else
+		console.error("form_AddFriend not found")
+}
 
 // change password
 function loadChangePassword() {
@@ -396,81 +412,10 @@ function get_stats() {
 	.catch(error => console.error('Error fetching stats', error));
 }
 
-// Récupération de la liste d'amis
-function fetchFriendList() {
-	fetch('/api/friends/', {
-		method: 'GET',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const list = document.getElementById('friend-list');
-        list.innerHTML = '';
-        data.friendships.forEach(friendship => {
-			if (friendship.status == 'accepted')
-			{
-				const li = document.createElement('li');
-				let username;
-				if (friendship.sender_username == data.username)
-					username = `${friendship.receiver_username}`;
-				else
-					username = `${friendship.sender_username}`;
-				li.textContent = username;
-				const deleteButton = document.createElement('button');
-				deleteButton.textContent = 'Remove';
-				deleteButton.style.marginLeft = '10px';
-				deleteButton.addEventListener('click', () => {
-					deleteFriendship(friendship.id); // Appel de la fonction de suppression
-				});
-				const chatButton = document.createElement('button');
-				chatButton.textContent = 'Begin chat';
-				chatButton.style.marginLeft = '10px';
-				chatButton.addEventListener('click', () => {
-					toggleChat(friendship.id);
-				});
-				const blockButton = document.createElement('button');
-				blockButton.textContent = 'Block';
-				blockButton.style.marginLeft = '10px';
-				blockButton.addEventListener('click', () => {
-					chatSocket.send(JSON.stringify({command: 'block', username: username}));
-				});
-				li.appendChild(blockButton);
-				li.appendChild(chatButton);
-				li.appendChild(deleteButton);
-				list.appendChild(li);
-			}
-        });
-    })
-    .catch(error => console.error('Error fetching friend list:', error));
-}
-
-// delete a friend
-function deleteFriendship(friendshipId){
-	fetch(`/api/friends/${friendshipId}/`, { // URL pour la suppression
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-		}
-	})
-	.then(response => {
-		if (response.ok) {
-			console.log('Friendship deleted successfully.');
-			fetchFriendList(); // Rafraîchir la liste
-		} else {
-			console.error('Failed to delete friendship.');
-		}
-	})
-	.catch(error => console.error('Error deleting friendship:', error));
-}
-
-
 // Envoyer une demande d'amis
 function sendFriendRequest() {
-	const username = document.getElementById('username').value;
+	const username = document.getElementById('AddFriend_input').value;
+	document.getElementById('AddFriend_input').value = '';
 	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
@@ -488,66 +433,9 @@ function sendFriendRequest() {
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
-window.sendFriendRequest = sendFriendRequest;                                                                                                                              
-
-
-// Récupérer la liste des demandes d'amis
-function fetchFriendRequests() {
-    fetch('/api/friend-requests/', {
-		method: 'GET',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-		const list = document.getElementById('friend-request-list');
-        list.innerHTML = '';  // Vide la liste avant de la remplir
-        data.forEach(request => {
-			const li = document.createElement('li');
-            li.textContent = `${request.sender_username} vous a envoyé une demande d'ami(e).`;
-
-            // Bouton pour accepter
-            const acceptButton = document.createElement('button');
-            acceptButton.textContent = 'Accepter';
-            acceptButton.onclick = () => respondToRequest(request.sender_username, 'accepted');
-			
-            // Bouton pour refuser
-            const rejectButton = document.createElement('button');
-            rejectButton.textContent = 'Refuser';
-            rejectButton.onclick = () => respondToRequest(request.sender_username, 'rejected');
-			
-            li.appendChild(acceptButton);
-            li.appendChild(rejectButton);
-            list.appendChild(li);
-        });
-    })
-    .catch(error => console.error('Error fetching friend requests:', error));
-}
-
-// Accepter ou refuser une demande
-function respondToRequest(username, action) {
-    fetch(`/api/friend-request/${username}/`, {
-        method: 'PATCH',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
-        },
-        body: JSON.stringify({ action: action })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message || data.error);
-        fetchFriendRequests();  // Rafraîchir la liste des demandes
-		fetchFriendList();
-    })
-    .catch(error => console.error('Error responding to friend request:', error));
-}
 
 // Variables globales Websocket
 let socket = null;
-let chatSocket = null;
 
 // Gestionnaire Friendship web socket
 function InitializeWebsocket(){
@@ -557,73 +445,16 @@ function InitializeWebsocket(){
 		console.log("WebSocket message received:", event.data); // Log des données brutes
 		const data = JSON.parse(event.data);
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
-		fetchFriendList();  // Rafraîchir la liste des amis
-		fetchFriendRequests();  // Rafraîchir la liste des demandes d'amis
+		fetchFriendList(() => {
+			loadfriendinput();
+			loadfriendmessage();
+		});
 	};
 	
 	socket.onclose = function () {
 		console.error("WebSocket connection closed.");
 	};
 };
-
-// Afficher ou fermer le Chat
-function toggleChat(roomId) {
-	// if (event) {
-    //     event.preventDefault(); // Empêche le comportement par défaut de navigation
-    // }
-	console.log("togglechat called")
-    const chatContainer = document.querySelector('#chat-container');
-	console.log("Current display style:", chatContainer.style.display);
-    if (chatContainer.style.display === 'none') {
-        chatContainer.style.display = 'block';
-		console.log("Chat container opened");
-		if (!chatSocket)
-		{
-        	initializeChatWebSocket(roomId); // Initialise la connexion WebSocket pour le chat
-			console.log("Chat websocket init")
-		}
-    } else {
-        chatContainer.style.display = 'none';
-		console.log("Chat container closed");
-		if (chatSocket)
-		{
-			chatSocket.send(JSON.stringify({command: 'delete_messages'}));
-			chatSocket.close()
-			chatSocket = null
-			console.log("Chat websocket closed")
-		}
-    }
-}
-window.toggleChat = toggleChat;
-
-// Gestionnaire Chat websocket
-function initializeChatWebSocket(roomId) {
-    chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
-
-	const chatLog = document.querySelector('#chat-log');
-
-    // Réception des messages
-    chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-		const messageElement = document.createElement('p');
-        messageElement.innerHTML = `<strong>${data.sender}:</strong> ${data.message} <small>(${data.timestamp || ''})</small>`;
-        chatLog.appendChild(messageElement);
-		chatLog.scrollTop = chatLog.scrollHeight; // Scroll automatique
-    };
-
-    // Gestion de l'envoi des messages
-    document.querySelector('#chat-message-submit').onclick = function () {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({message: message}));
-        messageInputDom.value = ''; // Efface le champ après envoi
-    };
-
-    // Gestion des erreurs
-    chatSocket.onclose = function (e) {
-        console.error('WebSocket connection closed');
-    };
-}
 
 // Fermer le WebSocket lorsque la page est déchargée
 window.addEventListener('beforeunload', function () {

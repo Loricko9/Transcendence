@@ -41,7 +41,7 @@ class User_tabManager(BaseUserManager):
 class User_tab(AbstractBaseUser, PermissionsMixin):
 	Email = models.EmailField(unique=True)
 	username = models.CharField(max_length=255, null=True, unique=True)
-	avatar = models.ImageField(upload_to='avatars/', default='avatars/avatar_1.png')
+	avatar = models.ImageField(upload_to='avatars/', default='/media/avatars/avatar_1.png')
 	is_active = models.BooleanField(default=True)
 	is_staff = models.BooleanField(default=False)
 	is_superuser = models.BooleanField(default=False)
@@ -51,6 +51,8 @@ class User_tab(AbstractBaseUser, PermissionsMixin):
 	verification_token = models.UUIDField(default=uuid.uuid4, editable=False) # génère un UUID de type 4 aleatoire
 	nb_win = models.IntegerField(default=0)
 	nb_lose = models.IntegerField(default=0)
+	nb_tournament_win = models.IntegerField(default=0)
+	nb_tournament_lose = models.IntegerField(default=0)
 	friends = models.ManyToManyField('self', blank=True, symmetrical=True)
 	#Mdp automatiquement heriter de la class AbstractBaseUser
 	#Mais a rajouter pour un hash de mdp manuel
@@ -120,7 +122,7 @@ class History(models.Model):
 			result = 'Victory'
 		else :
 			result = 'Defeat'
-		if not User_tab.objects.filter(username=enemy).exists():
+		if not User_tab.objects.filter(username=enemy).exists() and not enemy == 'AI':
 			raise ValueError("L'ennemy n'existe pas !")
 		try :
 			user_instance = User_tab.objects.get(username=user)

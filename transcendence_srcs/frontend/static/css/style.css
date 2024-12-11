@@ -19,6 +19,30 @@ body {
 	color: white;
 }
 
+.btn-red {
+	background-color: #9c0101;
+	color: white;
+}
+
+.btn-blue {
+	background-color: #0d1a65;
+	border-color: #0d1a65;
+	color: white;
+}
+
+.txt-grey {
+	color: #777777;
+}
+
+.border-blue {
+	border: 5px solid #007bff;
+}
+
+#friend-list {
+	overflow-y: auto;
+	max-height: 360px;
+}
+
 #dropdown_lang {
 	width: 15rem;
 }
@@ -49,6 +73,7 @@ body {
 	gap: 10px;
 	border: 0;
 }
+
 .log_form {
 	width: 35rem;
 	max-width: 97vw;
@@ -56,6 +81,15 @@ body {
 	position: absolute;
 	top: 100%;
     transform: translateY(10px);
+}
+
+#dropdown_AddFriend {
+	width: 20rem;
+	max-width: 40vw;
+	overflow-x: hidden;
+	position: absolute;
+	top: 100%;
+    transform: translateY(1px);
 }
 
 .offcanvas {
@@ -79,9 +113,48 @@ body {
 	color: #0d1a65;
 }
 
+.div-grey {
+	background-color: #e7e7e7;
+}
+
+.div-white {
+	background-color: white;
+}
+
+.div-blank {
+	background-color: #defffe;
+}
+
+.div-blue {
+	background-color: #007bff;
+}
+
 .Diagram {
 	width: 60%;
 	height: auto;
+}
+
+.border-green {
+	border: 4px solid green;
+}
+
+.border-red {
+	border: 4px solid darkred;
+}
+
+#div-tchat {
+	height: 450px;
+}
+
+#message_lst {
+	overflow-y: auto;
+	max-height: 360px;
+	width: 100%;
+}
+
+.message {
+	display: inline-block;
+	max-width: auto;
 }
 
 #signin_btn_index {

@@ -7,7 +7,6 @@ from rest_framework.decorators import api_view # type: ignore
 from rest_framework.response import Response # type: ignore
 from rest_framework.permissions import IsAuthenticated # type: ignore
 from rest_framework import status # type: ignore
-from .serializers import FriendshipSerializer
 from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash # type: ignore
 from django.views.decorators.csrf import csrf_protect, csrf_exempt # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
@@ -41,13 +40,25 @@ class FriendshipListView(APIView):
      
 	def get(self, request):
 		# Récupérer tous les amis de l'utilisateur connecté
-		friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
-		serializer = FriendshipSerializer(friendships, many=True)
-		response_data = {
-			"username": request.user.username,
-			"friendships": serializer.data
-		}
-		return Response(response_data)
+		username = request.user
+		friendships = Friendship.objects.filter(sender=username) | Friendship.objects.filter(receiver=username)
+		lst = []
+		for friendship in friendships:
+			if (friendship.sender == username):
+				friend = friendship.receiver
+			else :
+				friend = friendship.sender
+			res = {
+				"id": friendship.id,
+				"username": friend.username,
+				"avatar": f"{friend.avatar}",
+				"status": friendship.status,
+				"is_connected": friend.is_connected
+			}
+			if (friendship.status == "pending" and friendship.sender == username):
+				res['wait_pending'] = True
+			lst.append(res)
+		return JsonResponse({"friendships": lst})
 
 	def delete(self, request, id):
 		try:
@@ -73,28 +84,18 @@ class FriendshipListView(APIView):
 # @login_required
 @api_view(['POST'])
 def send_friend_request(request):
-	# Vérifier si un 'username' est passé dans la requête
 	receiver_username = request.data.get('receiver_username')
 	if not receiver_username:
 		return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
-
 	try:
-		# Récupérer l'utilisateur destinataire de la demande
 		receiver = User.objects.get(username=receiver_username)
 	except User.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-	# Ne pas permettre à un utilisateur de s'ajouter lui-même
 	if receiver == request.user:
 		return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
-
-	# Vérifier si une amitié existe déjà
 	if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
 		return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
-
-	# Créer une relation d'amitié
 	Friendship.objects.create(sender=request.user, receiver=receiver)
-	# Notification via WebSocket
 	channel_layer = get_channel_layer()
 	group_name = f"friendship_updates_{receiver.id}"
 	logger.info(f"Sending message to group: {group_name} with data: {request.user.username}")
@@ -105,30 +106,18 @@ def send_friend_request(request):
 			"data": {"message": f"You have a new friend request from {request.user.username}"}
 		}
 	)
-
 	return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
-
-# afficher la liste des demandes d'amis
-class FriendRequestListView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        # Récupérer toutes les demandes d'ami en attente (status = 'pending')
-        pending_requests = Friendship.objects.filter(receiver=request.user, status='pending')
-        serializer = FriendshipSerializer(pending_requests, many=True)
-        return Response(serializer.data)
 
 # repondre a la demande d'amis
 @api_view(['PATCH'])
-def respond_to_friend_request(request, username):
+def respond_to_friend_request(request, id):
 	try:
-		# Trouver l'utilisateur qui a envoyé la demande
-		sender = User.objects.get(username=username)
+		sender = User.objects.get(username=request.data.get('username'))
 	except User.DoesNotExist:
 		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 	# Vérifier s'il y a une demande d'ami en attente
-	friendship = Friendship.objects.filter(sender=sender, receiver=request.user, status='pending').first()
+	friendship = Friendship.objects.filter(id=id, sender=sender, status='pending').first()
 	if not friendship:
 		return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -250,24 +239,6 @@ def change_avatar(request):
 			request.user.save()
 			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
 		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
-	
-def login_view(request):
-	if request.method == 'POST':
-		email = request.POST.get('email')
-		password = request.POST.get('password')
-
-		user = authenticate(request, Email=email, password=password)
-        
-		if user is not None:
-			login(request, user)
-			user.connect()
-			data = {'success': True, 'message': 'Connexion reussie'}
-			response = JsonResponse(data)
-			response['Content-Type'] = 'application/json; charset=utf-8'
-			return response
-		else:
-			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
-	return redirect('/')
 
 def login_view(request):
 	if request.method == 'POST':
@@ -298,7 +269,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
-						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar.url}" alt="Avatar" width="65">',
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
 					   		'user': request.user.username,
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -321,6 +292,52 @@ def get_stats(request):
 			return JsonResponse({'error': 'Invalid JSON data'})
 	return (redirect('/'))
 
+def update_score(request):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		user_win = data.get('winner')
+		user_win_score = data.get('winnerScore')
+
+		user_lose = data.get('loser')
+		user_lose_score = data.get('loserScore')
+
+		isTournament = data.get('isTournament')
+
+		if user_win and user_win != 'AI':
+			if User_tab.objects.filter(username=user_win).exists():
+				Wuser = User_tab.objects.get(username=user_win)
+				Wuser.nb_win += 1
+				if isTournament:
+					Wuser.nb_tournament_win += 1
+				Wuser.save()
+
+		if user_lose and user_lose != 'AI':
+			if User_tab.objects.filter(username=user_lose).exists():
+				Luser = User_tab.objects.get(username=user_lose)
+				Luser.nb_lose += 1
+				if isTournament:
+					Luser.nb_tournament_lose += 1
+				Luser.save() # i forgot to save the user lol
+			
+		# if user_win and user_lose:
+		# 	if User_tab.objects.filter(username=user_win).exists() and User_tab.objects.filter(username=user_lose).exists():
+		# 		Wuser = User_tab.objects.get(username=user_win)
+		# 		Luser = User_tab.objects.get(username=user_lose)
+		# 		Wuser.nb_win += 1
+		# 		Luser.nb_lose += 1
+		# 		if isTournament:
+		# 			Wuser.nb_tournament_win += 1
+		# 			Luser.nb_tournament_lose += 1
+				try:
+					if (user_win != 'AI'):
+						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
+					if (user_lose != 'AI'):
+						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
+				except ValueError as e:
+					return JsonResponse({'error': str(e)})
+		return JsonResponse({'username' : None})
+	return redirect('/')
+
 def find_username(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
@@ -328,7 +345,7 @@ def find_username(request):
 		if username:
 			if User_tab.objects.filter(username=username).exists():
 				user = User_tab.objects.get(username=username)
-				return JsonResponse({'user': user.username})
+				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 	
@@ -338,8 +355,10 @@ def find_hostname(request):
 	if request.method == 'POST':
 		try:
 			user = request.user
+			print("Host name", flush=True)
+			print(user.avatar, flush=True)
 			if user.is_authenticated:
-				return JsonResponse({'user': user.username})
+				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:
