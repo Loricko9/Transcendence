@@ -364,3 +364,12 @@ function initializeChatWebSocket(roomId) {
         console.error('WebSocket connection closed');
     };
 }
+
+document.getElementById('block_friend').addEventListener('click', function() {
+	const friend_username = document.getElementById("friend_username").innerText;
+	if (chatSocket)
+		chatSocket.send(JSON.stringify({
+			command: 'block',
+			username: friend_username,
+	}));
+});
