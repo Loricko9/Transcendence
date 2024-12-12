@@ -8,8 +8,8 @@ export function initAll() {
 	const RoomUser1Info = document.getElementById('User1');
 	const RoomUser2Info = document.getElementById('User2');
 	const RoomUser3Info = document.getElementById('User3');
-	const Ltips = document.getElementById('tips1');
-	const Rtips = document.getElementById('tips2');
+	// const Ltips = document.getElementById('tips1');
+	// const Rtips = document.getElementById('tips2');
 
 	const PVP1v1Button = document.getElementById('HostGame1v1Button');
 	const PVP2v2Button = document.getElementById('HostGame2v2Button');
@@ -20,7 +20,7 @@ export function initAll() {
 	const PvAImediumButton = document.getElementById('AIMediumButton');
 	const PvAIhardButton = document.getElementById('AIHardButton');
 	const BackToMainMenuButton = document.getElementById('BackMainMenuButton');
-	const OptnButton = document.getElementById('OptnButton');
+	// const OptnButton = document.getElementById('OptnButton');
 	const ReadyButton = document.getElementById('ready');
 	const NextButton = document.getElementById('NextButton');
 	const PlayAgainButton = document.getElementById('PlayAgain');
@@ -29,7 +29,7 @@ export function initAll() {
 	const MainMenu = document.getElementById('main-menu');
 	const AIMenu = document.getElementById('AIMenu');
 	const RoomMenu = document.getElementById('Room');
-	const OptnMenu = document.getElementById('OptnMenu');
+	// const OptnMenu = document.getElementById('OptnMenu');
 
 	const ScorePlayerLeftElement = document.getElementById('LeftPlayerScore');
 	const LeftPlayerUserNameContent = document.getElementById('LeftPlayerName');
@@ -98,8 +98,8 @@ export function initAll() {
 	function setUser2UserName(value) {if (value === null) {User2UserNameVar = null;RoomUser2Name.textContent = '...';} else {User2UserNameVar = value;RoomUser2Name.textContent = value;}}
 	function setUser3UserName(value) {if (value === null) {User3UserNameVar = null;RoomUser3Name.textContent = '...';}else {User3UserNameVar = value;RoomUser3Name.textContent = value;}}
 	function resetFight() {fight = [null, null];}
-	function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
-	function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-170px';} else {OptnMenu.style.bottom = '-650px';}}
+	// function hideOptnMenu() {OptnMenu.style.bottom = '-650px';}
+	// function ToggleOptnMenu() {if (OptnMenu.style.bottom === '-650px') {OptnMenu.style.bottom = '-170px';} else {OptnMenu.style.bottom = '-650px';}}
 	function addPoint(side) {if (side === 'left') {scoreleftplayer++;ScorePlayerLeftElement.textContent = scoreleftplayer;}else if (side === 'right') {scorerightplayer++;ScorePlayerRightElement.textContent = scorerightplayer;}}
 	function setHostUserName() {
 		let UserIcon;
@@ -114,8 +114,8 @@ export function initAll() {
 		.then(data => {
 			if (data.user) {
 				UserIcon = data.userIcon;
-				UserIcon = UserIcon.replace('/media/media/', '/media/');
-				if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
+				// UserIcon = UserIcon.replace('/media/media/', '/media/');
+				// if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/', '');}
 				HostUserNameVar = data.user;
 				RoomHostName.textContent = data.user;
 				setHostImage(UserIcon);
@@ -142,8 +142,8 @@ export function initAll() {
 		.then(data => {
 			UserName = data.user;
 			UserIcon = data.userIcon;
-			UserIcon = UserIcon.replace('/media/media/', '/media/');
-			if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/https%3A', 'https:/');}
+			// UserIcon = UserIcon.replace('/media/media/', '/media/');
+			// if (!UserIcon.includes('/media/avatars/')) {UserIcon = UserIcon.replace('/media/https%3A', 'https:/');}
 			if (UserName === undefined || UserName === null) {
 				alert('User not found');
 				return ;
@@ -210,12 +210,12 @@ export function initAll() {
 	}
 
 	function changeMenu(menu) {
-		hideOptnMenu();
+		// hideOptnMenu();
 		AnimationAIMenu('out');
 		AnimationMainMenu('out');
 		document.getElementById('EndGameMenu').style.display = 'none';
-		Rtips.style.display = 'none';
-		Ltips.style.display = 'none';
+		// Rtips.style.display = 'none';
+		// Ltips.style.display = 'none';
 		Ball.style.display = 'none';
 		PaddingLeft.style.display = 'none';
 		PaddingRight.style.display = 'none';
@@ -261,7 +261,7 @@ export function initAll() {
 		AIDifficulty = "none";
 		PVPMode = "none";
 		ballSpeed = 6;
-		OptnMenu.style.bottom = '-650px';
+		// OptnMenu.style.bottom = '-650px';
 		PaddingLeft.style.top = '50%';
 		PaddingRight.style.top = '50%';
 		Ball.style.left = '50%';
@@ -321,7 +321,7 @@ export function initAll() {
 	function startGame() {
 		counter(() => {
 			gameStarted = true;
-			if (PVPMode === 'none') {Rtips.style.display = 'none';Ltips.style.display = 'block';} else {Ltips.style.display = 'block';Rtips.style.display = 'block';}
+			// if (PVPMode === 'none') {Rtips.style.display = 'none';Ltips.style.display = 'block';} else {Ltips.style.display = 'block';Rtips.style.display = 'block';}
 			gameLoop();
 		});
 	}
@@ -336,7 +336,7 @@ export function initAll() {
 	}
 
 	function updateScore(winner, loser, winnerScore, loserScore, isTournament) {
-		console.log('UpdateScoreTests [', 'winner:', winner, 'loser:', loser, 'winnerScore:', winnerScore, 'loserScore:', loserScore, 'isTournament:', isTournament, ']');
+		// console.log('UpdateScoreTests [', 'winner:', winner, 'loser:', loser, 'winnerScore:', winnerScore, 'loserScore:', loserScore, 'isTournament:', isTournament, ']');
 		fetch('/api/update-score/', {
 			method: 'POST',
 			headers: {
@@ -372,25 +372,10 @@ export function initAll() {
 					setWinnerIcon(leftUserIcon.src);
 					document.getElementById("WinnerName").textContent = LeftPlayerUserNameContent.textContent;
 					updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
-					
-					// if (PVPMode === 'none') {
-					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
-					// } else if (PVPMode !== 'none') {
-					// 	updateScore(LeftPlayerUserNameContent.textContent, RightPlayerUserNameContent.textContent, scoreleftplayer, scorerightplayer, false);
-					// }
 				}
 				else if (scorerightplayer === 3) {
 					document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
 					setWinnerIcon(rightUserIcon.src);
-					// if (PVPMode === 'none') {
-					// 	setWinnerIcon('/media/avatars/Bot.png');
-					// 	// document.getElementById("WinnerName").textContent = RightPlayerUserNameContent.textContent;
-					// 	// updateScore('loose', RightPlayerUserNameContent.textContent); ////////////
-					// }
-					// else {
-					// 	// updateScore('win', RightPlayerUserNameContent.textContent); ///////////
-					// 	// updateScore('loose', LeftPlayerUserNameContent.textContent); ///////////////
-					// }
 					updateScore(RightPlayerUserNameContent.textContent, LeftPlayerUserNameContent.textContent, scorerightplayer, scoreleftplayer, false);
 				}
 			}
@@ -523,16 +508,20 @@ export function initAll() {
 	}
 
 	function movePaddings() {
+		const gameAreaHeight = document.getElementById('game-area').clientHeight;
+		if (parseInt(window.getComputedStyle(PaddingRight).top) > (gameAreaHeight-80)) {PaddingRight.style.top = (gameAreaHeight-80) + "px";}
+		if (parseInt(window.getComputedStyle(PaddingLeft).top) > (gameAreaHeight-80)) {PaddingLeft.style.top = (gameAreaHeight-80) + "px";}
+
 		if (keyPressed['s']) {
-			if (parseInt(window.getComputedStyle(PaddingLeft).top) + 30 < 314) {PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) + 30) + "px";}
-			else {PaddingLeft.style.top = 314 + "px";}
+			if (parseInt(window.getComputedStyle(PaddingLeft).top) + 30 < (gameAreaHeight - 80)) {PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) + 30) + "px";}
+			else {PaddingLeft.style.top = (gameAreaHeight - 80) + "px";}
 		} if (keyPressed['w']) {
 			if (parseInt(window.getComputedStyle(PaddingLeft).top) - 30 > 80) {PaddingLeft.style.top = (parseInt(window.getComputedStyle(PaddingLeft).top) - 30) + "px";}
 			else{PaddingLeft.style.top = 80 + "px";}
 		} if (PVPMode !== 'none') {
 			if (keyPressed['ArrowDown']) {
-				if (parseInt(window.getComputedStyle(PaddingRight).top) + 30 < 314) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) + 30) + "px";}
-				else {PaddingRight.style.top = 314 + "px";}
+				if (parseInt(window.getComputedStyle(PaddingRight).top) + 30 < (gameAreaHeight - 80)) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) + 30) + "px";}
+				else {PaddingRight.style.top = (gameAreaHeight - 80) + "px";}
 			} if (keyPressed['ArrowUp']) {
 				if (parseInt(window.getComputedStyle(PaddingRight).top) - 30 > 80) {PaddingRight.style.top = (parseInt(window.getComputedStyle(PaddingRight).top) - 30) + "px";}
 				else {PaddingRight.style.top = 80 + "px";}
@@ -543,17 +532,19 @@ export function initAll() {
 	function AI() {
 		let ballTop = parseInt(window.getComputedStyle(Ball).top) + ballSpeed * ballDirectionY;
 		let result = parseInt(window.getComputedStyle(PaddingRight).top);
-		let diff = (700 - 400) - parseInt(window.getComputedStyle(Ball).left);
-		if (ballTop <= Ball.offsetHeight / 2 || ballTop >= 400 - Ball.offsetHeight) {
+		let gameAreaHeight = document.getElementById('game-area').clientHeight;
+		let gameAreaWidth = document.getElementById('game-area').clientWidth;
+		let diff = (gameAreaWidth - gameAreaHeight) - parseInt(window.getComputedStyle(Ball).left);
+		if (ballTop <= Ball.offsetHeight / 2 || ballTop >= gameAreaHeight - Ball.offsetHeight) {
 			if (diff < 0) {diff *= -1;}
 			
 			if (ballTop <= Ball.offsetHeight / 2) //top
-				result = 400 - diff;
-			if (ballTop >= 400 - Ball.offsetHeight) //bottom
+				result = gameAreaHeight - diff;
+			if (ballTop >= gameAreaHeight - Ball.offsetHeight) //bottom
 				result = diff;
 
 			if (result < 80) {result = 80;}
-			if (result > 314) {result = 314;}
+			if (result > (gameAreaHeight-80)) {result = (gameAreaHeight-80);}
 			PaddingRight.style.top = result + "px";
 		}
 	}
@@ -561,19 +552,24 @@ export function initAll() {
 	function moveBall() {
 		const paddingLeftRect = PaddingLeft.getBoundingClientRect();
 		const paddingRightRect = PaddingRight.getBoundingClientRect();
+		let gameAreaHeight = document.getElementById('game-area').clientHeight;
+		let gameAreaWidth = document.getElementById('game-area').clientWidth;
 		const ballRect = Ball.getBoundingClientRect();
 		let ballTop = parseInt(window.getComputedStyle(Ball).top) + ballSpeed * ballDirectionY;
 		let ballLeft = parseInt(window.getComputedStyle(Ball).left) + ballSpeed * ballDirectionX;
+		
 		if (ballTop <= Ball.offsetHeight / 2) {ballDirectionY = 1;}
-		else if (ballTop >= 400 - Ball.offsetHeight) {ballDirectionY = -1;}
+		else if (ballTop >= gameAreaHeight - (Ball.offsetHeight / 2)) {ballDirectionY = -1;}
+		
 		if (ballLeft <= 0) {addPoint("right");softReset();return;}
-		else if (ballLeft >= 700 - Ball.offsetWidth) {addPoint("left");softReset();return;}
-		if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left 
-			&& ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) 
+		else if (ballLeft >= gameAreaWidth) {addPoint("left");softReset();return;}
+		
+		if (ballRect.left <= paddingLeftRect.right && ballRect.right >= paddingLeftRect.left && ballRect.top <= paddingLeftRect.bottom && ballRect.bottom >= paddingLeftRect.top) 
 			{ballDirectionX = 1;if (ballSpeed < 9)ballSpeed += 0.1;if (ballSpeed > 9)ballSpeed = 9;}
-		if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right 
-			&& ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) 
+		
+		if (ballRect.right >= paddingRightRect.left && ballRect.left <= paddingRightRect.right && ballRect.top <= paddingRightRect.bottom && ballRect.bottom >= paddingRightRect.top) 
 			{ballDirectionX = -1;if (ballSpeed < 9)ballSpeed += 0.1;if (ballSpeed > 9)ballSpeed = 9;}
+
 		Ball.style.top = ballTop + 'px';
 		Ball.style.left = ballLeft + 'px';
 	}
@@ -581,6 +577,11 @@ export function initAll() {
 	/*///////////////////////////////////////////////////////////////////////////////////////////////
 	////                                  EVENTS                                               ////
 	/////////////////////////////////////////////////////////////////////////////////////////////// */
+
+	function onPhone() {
+		if (window.innerWidth <= 700 || window.innerHeight <= 400) {return true;}
+		return false;
+	}
 
 	PVP1v1Button.addEventListener('click', () => {PVPMode = '1vs1';changeMenu('RoomMenu');});
 	PVP2v2Button.addEventListener('click', () => {PVPMode = '2vs2';changeMenu('RoomMenu');});
@@ -590,34 +591,33 @@ export function initAll() {
 	PvAImediumButton.addEventListener('click', () => {AIDifficulty = 'Medium'; PaddingRight.style.transition = '1s linear'; changeMenu('Game');});
 	PvAIhardButton.addEventListener('click', () => {AIDifficulty = 'Hard'; PaddingRight.style.transition = '0.8s linear'; changeMenu('Game');});
 	BackToMainMenuButton.addEventListener('click', () => {changeMenu('MainMenu');resetAllData();});
-	OptnButton.addEventListener('click', () => {ToggleOptnMenu();});
 	PVPStartButton.addEventListener('click', () => {changeMenu('Game');});
 	ReadyButton.addEventListener('click', () => {if (PVPMode !== 'none') {PaddingRight.style.transition = '0.06s linear';}if (AIDifficulty === 'Easy') {PaddingRight.style.transition = '1.5s linear';}if (AIDifficulty === 'Meduim') {PaddingRight.style.transition = '1s linear';}if (AIDifficulty === 'Hard') {PaddingRight.style.transition = '0.8s linear';}ReadyButton.style.display = 'none';startGame();});
 	NextButton.addEventListener('click', () => {round++;scorerightplayer = 0;scoreleftplayer = 0;ScorePlayerLeftElement.textContent = scoreleftplayer;ScorePlayerRightElement.textContent = scorerightplayer;softReset();changeMenu('Game');});
 	Player1SearchButton.addEventListener('click', () => {searchUser(User1SearchBox.value, 'user1');});
 	Player2SearchButton.addEventListener('click', () => {searchUser(User2SearchBox.value, 'user2');});
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
-
+	
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
 	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
-
-	function toggleDarkMode() {
-		console.log('test');
-		document.getElementById('game-container').classList.toggle('dark-mode');
-	}
-
+	
+	function toggleDarkMode() {document.getElementById('game-container').classList.toggle('dark-mode');}
+	
 	DMswitch.removeEventListener('click', toggleDarkMode);
     DMswitch.addEventListener('click', toggleDarkMode);
-
+	
 	function init() {
 		changeMenu('MainMenu');
 		resetAllData();
 		setHostUserName();
 	}
-
+	
 	init();
 };
+
+// OptnButton.addEventListener('click', () => {ToggleOptnMenu();});
+
 
 // ------------------------------- -------------------------------
 // let ballTop = parseInt(window.getComputedStyle(ball).top);

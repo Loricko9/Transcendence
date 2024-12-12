@@ -285,7 +285,7 @@ def logout_view(request):
 def check_authentication(request):
 	if request.user.is_authenticated:
 		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
-						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar.url}" alt="Avatar" width="65">',
+						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
 					   		'user': request.user.username,
 							'nb_win': request.user.nb_win,
             				'nb_lose': request.user.nb_lose
@@ -301,7 +301,7 @@ def get_stats(request):
 			user = request.user
 			if user.is_authenticated:
 				history_data = History.objects.filter(user=user).values('date', 'enemy', 'score', 'result')
-				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'history': list(history_data)})
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'Twin': user.nb_tournament_win, 'Tlose': user.nb_tournament_lose, 'history': list(history_data)})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:
@@ -338,9 +338,9 @@ def update_score(request):
 				
 				try:
 					if (user_win != 'AI'):
-						History.Add_History(History(), Wuser, Luser, user_win_score, user_lose_score)
+						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
 					if (user_lose != 'AI'):
-						History.Add_History(History(), Luser, Wuser, user_lose_score, user_win_score)
+						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
 				except ValueError as e:
 					return JsonResponse({'error': str(e)})
 		return JsonResponse({'username' : None})
@@ -353,7 +353,7 @@ def find_username(request):
 		if username:
 			if User_tab.objects.filter(username=username).exists():
 				user = User_tab.objects.get(username=username)
-				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
+				return JsonResponse({'user': user.username, 'userIcon': f"{user.avatar}"})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 	
@@ -364,7 +364,7 @@ def find_hostname(request):
 		try:
 			user = request.user
 			if user.is_authenticated:
-				return JsonResponse({'user': user.username, 'userIcon': user.avatar.url})
+				return JsonResponse({'user': user.username, 'userIcon': f"{user.avatar}"})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:

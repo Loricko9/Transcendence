@@ -209,6 +209,7 @@
     </div> -->
 
     <template id="Game">
+        <!-- <div id="datest"></div> -->
         <div id="game-container">
             <!-- players information area -->
             <div id="LeftPlayer">
@@ -273,16 +274,6 @@
                 <button id="NextButton">{{ texts.NextButton }}</button>
             </div>
     
-            <div id="OptnMenu">
-                <!-- <p id="DarkModeText">Dark Mode:</p> -->
-                <button id="darkModeSwitch">Dark Mode</button>
-                <!-- <input id="leftUserKeyUp" type="text" placeholder="Left User Key Up">
-                <input id="leftUserKeyDown" type="text" placeholder="Left User Key Down">
-                <input id="rightUserKeyUp" type="text" placeholder="Right User Key Up">
-                <input id="rightUserKeyDown" type="text" placeholder="Right User Key Down"> -->
-                <!-- <button id="OptnControlsButton">Controls</button> -->
-            </div>
-    
             <!-- game area -->
             <div id="game-area">
                 <div id="ball"></div>
@@ -292,13 +283,8 @@
                 <button id="ready">{{ texts.Ready }}</button>
                 <p id="counter">3</p>
             </div>
-    
-            <!-- Others elements -->
-            <p id="tips1" style="display: none">tips</p>
-            <p id="tips2" style="display: none">tips</p>
             <button id="BackMainMenuButton">{{ texts.MainMenu }}</button>
-            <button id="OptnButton">⚙</button>
-            <!-- <h4 id="GameTypeHeader">none</h4> -->
+            <button><img id="darkModeSwitch" src="{% static 'img/darkmodeicon.png' %}"/></button>
         </div>
     </template>
 	<!-- temp change avatar -->

@@ -7,7 +7,7 @@ stop:
 
 migrations:
 	@echo "Updating the database..."
-	@docker-compose exec django /migrations.sh
+	@docker exec -it Django python3 manage.py collectstatic --noinput
 	@echo "Database updated successfully!"
 
 help:
