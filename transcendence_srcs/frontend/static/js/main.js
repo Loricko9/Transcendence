@@ -195,7 +195,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(data => {
 		// Affiche le message de réponse
 		document.getElementById('infoco').innerHTML = data.message
-		document.getElementById('dropdown_form').reset(); // reinitialise le form
+		document.getElementById('dropdown_form').reset();
 		showSuccessModal()
 		redirect_to("/")
 	})
@@ -268,6 +268,12 @@ function loadIndexLogin() {
 			const target = event.currentTarget.getAttribute('href');
 			redirect_to(target);
 		});
+	});
+	document.getElementById("Openfriends_menu").addEventListener("click", function() {
+		document.getElementById("friends_menu").classList.add("open");
+	});
+	document.getElementById("Closefriends_menu").addEventListener("click", function() {
+		document.getElementById("friends_menu").classList.remove("open");
 	});
 	const form_AddFriend = document.getElementById('dropdown_AddFriend');
 	if (form_AddFriend) {
@@ -455,10 +461,3 @@ function InitializeWebsocket(){
 		console.error("WebSocket connection closed.");
 	};
 };
-
-// Fermer le WebSocket lorsque la page est déchargée
-window.addEventListener('beforeunload', function () {
-    if (chatSocket) {
-        chatSocket.close();
-    }
-});

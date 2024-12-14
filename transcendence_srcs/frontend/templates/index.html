@@ -161,7 +161,7 @@
         </div>
         <div class="row d-flex align-items-center"><span class="txt-blue fs-2 text-center py-1">Tchat</span></div>
         <div class="row div-grey rounded-4 mx-2 mb-2 ps-4 pe-3 py-3" id="div-tchat">
-            <div class="col-8 container container-fluid div-white rounded-4 d-flex flex-column p-2" id="message_container">
+            <div class="col-11 col-md-8 container-fluid div-white rounded-4 d-flex flex-column p-2 mx-0" id="message_container">
                 <div class="d-flex align-items-center justify-content-center flex-grow-1 px-0" id="message_lst">
                     <span class="text-center fs-2 fw-bolder txt-grey">Select or add a friend</span>
                 </div>
@@ -169,9 +169,21 @@
 
                 </div>
             </div>
-            <div class="col-4 container container-fluid rounded-end-4 px-0 py-1" >
-                <div class="d-flex align-items-center justify-content-center">
-                    <button class="btn btn-info mx-2 mb-2 rounded-5" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fs-5">Add Friend</span></button>
+            <div class="col-1 d-block d-md-none px-0">
+                <button class="btn p-0 mx-3" id="Openfriends_menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-left" viewBox="3 2 12 12">
+                        <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="col-md-4 container-fluid rounded-end-4 px-0 py-1 mx-0" id="friends_menu">
+                <div class="d-flex align-items-center justify-content-between">
+                    <button class="btn d-block d-md-none p-0 mb-3 ms-2" id="Closefriends_menu">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-right" viewBox="3 2 12 12">
+                            <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"/>
+                        </svg>
+                    </button>
+                    <button class="btn btn-info mx-2 mb-2 rounded-5 flex-grow-1" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fs-5">Add Friend</span></button>
                     <form class="dropdown-menu p-2 log_form rounded-5" id="dropdown_AddFriend">
                         {% csrf_token %}
                         <div class="d-flex align-content-center">
@@ -197,10 +209,10 @@
     </template>
     <template id="temp_send_message">
         <div class="d-flex align-content-center">
-            <form class="d-flex align-content-center flex-grow-1">
+            <form class="d-flex align-content-center flex-grow-1" id="chat-message-form">
                 {% csrf_token %}
-                <input type="text" class="form-control rounded-4 me-1" id="chat-message-input" name="message" placeholder="Your message" required>
-                <button class="btn btn-info rounded-circle me-1" title="Send your message" id="chat-message-submit">
+                <input type="text" class="form-control rounded-4 me-1" id="chat-message-input" name="message" placeholder="Your message" autocomplete="off" required>
+                <button class="btn btn-info rounded-circle me-1" type="submit" title="Send your message" id="chat-message-submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                         <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
                     </svg>
@@ -422,6 +434,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="delete_friend">Oui, je l'aimais pas</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="ban_friend">Oui, je veux bloquer</button>
                 </div>
 			</div>
 		</div>
