@@ -136,12 +136,12 @@ export let chatSocket = null;
 export function loadfriendmessage() {
 	const div = document.getElementById("message_lst");
 	const friend = friendship_lst.find(line => line.id == id_friend_active);
-	// if (chatSocket) {
-	// 	// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
-	// 	chatSocket.close()
-	// 	chatSocket = null
-	// 	console.log("Chat websocket closed")
-	// }
+	if (chatSocket) {
+		// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
+		chatSocket.close()
+		chatSocket = null
+		console.log("Chat websocket closed")
+	}
 	if (friend && friend.status == "accepted") {
 		div.innerHTML = "";
 		div.className = "d-flex flex-column flex-grow-1"
@@ -262,15 +262,20 @@ function loadFriendProfile() {
 	const stats_template = document.getElementById("temp_stats");
 	appDiv.innerHTML = profile_template.innerHTML + stats_template.innerHTML;
 	document.getElementById("delete_friend").addEventListener('click', () => {
+		const appDiv = document.getElementById("app")
+		loadTemplate(appDiv, "temp_login")
 		deleteFriendship(id_friend_active);
 	});
 	document.getElementById('block_friend').addEventListener('click', function() {
-		const friend_username = document.getElementById("span_friend_username").innerText;
-		if (chatSocket)
+		if (chatSocket){
+			const appDiv = document.getElementById("app")
+			loadTemplate(appDiv, "temp_login")
+			const friend_username = document.getElementById("friend_username").innerText;
 			chatSocket.send(JSON.stringify({
 				command: 'block',
 				username: friend_username,
-		}));
+			}));
+		}
 	});
 }
 
@@ -324,8 +329,6 @@ function deleteFriendship(friendshipId){
 			console.log('Friendship deleted successfully.');
 			friendshipId = -1;
 			fetchFriendList(() => {
-				const appDiv = document.getElementById("app");
-				loadTemplate(appDiv, "temp_login")
 				loadfriendinput();
 				loadfriendmessage();
 			});
