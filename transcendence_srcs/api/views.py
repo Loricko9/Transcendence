@@ -81,6 +81,30 @@ class FriendshipListView(APIView):
 		except Friendship.DoesNotExist:
 			return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
 
+class FriendProfileView(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, id):
+		try:
+			friendship = Friendship.objects.get(id=id)
+			if friendship.sender == request.user or friendship.receiver == request.user:
+				friend = friendship.receiver if friendship.sender == request.user else friendship.sender
+				history_data = History.objects.filter(user=friend).values('date', 'enemy', 'score', 'result')
+				profile_data = {
+					"username": friend.username,
+					"avatar": friend.avatar.url,
+					"nb_win": friend.nb_win,
+					"nb_lose": friend.nb_lose,
+					"nb_tournament_win": friend.nb_tournament_win,
+					"nb_tournament_lose": friend.nb_tournament_lose,
+					'history': list(history_data),
+				}
+				return JsonResponse(profile_data)
+			else:
+				return Response({"error": "Not authorized to see this profile."}, status=status.HTTP_403_FORBIDDEN)
+		except Friendship.DoesNotExist:
+			return Response({"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND)
+
 # @login_required
 @api_view(['POST'])
 def send_friend_request(request):

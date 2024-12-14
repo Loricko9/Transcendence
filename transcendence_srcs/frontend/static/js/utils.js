@@ -131,17 +131,17 @@ export function AppendTemplateFriends(appDiv, friend) {
 		button.classList.add("border-blue");
 }
 
-let chatSocket = null;
+export let chatSocket = null;
 
 export function loadfriendmessage() {
 	const div = document.getElementById("message_lst");
 	const friend = friendship_lst.find(line => line.id == id_friend_active);
-	if (chatSocket) {
-		// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
-		chatSocket.close()
-		chatSocket = null
-		console.log("Chat websocket closed")
-	}
+	// if (chatSocket) {
+	// 	// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
+	// 	chatSocket.close()
+	// 	chatSocket = null
+	// 	console.log("Chat websocket closed")
+	// }
 	if (friend && friend.status == "accepted") {
 		div.innerHTML = "";
 		div.className = "d-flex flex-column flex-grow-1"
@@ -235,8 +235,9 @@ export function loadfriendinput() {
 	if (friend) {
 		if (friend.status == "accepted") {
 			div.innerHTML = document.getElementById("temp_send_message").innerHTML;
-			document.getElementById("delete_friend").addEventListener('click', () => {
-				deleteFriendship(id_friend_active);
+			document.getElementById("friendProfile").addEventListener('click', () => {
+				loadFriendProfile();
+				fetchFriendProfile(id_friend_active);
 			});
 		}
 		else if (friend.status == "pending" && friend.wait_pending)
@@ -253,6 +254,24 @@ export function loadfriendinput() {
 	}
 	else
 	div.style.display = "none";
+}
+
+function loadFriendProfile() {
+	const appDiv = document.getElementById("app");
+	const profile_template = document.getElementById("temp_friend_profile")
+	const stats_template = document.getElementById("temp_stats");
+	appDiv.innerHTML = profile_template.innerHTML + stats_template.innerHTML;
+	document.getElementById("delete_friend").addEventListener('click', () => {
+		deleteFriendship(id_friend_active);
+	});
+	document.getElementById('block_friend').addEventListener('click', function() {
+		const friend_username = document.getElementById("span_friend_username").innerText;
+		if (chatSocket)
+			chatSocket.send(JSON.stringify({
+				command: 'block',
+				username: friend_username,
+		}));
+	});
 }
 
 function Add_message(txt, bool) {
@@ -305,6 +324,8 @@ function deleteFriendship(friendshipId){
 			console.log('Friendship deleted successfully.');
 			friendshipId = -1;
 			fetchFriendList(() => {
+				const appDiv = document.getElementById("app");
+				loadTemplate(appDiv, "temp_login")
 				loadfriendinput();
 				loadfriendmessage();
 			});
@@ -337,6 +358,27 @@ function respondToRequest(action) {
     .catch(error => console.error('Error responding to friend request:', error));
 }
 
+function fetchFriendProfile(friendshipId) {
+    fetch(`/api/friend-profile/${friendshipId}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+		document.getElementById("span_friend_username").innerText = data.username
+		document.getElementById("img_friend_avatar").src = data.avatar
+        loadChart(0, data.nb_win, data.nb_lose);
+		loadChart(1, data.nb_tournament_win, data.nb_tournament_lose)
+		document.getElementById('Win_game').innerHTML = data.nb_win
+		document.getElementById('Lose_game').innerHTML = data.nb_lose
+		Fill_table(data.history)
+    })
+    .catch(error => console.error('Error fetching friend profile:', error));
+}
+
 // Gestionnaire Chat websocket
 function initializeChatWebSocket(roomId) {
     chatSocket = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
@@ -364,12 +406,3 @@ function initializeChatWebSocket(roomId) {
         console.error('WebSocket connection closed');
     };
 }
-
-document.getElementById('block_friend').addEventListener('click', function() {
-	const friend_username = document.getElementById("friend_username").innerText;
-	if (chatSocket)
-		chatSocket.send(JSON.stringify({
-			command: 'block',
-			username: friend_username,
-	}));
-});

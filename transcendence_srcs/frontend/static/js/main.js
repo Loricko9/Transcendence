@@ -1,7 +1,7 @@
 import { initAll } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields,
-	fetchFriendList, loadfriendinput,
+	fetchFriendList, loadfriendinput, chatSocket,
 	loadfriendmessage} from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
