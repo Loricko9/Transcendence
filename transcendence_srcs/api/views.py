@@ -292,11 +292,17 @@ def logout_view(request):
 
 def check_authentication(request):
 	if request.user.is_authenticated:
-		response = JsonResponse({'is_authenticated': True, 'is_user_42': request.user.is_user_42,
-						   	'avatar': f'<img class="rounded-circle" src="{request.user.avatar}" alt="Avatar" width="65">',
-					   		'user': request.user.username,
-							'nb_win': request.user.nb_win,
-            				'nb_lose': request.user.nb_lose
+		path_avatar = str(request.user.avatar)
+		if path_avatar.startswith("avatars"):
+			avatar = request.user.avatar.url
+		else:
+			avatar = request.user.avatar
+		response = JsonResponse({'is_authenticated': True,
+								'is_user_42': request.user.is_user_42,
+								'avatar': str(avatar),
+								'user': request.user.username,
+								'nb_win': request.user.nb_win,
+								'nb_lose': request.user.nb_lose
 		})
 		response['Content-Type'] = 'application/json; charset=utf-8'
 		return response

@@ -112,7 +112,11 @@ export function AppendTemplateFriends(appDiv, friend) {
 	else
 	button.classList.add('btn-light');
 	span.textContent = friend.username;
-	img.src = friend.avatar.url;
+	let avatar = friend.avatar.toString();
+	if (avatar.startsWith("avatars"))
+		img.src = "/media/" + avatar
+	else
+		img.src = friend.avatar
 	if (friend.is_connected == true)
 		img.classList.add('border-green');
 	else
@@ -268,9 +272,10 @@ function loadFriendProfile() {
 	});
 	document.getElementById('block_friend').addEventListener('click', function() {
 		if (chatSocket){
+			const friend_username = document.getElementById("span_friend_username").innerText;
 			const appDiv = document.getElementById("app")
 			loadTemplate(appDiv, "temp_login")
-			const friend_username = document.getElementById("friend_username").innerText;
+			fetchFriendList()
 			chatSocket.send(JSON.stringify({
 				command: 'block',
 				username: friend_username,

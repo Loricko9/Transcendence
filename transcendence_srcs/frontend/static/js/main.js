@@ -21,7 +21,7 @@ async function checkAuthentification() {
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
 			document.getElementById('bar_sub_login').classList.remove('d-flex');
-			document.getElementById('user_avatar').innerHTML = data.avatar;
+			document.getElementById('user_avatar').src = data.avatar;
 			document.getElementById('user_avatar').style.display = 'block';
 			document.getElementById('user_connected').innerHTML = data.user
 			document.getElementById('user_connected').style.display = 'block';
