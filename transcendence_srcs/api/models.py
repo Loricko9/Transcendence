@@ -99,6 +99,10 @@ class Friendship(models.Model):
 	async def is_blocked(self, user):
 		"""Vérifie si un utilisateur est bloqué"""
 		return await sync_to_async(self.blocked_users.filter(id=user.id).exists)()
+	
+	def is_blocked_sync(self, user):
+		"""Vérifie si un utilisateur est bloqué"""
+		return self.blocked_users.filter(id=user.id).exists()
 
 	def __str__(self):
 		return f"{self.sender.username} to {self.receiver.username} - Status: {self.status}"

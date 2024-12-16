@@ -22,4 +22,4 @@ help:
 down:
 	@docker-compose -f Docker-compose.yml down -v
 	@docker system prune -af
-re: down all
+re: stop all

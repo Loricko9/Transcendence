@@ -90,14 +90,20 @@ class FriendProfileView(APIView):
 			if friendship.sender == request.user or friendship.receiver == request.user:
 				friend = friendship.receiver if friendship.sender == request.user else friendship.sender
 				history_data = History.objects.filter(user=friend).values('date', 'enemy', 'score', 'result')
+				avatar_path = str(friend.avatar)
+				if avatar_path.startswith("avatars"):
+					avatar = friend.avatar.url
+				else:
+					avatar = friend.avatar
 				profile_data = {
 					"username": friend.username,
-					"avatar": friend.avatar.url,
+					"avatar": str(avatar),
 					"nb_win": friend.nb_win,
 					"nb_lose": friend.nb_lose,
 					"nb_tournament_win": friend.nb_tournament_win,
 					"nb_tournament_lose": friend.nb_tournament_lose,
 					'history': list(history_data),
+					"is_blocked": friendship.is_blocked_sync(friend),
 				}
 				return JsonResponse(profile_data)
 			else:

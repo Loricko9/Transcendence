@@ -270,7 +270,24 @@ function loadFriendProfile() {
 		loadTemplate(appDiv, "temp_login")
 		deleteFriendship(id_friend_active);
 	});
+	document.getElementById('blockFriend').addEventListener('click', function() {
+		var modalElement = document.getElementById('ConfirmBlockModal');
+		var confirm_block_modal = new bootstrap.Modal(modalElement);
+		confirm_block_modal.show();
+	});
 	document.getElementById('block_friend').addEventListener('click', function() {
+		if (chatSocket){
+			const friend_username = document.getElementById("span_friend_username").innerText;
+			const appDiv = document.getElementById("app")
+			loadTemplate(appDiv, "temp_login")
+			fetchFriendList()
+			chatSocket.send(JSON.stringify({
+				command: 'block',
+				username: friend_username,
+			}));
+		}
+	});
+	document.getElementById('deblockFriend').addEventListener('click', function() {
 		if (chatSocket){
 			const friend_username = document.getElementById("span_friend_username").innerText;
 			const appDiv = document.getElementById("app")
@@ -376,6 +393,10 @@ function fetchFriendProfile(friendshipId) {
     })
     .then(response => response.json())
     .then(data => {
+		if (data.is_blocked)
+			document.getElementById('blockFriend').style.display = 'none';
+		else
+			document.getElementById('deblockFriend').style.display = 'none';
 		document.getElementById("span_friend_username").innerText = data.username
 		document.getElementById("img_friend_avatar").src = data.avatar
         loadChart(0, data.nb_win, data.nb_lose);
