@@ -211,6 +211,7 @@
 					<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
 				</svg>
             </button>
+			<button class="btn btn-primary" title="Invite to play" id="inviteBtn">Invite to play</button>
         </div>
     </template>
     <template id="temp_Friend_Request">
@@ -479,6 +480,26 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="block_friend">Oui, il me saoule</button>
+                </div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal d'invitation a jouer -->
+	<div class="modal" id="inviteModal" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Notification !</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+                <div class="modal-body">
+                    <span id="inviteSender"></span><span> vous invite a jouer !</span>
+                    <span>Voulez-vous rejoindre ?</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="respondToInvite('refuse')">NON, flemme</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="respondToInvite('accepte')">Oui, go le detruire</button>
                 </div>
 			</div>
 		</div>

@@ -1,3 +1,4 @@
+import { initAll } from './pong.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {
@@ -239,9 +240,22 @@ export function loadfriendinput() {
 	if (friend) {
 		if (friend.status == "accepted") {
 			div.innerHTML = document.getElementById("temp_send_message").innerHTML;
+			// Afficher le profile de l'ami
 			document.getElementById("friendProfile").addEventListener('click', () => {
 				loadFriendProfile();
 				fetchFriendProfile(id_friend_active);
+			});
+			// Inviter l'ami a jouer
+			document.getElementById("inviteBtn").addEventListener('click', () => {
+				const friend_username = document.getElementById("friend_username").innerText;
+				console.log("btn trouve")
+				if (chatSocket){
+					console.log("invite envoye")
+					chatSocket.send(JSON.stringify({
+						command: 'invite',
+						username: friend_username,
+					}));
+				}
 			});
 		}
 		else if (friend.status == "pending" && friend.wait_pending)
@@ -383,6 +397,7 @@ function respondToRequest(action) {
     .catch(error => console.error('Error responding to friend request:', error));
 }
 
+// Recuperer les informations de l'ami
 function fetchFriendProfile(friendshipId) {
     fetch(`/api/friend-profile/${friendshipId}/`, {
         method: 'GET',
@@ -414,7 +429,25 @@ function initializeChatWebSocket(roomId) {
 
     // Réception des messages
     chatSocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
+		const data = JSON.parse(e.data);
+
+		if (data.type === 'invite') {
+            // Afficher le modal avec l'invitation
+			console.log("type invite recu")
+            showInvitationModal(data.sender);
+			return
+        }
+
+		if (data.type === 'invite_response') {
+			alert(data.message);
+			if (data.response === 'accepte'){
+				const appDiv = document.getElementById("app");
+				loadTemplate(appDiv, "Game");
+				initAll(true, data.username)
+			}
+			return
+		}
+		
 		const username = document.getElementById("user_connected").innerText;
 		if (data.sender == username)
 			Add_message(data.message, true)
@@ -435,3 +468,32 @@ function initializeChatWebSocket(roomId) {
         console.error('WebSocket connection closed');
     };
 }
+
+function showInvitationModal(sender){
+	console.log("invite modal")
+	var modalElement = document.getElementById('inviteModal');
+	var invite_modal = new bootstrap.Modal(modalElement);
+	invite_modal.show();
+	document.getElementById('inviteSender').innerText = sender
+}
+
+function respondToInvite(response) {
+	// Envoyer la réponse au serveur via WebSocket
+	sender = document.getElementById('inviteSender').innerText
+	socket.send(JSON.stringify({
+		command: 'respond_to_invite',
+		response: response,
+		sender: sender,
+	}));
+
+	// Supprimer le modal
+	const modal = document.getElementById('inviteModal');
+	if (modal) modal.remove();
+
+	if (response == "accepte"){
+		const message = sender + " vous attend a son poste"
+		document.getElementById('infoco').innerText = message
+		showSuccessModal()
+	}
+}
+window.respondToInvite = respondToInvite

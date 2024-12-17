@@ -11,9 +11,11 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		# Récupérer le nom de la salle depuis l'URL
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
 		self.room_group_name = f'chat_{self.room_name}'
+		self.user_group_name = f'chat_{self.scope["user"].id}'
 
 		# Rejoindre le groupe (channel layer)
 		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+		await self.channel_layer.group_add(self.user_group_name, self.channel_name)
 		await self.accept()  # Accepter la connexion WebSocket
 
 		# Charger les messages existants depuis la base de données
@@ -77,6 +79,32 @@ class ChatConsumers(AsyncWebsocketConsumer):
 					'message': f'{user.username} a été bloqué.'
 				}))
 			return
+		elif command == 'invite':
+			username = data.get('username')
+			print("first " + username)
+			user = await sync_to_async(User.objects.get)(username=username)
+			sender = self.scope['user']
+			print("second " + user.username)
+			await self.channel_layer.group_send(
+				f'chat_{user.id}',
+				{
+					'type': 'game_invite',
+					'sender': sender.username,
+				}
+			)
+		elif command == 'respond_to_invite':
+			response = data.get('response')
+			sender_username = data.get('sender')
+			sender = await sync_to_async(User.objects.get)(username=sender_username)
+			await self.channel_layer.group_send(
+				f'chat_{sender.id}',
+				{
+					'type': 'invite_response',
+					'from_user': self.scope['user'].username,
+					'response': response,
+					'sender_username': sender_username
+				}
+			)
 		else:
 			if await room.is_blocked(self.scope['user']):
 				await self.send(text_data=json.dumps({
@@ -114,4 +142,21 @@ class ChatConsumers(AsyncWebsocketConsumer):
 			'message': event['message'],      # Contenu du message
 			'sender': event.get('sender', 'Anonymous'),  # Expéditeur (par défaut : 'Anonymous')
 			'timestamp': event.get('timestamp', 'Unknown Time')  # Heure d'envoi (par défaut : 'Unknown Time')
+		}))
+
+	async def game_invite(self, event):
+		# Envoyer l'invitation au client cible
+		print("game invite")
+		await self.send(text_data=json.dumps({
+			'type': 'invite',
+			'sender': event['sender']
+		}))
+
+	async def invite_response(self, event):
+		# Envoyer la réponse au client expéditeur
+		await self.send(text_data=json.dumps({
+			'type': 'invite_response',
+			'response': event['response'],
+			'message': f"{event['from_user']} a {event['response']} votre invitation.",
+			'username': event['sender_username']
 		}))

@@ -83,7 +83,7 @@ function router(){
 					loadTemplate(appDiv, "Game");
 					appDiv.className = "";
 					blockage = true;
-					initAll();
+					initAll(false, null);
 				} else
 					redirect_to("/");
 				break;

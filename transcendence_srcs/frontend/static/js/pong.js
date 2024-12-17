@@ -1,10 +1,12 @@
-export function initAll() {
+export function initAll(invite_bool, invite_username) {
 	const PaddingLeft = document.getElementById('left-paddle');
 	const PaddingRight = document.getElementById('right-paddle');
 	const Ball = document.getElementById('ball');
 	const Delimiter = document.getElementById('delimiter');
 	const counterElement = document.getElementById('counter');
 	const RoomHostInfo = document.getElementById('Host');
+	const RoomUserInviteInfo = document.getElementById('UserInvite');
+	const RoomWait = document.getElementById('wait');
 	const RoomUser1Info = document.getElementById('User1');
 	const RoomUser2Info = document.getElementById('User2');
 	const RoomUser3Info = document.getElementById('User3');
@@ -597,7 +599,13 @@ export function initAll() {
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
 
 	function init() {
-		changeMenu('MainMenu');
+		if (invite_bool){
+			PVPMode = '1vs1';
+			changeMenu('RoomMenu');
+			searchUser(invite_username, 'user1')
+		}
+		else
+			changeMenu('MainMenu');
 		resetAllData();
 		setHostUserName();
 	}
