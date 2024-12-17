@@ -34,8 +34,8 @@
         <a class="navbar-brand ms-3" href="/" data-link><img src="{% static 'img/Logo_v2.png' %}" alt="logo" width="75" height="65"/></a>
         <div class="collapse navbar-collapse" id="NavCollaspe">
             <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link" style="display: none;">
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>Game</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>Statistiques</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>{{ texts.Game_link }}</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>{{ texts.Stat_link }}</a></li>
             </ul>
             <div class="ms-auto dropdown">
                 <button class="btn dropdown-toggle" id="btn_lang" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,9 +94,9 @@
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
             <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link">
-                <li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>Accueil</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>Game</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>Statistiques</a></li>
+                <li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>{{ texts.Home }}</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>{{ texts.Game_link }}</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>{{ texts.Stat_link }}</a></li>
             </ul>
             <div class="mt-auto">
                 <div class="dropdown">
@@ -154,16 +154,16 @@
 	</template>
 
     <template id="temp_login">
-        <div class="d-flex justify-content-center my-1"><span class="txt-blue fs-1 text-center py-1 px-2">Bienvenue</span><span id="username_login" class="txt-blue fs-1 text-center py-1 px-2"></span></div>
+        <div class="d-flex justify-content-center my-1"><span class="txt-blue fs-1 text-center py-1 px-2">{{ texts.Welcome }}</span><span id="username_login" class="txt-blue fs-1 text-center py-1 px-2"></span></div>
         <div class="row d-flex align-items-center">
-            <a class="col btn btn-danger btn-red btn-lg rounded-5 m-2 fw-bolder" href="/Game/" data-link>Jouer</a>
-            <a class="col btn btn-primary btn-blue btn-lg rounded-5 m-2 fw-bolder" href="/stats/" data-link>Mes Perf</a>
+            <a class="col btn btn-danger btn-red btn-lg rounded-5 m-2 fw-bolder" href="/Game/" data-link>{{ texts.Play_btn }}</a>
+            <a class="col btn btn-primary btn-blue btn-lg rounded-5 m-2 fw-bolder" href="/stats/" data-link>{{ texts.Stat_btn }}</a>
         </div>
         <div class="row d-flex align-items-center"><span class="txt-blue fs-2 text-center py-1">Tchat</span></div>
         <div class="row div-grey rounded-4 mx-2 mb-2 ps-4 pe-3 py-3" id="div-tchat">
             <div class="col-11 col-md-8 container-fluid div-white rounded-4 d-flex flex-column p-2 mx-0" id="message_container">
                 <div class="d-flex align-items-center justify-content-center flex-grow-1 px-0" id="message_lst">
-                    <span class="text-center fs-2 fw-bolder txt-grey">Select or add a friend</span>
+                    <span class="text-center fs-2 fw-bolder txt-grey">{{ texts.Friend_sel }}</span>
                 </div>
                 <div class="container rounded-4 div-grey p-2" id="message_input" style="display: none;">
 
@@ -183,7 +183,7 @@
                             <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"/>
                         </svg>
                     </button>
-                    <button class="btn btn-info mx-2 mb-2 rounded-5 flex-grow-1" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fs-5">Add Friend</span></button>
+                    <button class="btn btn-info mx-2 mb-2 rounded-5 flex-grow-1" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fs-5">{{ texts.Friend_add }}</span></button>
                     <form class="dropdown-menu p-2 log_form rounded-5" id="dropdown_AddFriend">
                         {% csrf_token %}
                         <div class="d-flex align-content-center">
@@ -205,14 +205,14 @@
         </button>
     </template>
     <template id="temp_no_friend">
-        <span class="text-center fs-2 fw-bolder txt-grey">Select or add a friend</span>
+        <span class="text-center fs-2 fw-bolder txt-grey">{{ texts.Friend_sel }}</span>
     </template>
     <template id="temp_send_message">
         <div class="d-flex align-content-center">
             <form class="d-flex align-content-center flex-grow-1" id="chat-message-form">
                 {% csrf_token %}
-                <input type="text" class="form-control rounded-4 me-1" id="chat-message-input" name="message" placeholder="Your message" autocomplete="off" required>
-                <button class="btn btn-info rounded-circle me-1" type="submit" title="Send your message" id="chat-message-submit">
+                <input type="text" class="form-control rounded-4 me-1" id="chat-message-input" name="message" placeholder=" {{ texts.Friend_message }}" autocomplete="off" required>
+                <button class="btn btn-info rounded-circle me-1" type="submit" title="{{ texts.Friend_send }}" id="chat-message-submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                         <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
                     </svg>
@@ -226,14 +226,14 @@
         </div>
     </template>
     <template id="temp_Friend_Request">
-        <div class="d-flex justify-content-center mb-1"><span class="txt-blue text-center fs-4">Demande d'ami reçu !</span></div>
+        <div class="d-flex justify-content-center mb-1"><span class="txt-blue text-center fs-4">{{ texts.Friend_request }}</span></div>
         <div class="row d-flex align-items-center">
-            <button class="col btn btn-success btn-sm ms-3 me-1 rounded-4" id="accept_friend">Accepter</button>
-            <button class="col btn btn-danger btn-sm ms-1 me-3 rounded-4" id="refuse_friend">Refuser</button>
+            <button class="col btn btn-success btn-sm ms-3 me-1 rounded-4" id="accept_friend">{{ texts.Accept }}</button>
+            <button class="col btn btn-danger btn-sm ms-1 me-3 rounded-4" id="refuse_friend">{{ texts.Refuse }}</button>
         </div>
     </template>
     <template id="temp_wait_Friend_Request">
-        <div class="d-flex justify-content-center mb-1"><span class="txt-blue text-center fs-4">En attente de la réponse à le demande !</span></div>
+        <div class="d-flex justify-content-center mb-1"><span class="txt-blue text-center fs-4">{{ texts.Friend_pending }}</span></div>
     </template>
 
     <template id="Game">
@@ -331,11 +331,11 @@
 
 	<template id="temp_change_avatar">
 		<div class="py-2 px-3 my-4" id="change_avatar">
-			<h1 class="text-center fw-bold">Change ton avatar</h1>
+			<h1 class="text-center fw-bold">{{ texts.Change_avatar1 }}</h1>
 			<form method="post" id="change-avatar-form">
 				<div id="avatar-container" class="d-flex flex-wrap gap-2"></div>
                 <div class="text-center mt-3">   
-                    <button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">Enregistrer</button>
+                    <button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">{{ texts.Save }}</button>
                 </div>
 			</form>
 		</div>
@@ -366,37 +366,37 @@
     </template>
     
     <template id="temp_stats">
-        <div class="row d-flex align-items-center"><span class="txt-blue fs-1 text-center py-1">Statistiques</span></div>
+        <div class="row d-flex align-items-center"><span class="txt-blue fs-1 text-center py-1">{{ texts.Stat }}</span></div>
         <div class="row d-flex align-items-center">
-            <span class="col txt-blue fs-2 text-center py-1">All Games</span>
-            <span class="col txt-blue fs-2 text-center py-1">Tournaments</span>
+            <span class="col txt-blue fs-2 text-center py-1">{{ texts.Stat_game }}</span>
+            <span class="col txt-blue fs-2 text-center py-1">{{ texts.Stat_tournaments }}</span>
         </div>
         <div class="row d-flex align-items-center">
             <div class="col p-2 d-flex align-items-center">
                 <div class="col-4 Diagram"><canvas id="Diag_games"></canvas></div>
                 <div class="col-4 txt-blue fs-2 mx-2" style="width: max-content;">
-                    <div><span>WIN : </span><span id="Win_game"></span></div>
-                    <div><span>LOSE : </span><span id="Lose_game"></span></div>
+                    <div><span>{{ texts.Stat_win1 }}</span><span id="Win_game"></span></div>
+                    <div><span>{{ texts.Stat_lose1 }}</span><span id="Lose_game"></span></div>
                 </div>
             </div>
             <div class="vr mx-2 rounded-5 p-2 d-none d-md-block" style="height: 200px; align-self: center;"></div>
             <div class="col p-2 d-flex align-items-center">
                 <div class="col-4 txt-blue fs-2 mx-2 text-end ms-auto" style="width: max-content;">
-                    <div><span id="Win_tournament"></span><span> : WIN</span></div>
-                    <div><span id="Lose_tournament"></span><span> : LOSE</span></div>
+                    <div><span id="Win_tournament"></span><span>{{ texts.Stat_win2 }}</span></div>
+                    <div><span id="Lose_tournament"></span><span>{{ texts.Stat_lose2 }}</span></div>
                 </div>
                 <div class="col-4 Diagram"><canvas id="Diag_tournament"></canvas></div>
             </div>
         </div>
         <div class="row d-flex align-items-center px-3">
-            <span class="txt-blue fs-2 text-center py-1">Game History</span>
+            <span class="txt-blue fs-2 text-center py-1">{{ texts.Stat_history }}</span>
             <table class="table table-striped">
                 <thead>
                     <tr>
-                      <th scope="col">Date</th>
-                      <th scope="col">Revival</th>
-                      <th scope="col">Score</th>
-                      <th scope="col">Result</th>
+                      <th scope="col">{{ texts.Stat_date }}</th>
+                      <th scope="col">{{ texts.Stat_opponent }}</th>
+                      <th scope="col">{{ texts.Stat_score }}</th>
+                      <th scope="col">{{ texts.Stat_result }}</th>
                     </tr>
                 </thead>
                 <tbody id="table_history"></tbody>
@@ -448,7 +448,7 @@
 		</div>
 		<div class="offcanvas-body">
 		  <!-- Contenu de la fenêtre coulissante -->
-		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn" href="/change-avatar/" data-link>Changer mon avatar</a>
+		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn" href="/change-avatar/" data-link>{{ texts.Change_avatar2 }}</a>
           <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-link>{{ texts.Change_Passwd_5 }}</a>
 		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">{{ texts.Log_out }}</button>
 		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5">{{ texts.Del_account }}</button>
