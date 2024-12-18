@@ -206,6 +206,10 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
+	logout()
+});
+	
+function logout(){
 	fetch('/api/logout/', {
 		method: 'POST',
         headers: {
@@ -233,7 +237,7 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));
-});
+}
 
 // delete account
 document.getElementById('deleteAccountBtn').addEventListener('click', function() {
@@ -458,7 +462,5 @@ function InitializeWebsocket(){
 
 // Fermer le WebSocket lorsque la page est déchargée
 window.addEventListener('beforeunload', function () {
-    if (chatSocket) {
-        chatSocket.close();
-    }
+    logout()
 });

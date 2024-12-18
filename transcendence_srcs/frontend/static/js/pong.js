@@ -604,9 +604,10 @@ export function initAll(invite_bool, invite_username) {
 			changeMenu('RoomMenu');
 			searchUser(invite_username, 'user1')
 		}
-		else
+		else{
 			changeMenu('MainMenu');
-		resetAllData();
+			resetAllData();
+		}
 		setHostUserName();
 	}
 

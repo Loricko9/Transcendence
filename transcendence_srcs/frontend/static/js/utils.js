@@ -247,13 +247,11 @@ export function loadfriendinput() {
 			});
 			// Inviter l'ami a jouer
 			document.getElementById("inviteBtn").addEventListener('click', () => {
-				const friend_username = document.getElementById("friend_username").innerText;
 				console.log("btn trouve")
 				if (chatSocket){
 					console.log("invite envoye")
 					chatSocket.send(JSON.stringify({
 						command: 'invite',
-						username: friend_username,
 					}));
 				}
 			});
@@ -434,7 +432,7 @@ function initializeChatWebSocket(roomId) {
 		if (data.type === 'invite') {
             // Afficher le modal avec l'invitation
 			console.log("type invite recu")
-            showInvitationModal(data.sender);
+            showInvitationModal(data.sender_username);
 			return
         }
 
@@ -443,7 +441,7 @@ function initializeChatWebSocket(roomId) {
 			if (data.response === 'accepte'){
 				const appDiv = document.getElementById("app");
 				loadTemplate(appDiv, "Game");
-				initAll(true, data.username)
+				initAll(true, data.sender_username)
 			}
 			return
 		}
@@ -469,21 +467,27 @@ function initializeChatWebSocket(roomId) {
     };
 }
 
-function showInvitationModal(sender){
+function showInvitationModal(sender_username){
 	console.log("invite modal")
 	var modalElement = document.getElementById('inviteModal');
 	var invite_modal = new bootstrap.Modal(modalElement);
 	invite_modal.show();
-	document.getElementById('inviteSender').innerText = sender
+	document.getElementById('inviteSender').innerText = sender_username
+	document.getElementById("inviteAccepte").addEventListener('click', () => {
+		respondToInvite('accepte', sender_username)
+	});
+	document.getElementById("inviteRefuse").addEventListener('click', () => {
+		respondToInvite('refuse', sender_username)
+	});
 }
 
-function respondToInvite(response) {
+function respondToInvite(response, sender_username) {
 	// Envoyer la réponse au serveur via WebSocket
-	sender = document.getElementById('inviteSender').innerText
-	socket.send(JSON.stringify({
+	console.log("response to invite")
+	chatSocket.send(JSON.stringify({
 		command: 'respond_to_invite',
 		response: response,
-		sender: sender,
+		sender_username: sender_username,
 	}));
 
 	// Supprimer le modal
@@ -491,9 +495,8 @@ function respondToInvite(response) {
 	if (modal) modal.remove();
 
 	if (response == "accepte"){
-		const message = sender + " vous attend a son poste"
+		const message = sender_username + " vous attend a son poste"
 		document.getElementById('infoco').innerText = message
 		showSuccessModal()
 	}
 }
-window.respondToInvite = respondToInvite
