@@ -439,15 +439,34 @@ function sendFriendRequest() {
 }
 
 // Variables globales Websocket
-let socket = null;
+export let socket = null;
 
 // Gestionnaire Friendship web socket
 function InitializeWebsocket(){
 	socket = new WebSocket(`wss://${window.location.host}/ws/friendship/`);
 	
 	socket.onmessage = function (event) {
-		console.log("WebSocket message received:", event.data); // Log des données brutes
+
 		const data = JSON.parse(event.data);
+
+		if (data.type === 'invite') {
+            // Afficher le modal avec l'invitation
+			console.log("type invite recu")
+            showInvitationModal(data.sender_username);
+			return
+        }
+
+		if (data.type === 'invite_response') {
+			alert(data.message);
+			if (data.response === 'accepte'){
+				const appDiv = document.getElementById("app");
+				loadTemplate(appDiv, "Game");
+				initAll(true, data.sender_username)
+			}
+			return
+		}
+
+		console.log("WebSocket message received:", event.data); // Log des données brutes
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
 		fetchFriendList(() => {
 			loadfriendinput();
@@ -459,6 +478,42 @@ function InitializeWebsocket(){
 		console.error("WebSocket connection closed.");
 	};
 };
+
+// afficher le modal d'invitation a jouer
+function showInvitationModal(sender_username){
+	console.log("invite modal")
+	var modalElement = document.getElementById('inviteModal');
+	var invite_modal = new bootstrap.Modal(modalElement);
+	invite_modal.show();
+	document.getElementById('inviteSender').innerText = sender_username
+	document.getElementById("inviteAccepte").addEventListener('click', () => {
+		respondToInvite('accepte', sender_username)
+	});
+	document.getElementById("inviteRefuse").addEventListener('click', () => {
+		respondToInvite('refuse', sender_username)
+	});
+}
+
+// Repondre a l'inviation
+function respondToInvite(response, sender_username) {
+	// Envoyer la réponse au serveur via WebSocket
+	console.log("response to invite")
+	socket.send(JSON.stringify({
+		command: 'respond_to_invite',
+		response: response,
+		sender_username: sender_username,
+	}));
+
+	// Supprimer le modal
+	const modal = document.getElementById('inviteModal');
+	if (modal) modal.remove();
+
+	if (response == "accepte"){
+		const message = sender_username + " vous attend a son poste"
+		document.getElementById('infoco').innerText = message
+		showSuccessModal()
+	}
+}
 
 // Fermer le WebSocket lorsque la page est déchargée
 window.addEventListener('beforeunload', function () {

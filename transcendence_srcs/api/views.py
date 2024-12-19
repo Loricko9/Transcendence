@@ -48,10 +48,15 @@ class FriendshipListView(APIView):
 				friend = friendship.receiver
 			else :
 				friend = friendship.sender
+			avatar_path = str(friend.avatar)
+			if avatar_path.startswith("avatars"):
+				avatar = friend.avatar.url
+			else:
+				avatar = friend.avatar
 			res = {
 				"id": friendship.id,
 				"username": friend.username,
-				"avatar": f"{friend.avatar}",
+				"avatar": str(avatar),
 				"status": friendship.status,
 				"is_connected": friend.is_connected
 			}
@@ -381,7 +386,12 @@ def find_username(request):
 		if username:
 			if User_tab.objects.filter(username=username).exists():
 				user = User_tab.objects.get(username=username)
-				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
+				path_avatar = str(user.avatar)
+				if path_avatar.startswith("avatars"):
+					avatar = user.avatar.url
+				else:
+					avatar = user.avatar
+				return JsonResponse({'user': user.username, 'userIcon': str(avatar)})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 	
@@ -394,7 +404,12 @@ def find_hostname(request):
 			print("Host name", flush=True)
 			print(user.avatar, flush=True)
 			if user.is_authenticated:
-				return JsonResponse({'user': user.username, 'userIcon': f'{user.avatar}'})
+				path_avatar = str(user.avatar)
+				if path_avatar.startswith("avatars"):
+					avatar = user.avatar.url
+				else:
+					avatar = user.avatar
+				return JsonResponse({'user': user.username, 'userIcon': str(avatar)})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:

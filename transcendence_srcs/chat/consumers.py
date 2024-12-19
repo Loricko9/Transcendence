@@ -10,29 +10,12 @@ class ChatConsumers(AsyncWebsocketConsumer):
 	async def connect(self):
 		# Récupérer le nom de la salle depuis l'URL
 		self.room_name = self.scope['url_route']['kwargs']['room_name']
-		my_username = self.scope['user'].username
 		self.room_group_name = f'chat_{self.room_name}'
-		self.user_group_name = f'chat_{my_username}'
 		# Rejoindre le groupe (channel layer)
 		await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-		await self.channel_layer.group_add(self.user_group_name, self.channel_name)
-
-		# Creer un groupe pour l'ami meme si pas connecte au chatSocket
-		Friendship = apps.get_model('api', 'Friendship')
-		room = await sync_to_async(Friendship.objects.get)(id=self.room_name)
-
-		if await sync_to_async(lambda: room.sender.username)() == my_username:
-			friend_username = await sync_to_async(lambda: room.receiver.username)()
-		else:
-			friend_username = await sync_to_async(lambda: room.sender.username)()
-		self.friend_group_name = f'chat_{friend_username}'
-		await self.channel_layer.group_add(self.friend_group_name, self.channel_name)
 
 		# Accepter la connexion WebSocket
 		await self.accept()
-		print(self.room_group_name)
-		print(self.user_group_name)
-		print(self.friend_group_name)
 
 		# Charger les messages existants depuis la base de données
 		ChatMessage = apps.get_model('chat', 'ChatMessage') # Charger le modèle dynamiquement
@@ -51,9 +34,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 	async def disconnect(self, close_code):
 		# Quitter le groupe
 		await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-		await self.channel_layer.group_discard(self.user_group_name, self.channel_name)
-		if hasattr(self, 'friend_group_name'):
-			await self.channel_layer.group_discard(self.friend_group_name, self.channel_name)
 
 	async def receive(self, text_data):
 		# Recuperer le modele de User
@@ -98,34 +78,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 					'message': f'{user.username} a été bloqué.'
 				}))
 			return
-		elif command == 'invite':
-			print("commande invite comprise")
-			sender_username = self.scope['user'].username
-			if await sync_to_async(lambda: room.sender.username)() == sender_username:
-				friend_username = await sync_to_async(lambda: room.receiver.username)()
-			else:
-				friend_username = await sync_to_async(lambda: room.sender.username)()
-			print("friend_username " + friend_username)
-			await self.channel_layer.group_send(
-				f'chat_{friend_username}',
-				{
-					'type': 'game_invite',
-					'sender_username': sender_username,
-				}
-			)
-		elif command == 'respond_to_invite':
-			response = data.get('response')
-			sender_username = data.get('sender_username')
-			print("sender_username " + sender_username)
-			await self.channel_layer.group_send(
-				f'chat_{sender_username}',
-				{
-					'type': 'invite_response',
-					'from_user': self.scope['user'].username,
-					'response': response,
-					'sender_username': sender_username
-				}
-			)
 		else:
 			if await room.is_blocked(self.scope['user']):
 				await self.send(text_data=json.dumps({
@@ -164,25 +116,3 @@ class ChatConsumers(AsyncWebsocketConsumer):
 			'sender': event.get('sender', 'Anonymous'),  # Expéditeur (par défaut : 'Anonymous')
 			'timestamp': event.get('timestamp', 'Unknown Time')  # Heure d'envoi (par défaut : 'Unknown Time')
 		}))
-
-	async def game_invite(self, event):
-		# Envoyer l'invitation au client cible
-		print("game invite")
-		if event['sender_username'] != self.scope['user'].username:
-			print("game invite envoye a " + self.scope['user'].username)
-			await self.send(text_data=json.dumps({
-				'type': 'invite',
-				'sender_username': event['sender_username']
-			}))
-
-	async def invite_response(self, event):
-		# Envoyer la réponse au client expéditeur
-		print("invite response")
-		if event['sender_username'] == self.scope['user'].username:
-			print("invite response envoye a " + self.scope['user'].username)
-			await self.send(text_data=json.dumps({
-				'type': 'invite_response',
-				'response': event['response'],
-				'message': f"{event['from_user']} a {event['response']} votre invitation.",
-				'sender_username': event['from_user']
-			}))

@@ -1,4 +1,4 @@
-import { initAll } from './pong.js';
+import { socket } from './main.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {
@@ -113,11 +113,7 @@ export function AppendTemplateFriends(appDiv, friend) {
 	else
 	button.classList.add('btn-light');
 	span.textContent = friend.username;
-	let avatar = friend.avatar.toString();
-	if (avatar.startsWith("avatars"))
-		img.src = "/media/" + avatar
-	else
-		img.src = friend.avatar
+	img.src = friend.avatar
 	if (friend.is_connected == true)
 		img.classList.add('border-green');
 	else
@@ -248,10 +244,11 @@ export function loadfriendinput() {
 			// Inviter l'ami a jouer
 			document.getElementById("inviteBtn").addEventListener('click', () => {
 				console.log("btn trouve")
-				if (chatSocket){
+				if (socket){
 					console.log("invite envoye")
-					chatSocket.send(JSON.stringify({
+					socket.send(JSON.stringify({
 						command: 'invite',
+						friendship_id: id_friend_active,
 					}));
 				}
 			});
@@ -428,24 +425,6 @@ function initializeChatWebSocket(roomId) {
     // Réception des messages
     chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
-
-		if (data.type === 'invite') {
-            // Afficher le modal avec l'invitation
-			console.log("type invite recu")
-            showInvitationModal(data.sender_username);
-			return
-        }
-
-		if (data.type === 'invite_response') {
-			alert(data.message);
-			if (data.response === 'accepte'){
-				const appDiv = document.getElementById("app");
-				loadTemplate(appDiv, "Game");
-				initAll(true, data.sender_username)
-			}
-			return
-		}
-		
 		const username = document.getElementById("user_connected").innerText;
 		if (data.sender == username)
 			Add_message(data.message, true)
@@ -465,38 +444,4 @@ function initializeChatWebSocket(roomId) {
     chatSocket.onclose = function (e) {
         console.error('WebSocket connection closed');
     };
-}
-
-function showInvitationModal(sender_username){
-	console.log("invite modal")
-	var modalElement = document.getElementById('inviteModal');
-	var invite_modal = new bootstrap.Modal(modalElement);
-	invite_modal.show();
-	document.getElementById('inviteSender').innerText = sender_username
-	document.getElementById("inviteAccepte").addEventListener('click', () => {
-		respondToInvite('accepte', sender_username)
-	});
-	document.getElementById("inviteRefuse").addEventListener('click', () => {
-		respondToInvite('refuse', sender_username)
-	});
-}
-
-function respondToInvite(response, sender_username) {
-	// Envoyer la réponse au serveur via WebSocket
-	console.log("response to invite")
-	chatSocket.send(JSON.stringify({
-		command: 'respond_to_invite',
-		response: response,
-		sender_username: sender_username,
-	}));
-
-	// Supprimer le modal
-	const modal = document.getElementById('inviteModal');
-	if (modal) modal.remove();
-
-	if (response == "accepte"){
-		const message = sender_username + " vous attend a son poste"
-		document.getElementById('infoco').innerText = message
-		showSuccessModal()
-	}
 }
