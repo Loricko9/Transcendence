@@ -4,6 +4,7 @@ body {
 	background-position: center;
 	background-attachment: fixed;
 	background-blend-mode: normal;
+	background-size: cover;
 	padding-top: 4rem;
 }
 

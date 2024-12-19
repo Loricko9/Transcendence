@@ -76,45 +76,48 @@ function router(){
 				}
 				else
 					loadTemplate(appDiv, "temp_index");
-				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				appDiv.className = "container col-md-10 py-2 px-3 my-5";
 				break;
-				case "/Game/":
-					if (isAuthenticated) {
+			case "/Game/":
+				if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
 					appDiv.className = "";
 					blockage = true;
 					initAll();
-				} else
+				}
+				else
 					redirect_to("/");
 				break;
-				case "/change-password/":
+			case "/change-password/":
 				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_password");
-					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
+					appDiv.className = "container col-md-6 py-2 px-3 my-5";
 					loadChangePassword();
 				}
 				else
 					redirect_to("/");
 				break;
-				case "/change-avatar/":
-					if (isAuthenticated && !is_user_42) {
+			case "/change-avatar/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_avatar");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+					appDiv.className = "container col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
-				} else
+				}
+				else
 					redirect_to("/");
-					break;
-					case "/stats/":
-						if (isAuthenticated) {
-					loadTemplate(appDiv, "temp_stats");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-					get_stats();
-				} else
-				redirect_to("/");
 				break;
-				default:
-					loadTemplate(appDiv, "temp_notFound");
-				appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
+			case "/stats/":
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "temp_stats");
+					appDiv.className = "container col-md-10 py-2 px-3 my-5";
+					get_stats();
+				}
+				else
+					redirect_to("/");
+				break;
+			default:
+				loadTemplate(appDiv, "temp_notFound");
+				appDiv.className = "container col-md-7 py-2 px-3 my-5";
 		}
 	});
 }
