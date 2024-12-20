@@ -76,10 +76,10 @@ function router(){
 				}
 				else
 					loadTemplate(appDiv, "temp_index");
-				appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+				appDiv.className = "container col-md-10 py-2 px-3 my-5";
 				break;
-				case "/Game/":
-					if (isAuthenticated) {
+			case "/Game/":
+				if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
 					appDiv.className = "";
 					blockage = true;
@@ -87,34 +87,36 @@ function router(){
 				} else
 					redirect_to("/");
 				break;
-				case "/change-password/":
+			case "/change-password/":
 				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_password");
-					appDiv.className = "container-fluid col-md-6 py-2 px-3 my-5";
+					appDiv.className = "container col-md-6 py-2 px-3 my-5";
 					loadChangePassword();
 				}
 				else
 					redirect_to("/");
 				break;
-				case "/change-avatar/":
-					if (isAuthenticated && !is_user_42) {
+			case "/change-avatar/":
+				if (isAuthenticated && !is_user_42) {
 					loadTemplate(appDiv, "temp_change_avatar");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
+					appDiv.className = "container col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
-				} else
+				}
+				else
 					redirect_to("/");
-					break;
-					case "/stats/":
-						if (isAuthenticated) {
-					loadTemplate(appDiv, "temp_stats");
-					appDiv.className = "container-fluid col-md-10 py-2 px-3 my-5";
-					get_stats();
-				} else
-				redirect_to("/");
 				break;
-				default:
-					loadTemplate(appDiv, "temp_notFound");
-				appDiv.className = "container-fluid col-md-7 py-2 px-3 my-5";
+			case "/stats/":
+				if (isAuthenticated) {
+					loadTemplate(appDiv, "temp_stats");
+					appDiv.className = "container col-md-10 py-2 px-3 my-5";
+					get_stats();
+				}
+				else
+					redirect_to("/");
+				break;
+			default:
+				loadTemplate(appDiv, "temp_notFound");
+				appDiv.className = "container col-md-7 py-2 px-3 my-5";
 		}
 	});
 }
@@ -195,7 +197,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(data => {
 		// Affiche le message de réponse
 		document.getElementById('infoco').innerHTML = data.message
-		document.getElementById('dropdown_form').reset(); // reinitialise le form
+		document.getElementById('dropdown_form').reset();
 		showSuccessModal()
 		redirect_to("/")
 	})
@@ -272,6 +274,12 @@ function loadIndexLogin() {
 			const target = event.currentTarget.getAttribute('href');
 			redirect_to(target);
 		});
+	});
+	document.getElementById("Openfriends_menu").addEventListener("click", function() {
+		document.getElementById("friends_menu").classList.add("open");
+	});
+	document.getElementById("Closefriends_menu").addEventListener("click", function() {
+		document.getElementById("friends_menu").classList.remove("open");
 	});
 	const form_AddFriend = document.getElementById('dropdown_AddFriend');
 	if (form_AddFriend) {

@@ -125,6 +125,7 @@ export function AppendTemplateFriends(appDiv, friend) {
 		for (const btn of elements)
 			btn.classList.remove("border-blue");
 		button.classList.add("border-blue");
+		document.getElementById("friends_menu").classList.remove("open");
 		loadfriendinput();
 		loadfriendmessage();
 	});
@@ -327,8 +328,8 @@ function Add_message(txt, bool) {
 	}
 	tempDiv.appendChild(tempDivtxt);
 	const Div = document.getElementById("message_lst");
-	Div.scrollTop = Div.scrollHeight;
 	Div.appendChild(tempDiv);
+	Div.scrollTop = Div.scrollHeight;
 }
 
 window.Click_login = Click_login;
@@ -433,12 +434,12 @@ function initializeChatWebSocket(roomId) {
     };
 
     // Gestion de l'envoi des messages
-    document.querySelector('#chat-message-submit').onclick = function () {
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
+	document.getElementById('chat-message-form').addEventListener('submit', function(event) {
+		event.preventDefault();
+        const message = document.getElementById('chat-message-input').value;
         chatSocket.send(JSON.stringify({message: message}));
-        messageInputDom.value = ''; // Efface le champ après envoi
-    };
+		document.getElementById('chat-message-form').reset();
+	})
 
     // Gestion des erreurs
     chatSocket.onclose = function (e) {
