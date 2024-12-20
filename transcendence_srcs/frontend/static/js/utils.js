@@ -246,7 +246,9 @@ export function loadfriendinput() {
 			document.getElementById("inviteBtn").addEventListener('click', () => {
 				console.log("btn trouve")
 				if (socket){
-					console.log("invite envoye")
+					const message = "Invitation envoyée"
+					document.getElementById('infoco').innerText = message
+					showSuccessModal()
 					socket.send(JSON.stringify({
 						command: 'invite',
 						friendship_id: id_friend_active,

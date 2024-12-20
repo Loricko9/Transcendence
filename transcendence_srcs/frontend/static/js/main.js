@@ -459,7 +459,6 @@ function InitializeWebsocket(){
 
 		if (data.type === 'invite') {
             // Afficher le modal avec l'invitation
-			console.log("type invite recu")
             showInvitationModal(data.sender_username);
 			return
         }
@@ -489,7 +488,6 @@ function InitializeWebsocket(){
 
 // afficher le modal d'invitation a jouer
 function showInvitationModal(sender_username){
-	console.log("invite modal")
 	var modalElement = document.getElementById('inviteModal');
 	var invite_modal = new bootstrap.Modal(modalElement);
 	invite_modal.show();
@@ -505,7 +503,6 @@ function showInvitationModal(sender_username){
 // Repondre a l'inviation
 function respondToInvite(response, sender_username) {
 	// Envoyer la réponse au serveur via WebSocket
-	console.log("response to invite")
 	socket.send(JSON.stringify({
 		command: 'respond_to_invite',
 		response: response,
