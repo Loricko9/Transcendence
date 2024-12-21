@@ -1,4 +1,4 @@
-import { initAll } from './pong.js';
+import { initAll, MatchmakingSocket } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields,
 	fetchFriendList, loadfriendinput, chatSocket,
@@ -236,6 +236,12 @@ function logout(){
 			chatSocket = null
 			console.log("Chat websocket close")
 		}
+		if (MatchmakingSocket)
+			{
+				MatchmakingSocket.close()
+				MatchmakingSocket = null
+				console.log("Matchmaking websocket close")
+			}
 		redirect_to("/")
     })
     .catch(error => console.error('Erreur:', error));

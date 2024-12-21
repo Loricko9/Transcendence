@@ -141,3 +141,20 @@ class History(models.Model):
 		new_history.save()
 
 		return new_history
+	
+class Matchmaking(models.Model):
+	leader = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name="group_leader")
+	members = models.ManyToManyField(User_tab, related_name="group", blank=True)
+	max_members = models.PositiveIntegerField(default=1)
+
+	def is_full(self):
+		return self.members.count() >= self.max_members
+	
+	def add_member(self, user):
+		if not self.is_full():
+			self.members.add(user)
+		else:
+			raise ValueError("Le groupe est déjà plein.")
+	
+	def __str__(self):
+		return f"Groupe dirigé par {self.leader.username}, {self.members.count()} membres sur {self.max_members}"

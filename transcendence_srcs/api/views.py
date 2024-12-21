@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.http import JsonResponse, HttpResponse # type: ignore
-from .models import User_tab, Friendship, History
+from .models import User_tab, Friendship, History, Matchmaking
 from django.shortcuts import get_object_or_404, render, redirect # type: ignore
 from rest_framework.views import APIView # type: ignore
 from rest_framework.decorators import api_view # type: ignore

@@ -1,3 +1,7 @@
+import {showSuccessModal} from './utils.js';
+
+export let MatchmakingSocket = null;
+
 export function initAll(invite_bool, invite_username) {
 	const PaddingLeft = document.getElementById('left-paddle');
 	const PaddingRight = document.getElementById('right-paddle');
@@ -26,6 +30,8 @@ export function initAll(invite_bool, invite_username) {
 	const ReadyButton = document.getElementById('ready');
 	const NextButton = document.getElementById('NextButton');
 	const PlayAgainButton = document.getElementById('PlayAgain');
+	const LaunchMatchMaking = document.getElementById('launchMatchMaking');
+	const waitingPlayer = document.getElementById('waitingPlayer');
 
 	const MainMenu = document.getElementById('main-menu');
 	const AIMenu = document.getElementById('AIMenu');
@@ -85,6 +91,7 @@ export function initAll(invite_bool, invite_username) {
 	let tournamentWinnerRound1Icon = null;
 	let tournamentWinnerRound2 = null;
 	let tournamentWinnerRound2Icon = null;
+
 
 	//////////////////////////////////////////////////////////////////////////////////
 	////                             functions                                    ///
@@ -572,6 +579,52 @@ export function initAll(invite_bool, invite_username) {
 		Ball.style.top = ballTop + 'px';
 		Ball.style.left = ballLeft + 'px';
 	}
+
+	function matchMaking(){
+		if (!MatchmakingSocket)
+			InitializeMatchmakingWebsocket()
+		switch (PVPMode) {
+			case '1vs1':
+				playerNb = 1;
+				break;
+			case 'Tournament':
+				playerNb = 3
+			default:
+				break;
+		}
+		MatchmakingSocket.send(JSON.stringify({
+			playerNb: playerNb
+		}));
+	}
+
+	function InitializeMatchmakingWebsocket(){
+		MatchmakingSocket = new WebSocket(`wss://${window.location.host}/ws/matchmaking/`);
+		
+		socket.onmessage = function (event) {
+			const data = JSON.parse(event.data);
+			if (data.waiting){
+				if (data.playerNb === 1)
+					RoomUser1Info.style.display = 'none';
+				waitingPlayer.style.display = 'block';
+			}
+			else{
+				if (!data.leader){
+					const message = data.leader_username + " vous attend a son poste"
+					document.getElementById('infoco').innerText = message
+					showSuccessModal()
+				}
+				else{
+					RoomUser1Info.style.display = 'block';
+					waitingPlayer.style.display = 'none';
+					searchUser(data.member_username, 'user1')
+				}
+			}
+		};
+		
+		socket.onclose = function () {
+			console.error("WebSocket connection closed.");
+		};
+	};
 			
 	/*///////////////////////////////////////////////////////////////////////////////////////////////
 	////                                  EVENTS                                               ////
@@ -597,6 +650,7 @@ export function initAll(invite_bool, invite_username) {
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
 	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
+	LaunchMatchMaking.addEventListener('click', () => {matchMaking()});
 
 	function init() {
 		if (invite_bool){
