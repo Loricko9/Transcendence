@@ -22,10 +22,10 @@
 #AIMediumButton {background-color: lightgreen;}
 #AIHardButton {background-color: lightcoral;}
 
-#StartGame {
+#StartGame, #launchMatchmaking {
 	font-size: 40px;
-    position: absolute;
-    bottom: 20px;
+    /* position: relative; */
+    /* bottom: 20px; */
     width: 350px;
     margin: 10px;
 }

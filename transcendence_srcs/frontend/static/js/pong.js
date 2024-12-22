@@ -249,6 +249,12 @@ export function initAll(invite_bool, invite_username) {
 				RoomUser3Info.style.backgroundColor = 'blue';
 			} else if (PVPMode === 'Tournament') {} 
 		} else if (menu === 'Game') {
+			if (MatchmakingSocket){
+				MatchmakingSocket.send(JSON.stringify({
+					command: 'delete',
+				}));
+				console.log("delete group")
+			}
 			Ball.style.display = 'block';
 			PaddingLeft.style.display = 'block';
 			PaddingRight.style.display = 'block';
@@ -257,7 +263,7 @@ export function initAll(invite_bool, invite_username) {
 			defineWhoFight();
 		} else if (menu === 'endGameMenu') {document.getElementById('EndGameMenu').style.display = 'block';}
 		else
-			console.error('Menu not found');
+		console.error('Menu not found');
 	}
 
 	function resetAllData() {
@@ -581,47 +587,55 @@ export function initAll(invite_bool, invite_username) {
 	}
 
 	function matchMaking(){
-		if (!MatchmakingSocket)
-			InitializeMatchmakingWebsocket()
+		let playerNb;
 		switch (PVPMode) {
 			case '1vs1':
 				playerNb = 1;
 				break;
 			case 'Tournament':
 				playerNb = 3
-			default:
-				break;
+				default:
+					break;
 		}
-		MatchmakingSocket.send(JSON.stringify({
-			playerNb: playerNb
-		}));
-	}
-
-	function InitializeMatchmakingWebsocket(){
-		MatchmakingSocket = new WebSocket(`wss://${window.location.host}/ws/matchmaking/`);
-		
-		socket.onmessage = function (event) {
-			const data = JSON.parse(event.data);
+		console.log(playerNb)
+		console.log("Matchmaking lancee")
+		fetch('/api/matchmaking/', {
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+			body: JSON.stringify({ playerNb: playerNb })
+		})
+		.then(response => response.json())
+		.then(data => {
 			if (data.waiting){
+				console.log("waiting")
 				if (data.playerNb === 1)
 					RoomUser1Info.style.display = 'none';
 				waitingPlayer.style.display = 'block';
 			}
 			else{
-				if (!data.leader){
-					const message = data.leader_username + " vous attend a son poste"
-					document.getElementById('infoco').innerText = message
-					showSuccessModal()
-				}
-				else{
-					RoomUser1Info.style.display = 'block';
-					waitingPlayer.style.display = 'none';
-					searchUser(data.member_username, 'user1')
-				}
+				const message = data.leader_username + " vous attend a son poste"
+				document.getElementById('infoco').innerText = message
+				showSuccessModal()
+			}
+		})
+		.catch(error => console.error('Error matchmaking:', error));
+	}
+	
+	function InitializeMatchmakingWebsocket(){
+		MatchmakingSocket = new WebSocket(`wss://${window.location.host}/ws/matchmaking/`);
+		
+		MatchmakingSocket.onmessage = function (event) {
+			const data = JSON.parse(event.data);
+			if (data.playerNb === 1){
+				RoomUser1Info.style.display = 'block';
+				waitingPlayer.style.display = 'none';
+				searchUser(data.member_username, 'user1')
 			}
 		};
-		
-		socket.onclose = function () {
+
+		MatchmakingSocket.onclose = function () {
 			console.error("WebSocket connection closed.");
 		};
 	};
@@ -629,7 +643,7 @@ export function initAll(invite_bool, invite_username) {
 	/*///////////////////////////////////////////////////////////////////////////////////////////////
 	////                                  EVENTS                                               ////
 	/////////////////////////////////////////////////////////////////////////////////////////////// */
-
+	
 	PVP1v1Button.addEventListener('click', () => {PVPMode = '1vs1';changeMenu('RoomMenu');});
 	PVP2v2Button.addEventListener('click', () => {PVPMode = '2vs2';changeMenu('RoomMenu');});
 	TournamentButton.addEventListener('click', () => {PVPMode = 'Tournament';changeMenu('RoomMenu');});
@@ -651,7 +665,7 @@ export function initAll(invite_bool, invite_username) {
 	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
 	LaunchMatchMaking.addEventListener('click', () => {matchMaking()});
-
+	
 	function init() {
 		if (invite_bool){
 			PVPMode = '1vs1';
@@ -663,8 +677,12 @@ export function initAll(invite_bool, invite_username) {
 			resetAllData();
 		}
 		setHostUserName();
+		if (!MatchmakingSocket){
+			console.log("Init matchmaking socket")
+			InitializeMatchmakingWebsocket()
+		}
 	}
-
+	
 	init();
 };
 

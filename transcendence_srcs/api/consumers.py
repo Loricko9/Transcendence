@@ -98,50 +98,14 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		# Recuperer le modele de User
 		User = get_user_model()
 
-		if Matchmaking.objects.exists():
-			groups = Matchmaking.objects.all()
-			for group in groups:
-				if group.is_full() == False:
-					leader = User.objects.get(username=group.leader.username)
-					member = User.objects.get(username=self.scope['user'].username)
-					group.add_member(member)
-					await self.channel_layer.group_send(
-						f'matchmaking_{leader.id}',
-						{
-							'type': 'matchmaking_update',
-							'waiting': False,
-							'member_username': member.username,
-							'playerNb': group.max_members,
-							'leader': True
-						}
-					)
-					await self.channel_layer.group_send(
-					self.group_name,
-						{
-							'type': 'matchmaking_update',
-							'leader': False,
-							'waiting': False,
-							'leader_username': leader.username
-						}
-					)
-		else:
-			leader = User.objects.get(username=self.scope['user'].username)
-			print("leader matchmaking: " + leader)
-			group = Matchmaking.objects.create(leader=leader, max_members=data.get('playerNb'))
-			await self.channel_layer.group_send(
-				self.group_name,
-				{
-					'type': 'matchmaking_update',
-					'waiting': True,
-				}
-			)
+		command = data.get('command')
+		if command and command == 'delete':
+			print("delete group")
+			leader = await sync_to_async(User.objects.get)(username=self.scope['user'].username)
+			await sync_to_async(Matchmaking.objects.filter)(leader=leader).delete()
+			return
+
 
 	async def matchmaking_update(self, event):
 		# Envoyer l'invitation au client cible
-		await self.send(text_data=json.dumps({
-			'waiting': event['waiting'],
-			'member_username': event['member_username'],
-			'playerNb': event['playerNb'],
-			'leader': event['leader'],
-			'leader_username': event['leader_username']
-		}))
+		await self.send(text_data=json.dumps({event['data']}))
