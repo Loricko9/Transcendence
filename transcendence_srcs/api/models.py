@@ -146,6 +146,7 @@ class Matchmaking(models.Model):
 	leader = models.ForeignKey(User_tab, on_delete=models.CASCADE, related_name="group_leader")
 	members = models.ManyToManyField(User_tab, related_name="group", blank=True)
 	max_members = models.PositiveIntegerField(default=1)
+	mode = models.CharField(max_length=10, default='1vs1')
 
 	def is_full(self):
 		return self.members.count() >= self.max_members

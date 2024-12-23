@@ -595,10 +595,9 @@ export function initAll(invite_bool, invite_username) {
 			case '1vs1':
 				playerNb = 1;
 				break;
-			case 'Tournament':
-				playerNb = 3
-				default:
-					break;
+			default:
+				playerNb = 3;
+				break;
 		}
 		console.log(playerNb)
 		console.log("Matchmaking lancee")
@@ -608,15 +607,23 @@ export function initAll(invite_bool, invite_username) {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': Get_Cookie('csrftoken')
 			},
-			body: JSON.stringify({ playerNb: playerNb })
+			body: JSON.stringify({
+				playerNb: playerNb,
+				PVPMode: PVPMode,
+			})
 		})
 		.then(response => response.json())
 		.then(data => {
 			if (data.success){
 				if (data.waiting){
 					console.log("waiting")
-					if (data.playerNb === 1)
+					if (data.maxPlayer === 1)
 						RoomUser1Info.style.display = 'none';
+					else if (data.maxPlayer === 3){
+						RoomUser1Info.style.display = 'none';
+						RoomUser2Info.style.display = 'none';
+						RoomUser3Info.style.display = 'none';
+					}
 					waitingPlayer.style.display = 'block';
 				}
 				else{
@@ -640,11 +647,20 @@ export function initAll(invite_bool, invite_username) {
 		
 		MatchmakingSocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
-			if (data.playerNb === 1){
+			if (data.playerNb === 1 ){
 				RoomUser1Info.style.display = 'block';
-				waitingPlayer.style.display = 'none';
 				searchUser(data.member_username, 'user1')
 			}
+			else if (data.playerNb === 2 ){
+				RoomUser2Info.style.display = 'block';
+				searchUser(data.member_username, 'user2')
+			}
+			else if (data.playerNb === 3 ){
+				RoomUser3Info.style.display = 'block';
+				searchUser(data.member_username, 'user3')
+			}
+			if (data.playerNb === data.maxPlayer)
+				waitingPlayer.style.display = 'none';
 		};
 
 		MatchmakingSocket.onclose = function () {

@@ -436,15 +436,18 @@ def delete_account(request):
 def MatchmakingView(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
+		maxPlayer = data.get('playerNb')
+		PVPMode = data.get('PVPMode')
 		if Matchmaking.objects.exists():
 			print("rejoindre un groupe")
 			groups =Matchmaking.objects.all()
 			for group in groups:
-				if not group.is_full():
+				if not group.is_full() and PVPMode == group.mode:
 					leader = User.objects.get(username=group.leader.username)
 					member = User.objects.get(username=request.user.username)
 					if member.username != leader.username:
 						group.add_member(member)
+						playerNb = group.members.count()
 						channel_layer = get_channel_layer()
 						async_to_sync(channel_layer.group_send)(
 							f'matchmaking_{leader.id}',
@@ -452,7 +455,8 @@ def MatchmakingView(request):
 								'type': 'matchmaking_update',
 								'data': {
 									'member_username': member.username,
-									'playerNb': group.max_members,
+									'playerNb': playerNb,
+									'maxPlayer': maxPlayer
 								}
 							}
 						)
@@ -463,6 +467,6 @@ def MatchmakingView(request):
 			print("Creation d'un groupe")
 			leader = User.objects.get(username=request.user.username)
 			print("leader matchmaking: " + leader.username)
-			group = Matchmaking.objects.create(leader=leader, max_members=data.get('playerNb'))
-			return JsonResponse({'success': True, 'waiting': True, 'playerNb': data.get('playerNb')})
+			group = Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
+			return JsonResponse({'success': True, 'waiting': True, 'maxPlayer': maxPlayer})
 	return redirect('/')
