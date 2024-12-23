@@ -212,8 +212,14 @@ export function initAll(invite_bool, invite_username) {
 		if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';}
 		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}
 	}
-
+	
 	function changeMenu(menu) {
+		if (MatchmakingSocket){
+			MatchmakingSocket.send(JSON.stringify({
+				command: 'delete',
+			}));
+			console.log("delete group")
+		}
 		hideOptnMenu();
 		AnimationAIMenu('out');
 		AnimationMainMenu('out');
@@ -234,6 +240,8 @@ export function initAll(invite_bool, invite_username) {
 			RoomUser1Info.style.backgroundColor = 'lightgrey';
 			RoomUser2Info.style.backgroundColor = 'lightgrey';
 			RoomUser3Info.style.backgroundColor = 'lightgrey';
+			waitingPlayer.style.display = 'none';
+			LaunchMatchMaking.style.display = 'block';
 			RoomHostInfo.style.display = 'block';
 			RoomUser1Info.style.display = 'block';
 			RoomUser2Info.style.display = 'block';
@@ -249,12 +257,6 @@ export function initAll(invite_bool, invite_username) {
 				RoomUser3Info.style.backgroundColor = 'blue';
 			} else if (PVPMode === 'Tournament') {} 
 		} else if (menu === 'Game') {
-			if (MatchmakingSocket){
-				MatchmakingSocket.send(JSON.stringify({
-					command: 'delete',
-				}));
-				console.log("delete group")
-			}
 			Ball.style.display = 'block';
 			PaddingLeft.style.display = 'block';
 			PaddingRight.style.display = 'block';
@@ -587,6 +589,7 @@ export function initAll(invite_bool, invite_username) {
 	}
 
 	function matchMaking(){
+		LaunchMatchMaking.style.display = 'none';
 		let playerNb;
 		switch (PVPMode) {
 			case '1vs1':
@@ -600,6 +603,7 @@ export function initAll(invite_bool, invite_username) {
 		console.log(playerNb)
 		console.log("Matchmaking lancee")
 		fetch('/api/matchmaking/', {
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': Get_Cookie('csrftoken')
@@ -608,16 +612,24 @@ export function initAll(invite_bool, invite_username) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			if (data.waiting){
-				console.log("waiting")
-				if (data.playerNb === 1)
-					RoomUser1Info.style.display = 'none';
-				waitingPlayer.style.display = 'block';
-			}
-			else{
-				const message = data.leader_username + " vous attend a son poste"
-				document.getElementById('infoco').innerText = message
-				showSuccessModal()
+			if (data.success){
+				if (data.waiting){
+					console.log("waiting")
+					if (data.playerNb === 1)
+						RoomUser1Info.style.display = 'none';
+					waitingPlayer.style.display = 'block';
+				}
+				else{
+					const message = data.leader_username + " vous attend a son poste"
+					document.getElementById('infoco').innerText = message
+					showSuccessModal()
+				}
+			} else{
+				MatchmakingSocket.send(JSON.stringify({
+					command: 'delete',
+				}));
+				console.log("delete group")
+				alert(data.error)
 			}
 		})
 		.catch(error => console.error('Error matchmaking:', error));

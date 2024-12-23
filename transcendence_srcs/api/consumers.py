@@ -102,10 +102,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		if command and command == 'delete':
 			print("delete group")
 			leader = await sync_to_async(User.objects.get)(username=self.scope['user'].username)
-			await sync_to_async(Matchmaking.objects.filter)(leader=leader).delete()
+			await sync_to_async(lambda: Matchmaking.objects.filter(leader=leader).delete())()
 			return
 
 
 	async def matchmaking_update(self, event):
 		# Envoyer l'invitation au client cible
-		await self.send(text_data=json.dumps({event['data']}))
+		await self.send(text_data=json.dumps(event['data']))

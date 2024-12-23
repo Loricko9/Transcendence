@@ -238,6 +238,10 @@ function logout(){
 		}
 		if (MatchmakingSocket)
 			{
+				MatchmakingSocket.send(JSON.stringify({
+					command: 'delete',
+				}));
+				console.log("delete group")
 				MatchmakingSocket.close()
 				MatchmakingSocket = null
 				console.log("Matchmaking websocket close")

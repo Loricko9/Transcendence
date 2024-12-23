@@ -434,33 +434,35 @@ def delete_account(request):
 
 
 def MatchmakingView(request):
-	data = json.loads(request.body)
-
-	if Matchmaking.objects.exists():
-		print("rejoindre un groupe")
-		groups =Matchmaking.objects.all()
-		for group in groups:
-			if not group.is_full():
-				leader = User.objects.get(username=group.leader.username)
-				member = User.objects.get(username=request.user.username)
-				if member.username != leader.username:
-					group.add_member(member)
-					channel_layer = get_channel_layer()
-					async_to_sync(channel_layer.group_send)(
-						f'matchmaking_{leader.id}',
-						{
-							'data': {
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		if Matchmaking.objects.exists():
+			print("rejoindre un groupe")
+			groups =Matchmaking.objects.all()
+			for group in groups:
+				if not group.is_full():
+					leader = User.objects.get(username=group.leader.username)
+					member = User.objects.get(username=request.user.username)
+					if member.username != leader.username:
+						group.add_member(member)
+						channel_layer = get_channel_layer()
+						async_to_sync(channel_layer.group_send)(
+							f'matchmaking_{leader.id}',
+							{
 								'type': 'matchmaking_update',
-								'waiting': False,
-								'member_username': member.username,
-								'playerNb': group.max_members,
+								'data': {
+									'member_username': member.username,
+									'playerNb': group.max_members,
+								}
 							}
-						}
-					)
-					return JsonResponse({'waiting': False, 'leader_username': leader.username})
-	else:
-		print("Creation d'un groupe")
-		leader = User.objects.get(username=request.user.username)
-		print("leader matchmaking: " + leader.username)
-		group = Matchmaking.objects.create(leader=leader, max_members=data.get('playerNb'))
-		return JsonResponse({'waiting': True, 'playerNb': data.get('playerNb')})
+						)
+						return JsonResponse({'success': True, 'waiting': False, 'leader_username': leader.username})
+					return JsonResponse({'succes': False, 'error': 'Group not full exist and you are leader'})
+			return JsonResponse({'succes': False, 'error': 'Existing groups are all full'})
+		else:
+			print("Creation d'un groupe")
+			leader = User.objects.get(username=request.user.username)
+			print("leader matchmaking: " + leader.username)
+			group = Matchmaking.objects.create(leader=leader, max_members=data.get('playerNb'))
+			return JsonResponse({'success': True, 'waiting': True, 'playerNb': data.get('playerNb')})
+	return redirect('/')
