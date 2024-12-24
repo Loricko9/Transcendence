@@ -194,6 +194,7 @@ export function initAll(invite_bool, invite_username) {
 			console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 		LeftPlayerUserNameContent.textContent = value1;
 		RightPlayerUserNameContent.textContent = value2;
+		
 	}
 
 	function setFightIcons(value1, value2) {

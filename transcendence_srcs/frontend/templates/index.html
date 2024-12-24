@@ -49,9 +49,15 @@
             </div>
         </div>
         
+		<!-- Notifications -->
+		<div id="notif-div" style="display: none;">
+			<button class="btn btn-outline-light d-none d-md-block" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡Notifications</button>
+		</div>
+		  
+		
 		<!-- options button when connected-->
 		<button class="btn btn-outline-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: none;">
-            <img class="ms-2 rounded-circle" id="user_avatar" src="" alt="Avatar" width="70" height="65" style="display: none;">
+			<img class="ms-2 rounded-circle" id="user_avatar" src="" alt="Avatar" width="70" height="65" style="display: none;">
             <span id="user_connected" style="display: none;"><!-- script dyhnamique --></span>
 		</button>
 
@@ -59,7 +65,7 @@
 		<div class="btn-group me-3 d-flex align-items-center" id="bar_sub_login" role="toolbar" aria-label="Connexion Inscription" style="display:none;">
             <a class="btn btn-outline-light d-none d-md-block" href="/sign_in/" id="signin_btn">{{ texts.Sign_in }}</a>
             <button class="btn btn-outline-light d-block d-md-none rounded-2" id="login_btn_small" type="button" data-bs-toggle="dropdown" aria-expanded="false" >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="grey" class="bi bi-person" viewBox="0 0 16 16">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="grey" class="bi bi-person" viewBox="0 0 16 16">
                 	<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
 				</svg>
             </button>
@@ -67,19 +73,19 @@
             <form class="dropdown-menu dropdown-menu-end p-3 log_form" id="dropdown_form">
 				{% csrf_token %}
                 <div class="mb-1">
-                    <label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
+					<label for="Email_input" class="form-label fs-4">{{ texts.Email_1 }}</label>
                     <input type="email" class="form-control fs-4" id="Email_input" placeholder="email@exemple.com" name="email" required>
                 </div>
                 <div class="mb-1">
-                    <label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
+					<label for="Passwd_input" class="form-label fs-4">{{ texts.Passwd_1 }}</label>
                     <input type="password" class="form-control fs-4" id="Passwd_input" placeholder="123merde" name="password" required>
                 </div>
                 <div class="text-center mb-1">   
-                    <button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
+					<button type="submit" class="btn btn-primary fs-4">{{ texts.OK_btn }}</button>
                 </div>
                 <div class="text-center">   
-                    <a class="btn btn-light fs-4" href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-74c5a74b9bae831aafaf85e15f96bdfc8fbf92c9cea3732e1a449c956a41b6ba&redirect_uri=https%3A%2F%2Flocalhost%2Fapi%2Flog-42%2F&response_type=code">
-                        {{ texts.Log_42 }}  <img src="{% static 'img/42_Logo.svg.ico' %}" alt="logo" width="40" height="40" id="42-logo"/>
+					<a class="btn btn-light fs-4" href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-74c5a74b9bae831aafaf85e15f96bdfc8fbf92c9cea3732e1a449c956a41b6ba&redirect_uri=https%3A%2F%2Flocalhost%2Fapi%2Flog-42%2F&response_type=code">
+						{{ texts.Log_42 }}  <img src="{% static 'img/42_Logo.svg.ico' %}" alt="logo" width="40" height="40" id="42-logo"/>
                     </a>
                 </div>
             </form>
@@ -88,13 +94,13 @@
     
     <!--Offcanva Menu (petit ecran)-->
     <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="OffcanvasNavBar" aria-labelledby="OffcanvasNavBarLabel">
-        <div class="offcanvas-header">
+		<div class="offcanvas-header">
             <h1 class="offcanvas-title fw-bolder" id="offcanvasNavbarLabel">Menu</h1>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link">
-                <li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>{{ texts.Home }}</a></li>
+			<ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link">
+				<li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>{{ texts.Home }}</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>{{ texts.Game_link }}</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>{{ texts.Stat_link }}</a></li>
             </ul>
@@ -104,7 +110,7 @@
                         <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-lg-end pe-3" id="dropdown_lang">
-                        <li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+						<li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
                         <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
                         <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                     </ul>
@@ -114,9 +120,9 @@
         </div>
     </div>
     
-
+	
     <div id="app" class="container">  
-        <!--Sript dynamique-->
+		<!--Sript dynamique-->
     </div>
     
     {% if messages %}
@@ -136,23 +142,23 @@
 				{{ message }}
 			</div>
 			{% endfor %}
-		{% endif %}
-        <div class="row align-items-center" id="sign_log" style="display: flex;">
-            <div class="col p-2 ">
-                <p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
-                <p class="fs-1 fw-bolder txt-red text-center">Ft_Transcendence</p>
+			{% endif %}
+			<div class="row align-items-center" id="sign_log" style="display: flex;">
+				<div class="col p-2 ">
+					<p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
+					<p class="fs-1 fw-bolder txt-red text-center">Ft_Transcendence</p>
                 <p class="fs-5 txt-blue">{{ texts.Index_2 }}</p>
                 <div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
-                    <a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>{{ texts.Regis_now }}</span></a>
+					<a class="btn btn-dark" href="/sign_in/" id="signin_btn_index"><span>{{ texts.Regis_now }}</span></a>
                     <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>{{ texts.Log_on }}</span></button>
                 </div>
             </div>
             <div class="col p-4">
-                <img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
+				<img src="{% static 'anim/pong_index.gif' %}" alt="pong_index gif" class="img-fluid d-block mx-auto rounded-5 img-border img-flex">
             </div>
         </div>
 	</template>
-
+	
     <template id="temp_login">
         <div class="d-flex justify-content-center my-1"><span class="txt-blue fs-1 text-center py-1 px-2">{{ texts.Welcome }}</span><span id="username_login" class="txt-blue fs-1 text-center py-1 px-2"></span></div>
         <div class="row d-flex align-items-center">
@@ -162,45 +168,45 @@
         <div class="row d-flex align-items-center"><span class="txt-blue fs-2 text-center py-1">Tchat</span></div>
         <div class="row div-grey rounded-4 mx-2 mb-2 ps-4 pe-3 py-3" id="div-tchat">
             <div class="col-11 col-md-8 container-fluid div-white rounded-4 d-flex flex-column p-2 mx-0" id="message_container">
-                <div class="d-flex align-items-center justify-content-center flex-grow-1 px-0" id="message_lst">
-                    <span class="text-center fs-2 fw-bolder txt-grey">{{ texts.Friend_sel }}</span>
+				<div class="d-flex align-items-center justify-content-center flex-grow-1 px-0" id="message_lst">
+					<span class="text-center fs-2 fw-bolder txt-grey">{{ texts.Friend_sel }}</span>
                 </div>
                 <div class="container rounded-4 div-grey p-2" id="message_input" style="display: none;">
-
-                </div>
+					
+				</div>
             </div>
             <div class="col-1 d-block d-md-none px-0">
-                <button class="btn p-0 mx-3" id="Openfriends_menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-left" viewBox="3 2 12 12">
+				<button class="btn p-0 mx-3" id="Openfriends_menu">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-left" viewBox="3 2 12 12">
                         <path d="M10 12.796V3.204L4.519 8zm-.659.753-5.48-4.796a1 1 0 0 1 0-1.506l5.48-4.796A1 1 0 0 1 11 3.204v9.592a1 1 0 0 1-1.659.753"/>
                     </svg>
                 </button>
             </div>
             <div class="col-md-4 container-fluid rounded-end-4 px-0 py-1 mx-0" id="friends_menu">
-                <div class="d-flex align-items-center justify-content-between">
-                    <button class="btn d-block d-md-none p-0 mb-3 ms-2" id="Closefriends_menu">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-right" viewBox="3 2 12 12">
+				<div class="d-flex align-items-center justify-content-between">
+					<button class="btn d-block d-md-none p-0 mb-3 ms-2" id="Closefriends_menu">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-caret-right" viewBox="3 2 12 12">
                             <path d="M6 12.796V3.204L11.481 8zm.659.753 5.48-4.796a1 1 0 0 0 0-1.506L6.66 2.451C6.011 1.885 5 2.345 5 3.204v9.592a1 1 0 0 0 1.659.753"/>
                         </svg>
                     </button>
                     <button class="btn btn-info mx-2 mb-2 rounded-5 flex-grow-1" type="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fs-5">{{ texts.Friend_add }}</span></button>
                     <form class="dropdown-menu p-2 log_form rounded-5" id="dropdown_AddFriend">
-                        {% csrf_token %}
+						{% csrf_token %}
                         <div class="d-flex align-content-center">
-                            <input type="name" class="form-control rounded-5 mx-1" id="AddFriend_input" name="name" placeholder="Friend" required>
+							<input type="name" class="form-control rounded-5 mx-1" id="AddFriend_input" name="name" placeholder="Friend" required>
                             <button type="submit" class="btn btn-info rounded-5 mx-1">Send</button>
                         </div>
                     </form>
                 </div>
                 <div id="friend-list">
-
+					
                 </div>
             </div>
         </div>
     </template>
-
+	
     <template id="temp_friend">
-        <button class="btn my-2 py-2 ps-1 pe-0 rounded-start-0 rounded-end-5 d-flex align-items-center justify-content-between friend_btn">
+		<button class="btn my-2 py-2 ps-1 pe-0 rounded-start-0 rounded-end-5 d-flex align-items-center justify-content-between friend_btn">
             <span class="text-break flex-grow-1" id="friend_username"></span><img class="ms-2 rounded-circle" src="" alt="Avatar" width="50" height="50">
         </button>
     </template>
@@ -208,18 +214,18 @@
         <span class="text-center fs-2 fw-bolder txt-grey">{{ texts.Friend_sel }}</span>
     </template>
     <template id="temp_send_message">
-        <div class="d-flex align-content-center">
-            <form class="d-flex align-content-center flex-grow-1" id="chat-message-form">
+		<div class="d-flex align-content-center">
+			<form class="d-flex align-content-center flex-grow-1" id="chat-message-form">
                 {% csrf_token %}
                 <input type="text" class="form-control rounded-4 me-1" id="chat-message-input" name="message" placeholder=" {{ texts.Friend_message }}" autocomplete="off" required>
                 <button class="btn btn-info rounded-circle me-1" type="submit" title="{{ texts.Friend_send }}" id="chat-message-submit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                         <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576zm6.787-8.201L1.591 6.602l4.339 2.76z"/>
                     </svg>
                 </button>
             </form>
 			<button class="btn btn-info rounded-circle me-1" title="Friend profile" id="friendProfile">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
 					<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
 				</svg>
             </button>
@@ -229,7 +235,7 @@
     <template id="temp_Friend_Request">
         <div class="d-flex justify-content-center mb-1"><span class="txt-blue text-center fs-4">{{ texts.Friend_request }}</span></div>
         <div class="row d-flex align-items-center">
-            <button class="col btn btn-success btn-sm ms-3 me-1 rounded-4" id="accept_friend">{{ texts.Accept }}</button>
+			<button class="col btn btn-success btn-sm ms-3 me-1 rounded-4" id="accept_friend">{{ texts.Accept }}</button>
             <button class="col btn btn-danger btn-sm ms-1 me-3 rounded-4" id="refuse_friend">{{ texts.Refuse }}</button>
         </div>
     </template>
@@ -238,19 +244,19 @@
     </template>
 
     <template id="Game">
-        <div id="game-container">
-            <!-- players information area -->
+		<div id="game-container">
+			<!-- players information area -->
             <div id="LeftPlayer">
-                <p id="LeftPlayerName">...</p>
+				<p id="LeftPlayerName">...</p>
                 <p id="LeftPlayerScore">0</p>
                 <img src="icons/DefaultIcon.png" alt="LeftUserIcon" id="leftUserIcon">
             </div>
             <div id="RightPlayer">
-                <p id="RightPlayerName">...</p>
+				<p id="RightPlayerName">...</p>
                 <p id="RightPlayerScore">0</p>
                 <img src="icons/DefaultIcon.png" alt="RightUserIcon" id="rightUserIcon">
             </div>
-    
+			
             <!-- menu area -->
             <div id="main-menu">
                 <button id="AIButton">{{ texts.PlayerVsAI }}</button>
@@ -260,31 +266,31 @@
             </div>
             
             <div id="AIMenu">
-                <button id="AIEasyButton">{{ texts.AIEasyDifficulty }}</button>
+				<button id="AIEasyButton">{{ texts.AIEasyDifficulty }}</button>
                 <button id="AIMediumButton">{{ texts.AIMediumDifficulty }}</button>
                 <button id="AIHardButton">{{ texts.AIHardDifficulty }}</button>
             </div>
             
             <div id="Room" style="display: none">
-                <div id="UsersInformation">
-                    <div id="Host">
-                        <p id="HostName">Host</p>
+				<div id="UsersInformation">
+					<div id="Host">
+						<p id="HostName">Host</p>
                         <img src="icons/DefaultIcon.png" alt="HostUserIcon" id="hostUserIcon">
                     </div>
                     <div id="User1">
-                        <p id="User1Name">...</p>
+						<p id="User1Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User1Icon" id="user1Icon">
                         <input id="User1SearchBox" type="SearchBox">
                         <button id="User1Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User2">
-                        <p id="User2Name">...</p>
+						<p id="User2Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User2Icon" id="user2Icon">
                         <input id="User2SearchBox" type="SearchBox">
                         <button id="User2Search">{{ texts.GameUserSearch }}</button>
                     </div>
                     <div id="User3">
-                        <p id="User3Name">...</p>
+						<p id="User3Name">...</p>
                         <img src="icons/DefaultIcon.png" alt="User3Icon" id="user3Icon">
                         <input id="User3SearchBox" type="SearchBox">
                         <button id="User3Search">{{ texts.GameUserSearch }}</button>
@@ -305,11 +311,11 @@
                 <button id="PlayAgain">{{ texts.PlayAgain }}</button>
                 <button id="NextButton">{{ texts.NextButton }}</button>
             </div>
-    
+			
             <div id="OptnMenu">
-                <p id="DarkModeText">Dark Mode:</p>
+				<p id="DarkModeText">Dark Mode:</p>
                 <label class="switch" id="DarkModeSwitch">
-                    <input type="checkbox">
+					<input type="checkbox">
                     <span class="slider round"></span>
                 </label>
                 <button id="OptnControlsButton">Controls</button>
@@ -324,7 +330,7 @@
                 <button id="ready">{{ texts.Ready }}</button>
                 <p id="counter">3</p>
             </div>
-    
+			
             <!-- Others elements -->
             <p id="tips1" style="display: none">tips</p>
             <p id="tips2" style="display: none">tips</p>
@@ -333,14 +339,14 @@
             <!-- <h4 id="GameTypeHeader">none</h4> -->
         </div>
     </template>
-
+	
 	<template id="temp_change_avatar">
 		<div class="py-2 px-3 my-4" id="change_avatar">
 			<h1 class="text-center fw-bold">{{ texts.Change_avatar1 }}</h1>
 			<form method="post" id="change-avatar-form">
 				<div id="avatar-container" class="d-flex flex-wrap gap-2"></div>
                 <div class="text-center mt-3">   
-                    <button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">{{ texts.Save }}</button>
+					<button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">{{ texts.Save }}</button>
                 </div>
 			</form>
 		</div>
@@ -369,7 +375,7 @@
 			</form>
 		</div>
     </template>
-
+	
     <!-- Template friend_profile -->
 	<template id="temp_friend_profile">
 		<div class="d-flex align-items-center justify-content-between">
@@ -379,7 +385,7 @@
 			</div>
 			<div>
 				<button class="btn btn-outline-danger" title="Delete your friend" data-bs-toggle="modal" data-bs-target="#ConfirmDeleteModal">
-	                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heartbreak-fill" viewBox="0 0 16 16">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heartbreak-fill" viewBox="0 0 16 16">
 	                    <path d="M8.931.586 7 3l1.5 4-2 3L8 15C22.534 5.396 13.757-2.21 8.931.586M7.358.77 5.5 3 7 7l-1.5 3 1.815 4.537C-6.533 4.96 2.685-2.467 7.358.77"/>
 	                </svg>
 					Delete
@@ -401,43 +407,43 @@
 					Deblock
 				</button>
 			</div>
-			</div>
 		</div>
+	</div>
 	</template>
 
 	<!-- Template des stats -->
     <template id="temp_stats">
-        <div class="row d-flex align-items-center"><span class="txt-blue fs-1 text-center py-1">{{ texts.Stat }}</span></div>
+		<div class="row d-flex align-items-center"><span class="txt-blue fs-1 text-center py-1">{{ texts.Stat }}</span></div>
         <div class="row d-flex align-items-center">
-            <span class="col txt-blue fs-2 text-center py-1">{{ texts.Stat_game }}</span>
+			<span class="col txt-blue fs-2 text-center py-1">{{ texts.Stat_game }}</span>
             <span class="col txt-blue fs-2 text-center py-1">{{ texts.Stat_tournaments }}</span>
         </div>
         <div class="row d-flex align-items-center">
-            <div class="col p-2 d-flex align-items-center">
-                <div class="col-4 Diagram"><canvas id="Diag_games"></canvas></div>
+			<div class="col p-2 d-flex align-items-center">
+				<div class="col-4 Diagram"><canvas id="Diag_games"></canvas></div>
                 <div class="col-4 txt-blue fs-2 mx-2" style="width: max-content;">
-                    <div><span>{{ texts.Stat_win1 }}</span><span id="Win_game"></span></div>
+					<div><span>{{ texts.Stat_win1 }}</span><span id="Win_game"></span></div>
                     <div><span>{{ texts.Stat_lose1 }}</span><span id="Lose_game"></span></div>
                 </div>
             </div>
             <div class="vr mx-2 rounded-5 p-2 d-none d-md-block" style="height: 200px; align-self: center;"></div>
             <div class="col p-2 d-flex align-items-center">
-                <div class="col-4 txt-blue fs-2 mx-2 text-end ms-auto" style="width: max-content;">
-                    <div><span id="Win_tournament"></span><span>{{ texts.Stat_win2 }}</span></div>
+				<div class="col-4 txt-blue fs-2 mx-2 text-end ms-auto" style="width: max-content;">
+					<div><span id="Win_tournament"></span><span>{{ texts.Stat_win2 }}</span></div>
                     <div><span id="Lose_tournament"></span><span>{{ texts.Stat_lose2 }}</span></div>
                 </div>
                 <div class="col-4 Diagram"><canvas id="Diag_tournament"></canvas></div>
             </div>
         </div>
         <div class="row d-flex align-items-center px-3">
-            <span class="txt-blue fs-2 text-center py-1">{{ texts.Stat_history }}</span>
+			<span class="txt-blue fs-2 text-center py-1">{{ texts.Stat_history }}</span>
             <table class="table table-striped">
-                <thead>
-                    <tr>
-                      <th scope="col">{{ texts.Stat_date }}</th>
-                      <th scope="col">{{ texts.Stat_opponent }}</th>
-                      <th scope="col">{{ texts.Stat_score }}</th>
-                      <th scope="col">{{ texts.Stat_result }}</th>
+				<thead>
+					<tr>
+						<th scope="col">{{ texts.Stat_date }}</th>
+						<th scope="col">{{ texts.Stat_opponent }}</th>
+						<th scope="col">{{ texts.Stat_score }}</th>
+						<th scope="col">{{ texts.Stat_result }}</th>
                     </tr>
                 </thead>
                 <tbody id="table_history"></tbody>
@@ -445,9 +451,9 @@
             <span id="no_data_txt" class="txt-blue fs-4 text-center pb-2" style="display: none;">No Data</span>
         </div>
 	</template>
-
+	
     <template id="temp_notFound">
-        <img src="{% static 'anim/404_err.gif' %}" alt="Err_404 gif" class="img-fluid d-block mx-auto rounded-5 img-border"/>
+		<img src="{% static 'anim/404_err.gif' %}" alt="Err_404 gif" class="img-fluid d-block mx-auto rounded-5 img-border"/>
         <h1 class="text-center fw-bolder">{{ texts.404_Err }}</h1>
     </template>
 
@@ -460,7 +466,7 @@
 			</div>
 		</div>
 	</div>
-
+	
 	<!-- Modal pour confirmer la supression de l'ami -->
     <div class="modal" id="ConfirmDeleteModal" tabindex="-1" aria-labelledby="exampleConfirmDeleteModal" aria-hidden="true">
 		<div class="modal-dialog">
@@ -474,14 +480,14 @@
                     <span>Etes vous sur ?</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="delete_friend">Oui, je l'aimais pas</button>
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="ban_friend">Oui, je veux bloquer</button>
                 </div>
 			</div>
 		</div>
 	</div>
-
+	
 	<!-- Modal pour corfirmer le blocage du user -->
 	<div class="modal" id="ConfirmBlockModal" tabindex="-1" aria-labelledby="exampleConfirmBlockModal" aria-hidden="true">
 		<div class="modal-dialog">
@@ -491,13 +497,33 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
                 <div class="modal-body">
-                    <span>Vous etes sur le point de bloquer votre amis !</span>
+					<span>Vous etes sur le point de bloquer votre amis !</span>
                     <span>Etes vous sur ?</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
                     <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="block_friend">Oui, il me saoule</button>
                 </div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal pour Notifications-->
+	<div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Notifications</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="lst_notif">
+					<ul class="list-group list-group-flush">
+						<!-- contenue dynamique -->
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
 			</div>
 		</div>
 	</div>

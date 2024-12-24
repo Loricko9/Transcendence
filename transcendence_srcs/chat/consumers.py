@@ -98,6 +98,18 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				room=room, sender=sender, content=message
 			)
 
+			# notif if needs
+			if await sync_to_async(lambda: room.sender.username)() == sender.username:
+				friend_username = await sync_to_async(lambda: room.receiver.username)()
+			else:
+				friend_username = await sync_to_async(lambda: room.sender.username)()
+			friend = await sync_to_async(User.objects.get)(username=friend_username)
+			if await sync_to_async(lambda: not friend.is_connected)():
+				Notifications = apps.get_model('api', 'Notifications')
+				notif = sender.username + " sends you un message."
+				await sync_to_async(Notifications.objects.create)(user=friend, message=notif)
+
+
 			# Envoyer le message à tout le groupe
 			await self.channel_layer.group_send(
 			self.room_group_name,

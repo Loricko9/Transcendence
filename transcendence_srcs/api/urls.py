@@ -11,6 +11,7 @@ urlpatterns = [
     path('friend-request/<int:id>/', views.respond_to_friend_request, name='respond-to-friend-request'),  # Répondre à une demande
 	path('friend-profile/<int:id>/', views.FriendProfileView.as_view(), name='friend_profile'), # Display friend profile
 	path('matchmaking/', views.MatchmakingView, name='match-making'),
+	path('notifications/', views.NotificationsView, name='notifications'),
 	path('log-42/', views.log_42, name='log_42'),
 	path('change-password/', views.change_password, name='change_password'),
 	path('change-avatar/', views.change_avatar, name='change_avatar'),

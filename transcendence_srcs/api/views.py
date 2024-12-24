@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect # type: ignore
 from django.http import JsonResponse, HttpResponse # type: ignore
-from .models import User_tab, Friendship, History, Matchmaking
+from .models import User_tab, Friendship, History, Matchmaking, Notifications
 from django.shortcuts import get_object_or_404, render, redirect # type: ignore
 from rest_framework.views import APIView # type: ignore
 from rest_framework.decorators import api_view # type: ignore
@@ -460,6 +460,8 @@ def MatchmakingView(request):
 								}
 							}
 						)
+						message = leader.username + " vous attend a son poste"
+						Notifications.objects.create(user=member, message=message)
 						return JsonResponse({'success': True, 'waiting': False, 'leader_username': leader.username})
 					return JsonResponse({'succes': False, 'error': 'Group not full exist and you are leader'})
 			return JsonResponse({'succes': False, 'error': 'Existing groups are all full'})
@@ -470,3 +472,17 @@ def MatchmakingView(request):
 			group = Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
 			return JsonResponse({'success': True, 'waiting': True, 'maxPlayer': maxPlayer})
 	return redirect('/')
+
+def NotificationsView(request):
+	print("Recption Notif view")
+	Notifications.objects.filter(user=request.user, is_read=True).delete()
+	notifications = Notifications.objects.filter(user=request.user, is_read=False)
+	messages = []
+	if notifications:
+		for notif in notifications:	
+			notif.is_read = True
+			messages.append(notif.message)
+		return JsonResponse({'success': True, 'messages': messages})
+	else:
+		print("pas de notifs")
+		return JsonResponse({'success': False, 'message': 'Aucune notification'})

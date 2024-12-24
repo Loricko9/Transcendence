@@ -17,6 +17,7 @@ async function checkAuthentification() {
 				InitializeWebsocket();
 				console.log("websocket init")
 			}
+			document.getElementById('notif-div').style.display = 'flex';
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -31,6 +32,7 @@ async function checkAuthentification() {
 			return [true, false];
 		}
 		else {
+			document.getElementById('notif-div').style.display = 'none';
 			document.getElementById('option').style.display = 'none';
 			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
@@ -534,3 +536,46 @@ function respondToInvite(response, sender_username) {
 window.addEventListener('beforeunload', function () {
     logout()
 });
+
+
+document.getElementById('notifications').addEventListener('click', () => {
+	displayNotifications();
+	var modalElement = document.getElementById('notifModal');
+	var successModal = new bootstrap.Modal(modalElement);
+	successModal.show();
+})
+
+function displayNotifications(){
+	console.log('displayNotification called')
+	fetch('/api/notifications/', {
+		method: 'GET',
+        headers: {
+			'Content-Type': 'application/json',
+            'X-CSRFToken': Get_Cookie('csrftoken')
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+		if (data.success){
+			console.log("notif success")
+			data.messages.forEach(message => {
+				const notificationList = document.querySelector('#lst_notif ul');
+				notificationList.innerHTML = ''; // Supprime tous les <li>
+				const newNotification = document.createElement('li');
+				newNotification.classList.add('list-group-item animate-bounce');
+				newNotification.textContent = message;
+				notificationList.appendChild(newNotification);
+			});
+		}
+		else{
+			console.log("aucune notif")
+			const notificationList = document.querySelector('#lst_notif ul');
+				notificationList.innerHTML = ''; // Supprime tous les <li>
+				const newNotification = document.createElement('li');
+				newNotification.classList.add('list-group-item');
+				newNotification.textContent = data.message;
+				notificationList.appendChild(newNotification);
+		}
+    })
+    .catch(error => console.error('Error update notifications:', error));
+}
