@@ -537,44 +537,56 @@ window.addEventListener('beforeunload', function () {
     logout()
 });
 
-
 document.getElementById('notifications').addEventListener('click', () => {
-	displayNotifications();
+	updateNotifications(false, null);
 	var modalElement = document.getElementById('notifModal');
 	var successModal = new bootstrap.Modal(modalElement);
 	successModal.show();
 })
 
-function displayNotifications(){
+export function updateNotifications(update_notif_nb, message){
 	console.log('displayNotification called')
 	fetch('/api/notifications/', {
-		method: 'GET',
+		method: 'POST',
         headers: {
 			'Content-Type': 'application/json',
             'X-CSRFToken': Get_Cookie('csrftoken')
         },
+		body: JSON.stringify({
+			update_notif_nb: update_notif_nb,
+			message: message
+		})
     })
     .then(response => response.json())
     .then(data => {
+		const badge_notif = document.getElementById('notif_nb')
+		if (data.update_notif_nb){
+			console.log("badge mit en place")
+			badge_notif.style.display = 'inline'
+			badge_notif.textContent = data.notif_nb
+			return
+		}
 		if (data.success){
 			console.log("notif success")
+			const notificationList = document.querySelector('#lst_notif ul');
+			notificationList.innerHTML = ''; // Supprime tous les <li>
 			data.messages.forEach(message => {
-				const notificationList = document.querySelector('#lst_notif ul');
-				notificationList.innerHTML = ''; // Supprime tous les <li>
 				const newNotification = document.createElement('li');
-				newNotification.classList.add('list-group-item animate-bounce');
+				newNotification.classList.add('list-group-item');
 				newNotification.textContent = message;
 				notificationList.appendChild(newNotification);
 			});
+			badge_notif.style.display = 'none';
+			badge_notif.textContent = '';
 		}
 		else{
 			console.log("aucune notif")
 			const notificationList = document.querySelector('#lst_notif ul');
-				notificationList.innerHTML = ''; // Supprime tous les <li>
-				const newNotification = document.createElement('li');
-				newNotification.classList.add('list-group-item');
-				newNotification.textContent = data.message;
-				notificationList.appendChild(newNotification);
+			notificationList.innerHTML = ''; // Supprime tous les <li>
+			const newNotification = document.createElement('li');
+			newNotification.classList.add('list-group-item');
+			newNotification.textContent = data.message;
+			notificationList.appendChild(newNotification);
 		}
     })
     .catch(error => console.error('Error update notifications:', error));

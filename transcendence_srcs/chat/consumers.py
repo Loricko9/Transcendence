@@ -105,10 +105,9 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				friend_username = await sync_to_async(lambda: room.sender.username)()
 			friend = await sync_to_async(User.objects.get)(username=friend_username)
 			if await sync_to_async(lambda: not friend.is_connected)():
-				Notifications = apps.get_model('api', 'Notifications')
-				notif = sender.username + " sends you un message."
-				await sync_to_async(Notifications.objects.create)(user=friend, message=notif)
-
+				notif = True
+			else:
+				notif = False
 
 			# Envoyer le message à tout le groupe
 			await self.channel_layer.group_send(
@@ -117,7 +116,8 @@ class ChatConsumers(AsyncWebsocketConsumer):
 					'type': 'chat_message',
 					'message': message,
 					'sender': sender.username,
-					'timestamp': timestamp
+					'timestamp': timestamp,
+					'notif': notif
 				}
 			)
 
@@ -126,5 +126,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			'message': event['message'],      # Contenu du message
 			'sender': event.get('sender', 'Anonymous'),  # Expéditeur (par défaut : 'Anonymous')
-			'timestamp': event.get('timestamp', 'Unknown Time')  # Heure d'envoi (par défaut : 'Unknown Time')
+			'timestamp': event.get('timestamp', 'Unknown Time'),  # Heure d'envoi (par défaut : 'Unknown Time')
+			'notif': event.get('notif'),
 		}))

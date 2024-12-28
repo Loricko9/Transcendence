@@ -1,4 +1,4 @@
-import { socket } from './main.js';
+import { socket, updateNotifications} from './main.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {
@@ -431,8 +431,14 @@ function initializeChatWebSocket(roomId) {
 		const username = document.getElementById("user_connected").innerText;
 		if (data.sender == username)
 			Add_message(data.message, true)
-		else
+		else{
 			Add_message(data.message, false)
+			if (data.notif){
+				message = data.sender + " send you a message !"
+				updateNotifications(true, message)
+			}
+		}
+
     };
 
     // Gestion de l'envoi des messages

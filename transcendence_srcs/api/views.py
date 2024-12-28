@@ -460,8 +460,6 @@ def MatchmakingView(request):
 								}
 							}
 						)
-						message = leader.username + " vous attend a son poste"
-						Notifications.objects.create(user=member, message=message)
 						return JsonResponse({'success': True, 'waiting': False, 'leader_username': leader.username})
 					return JsonResponse({'succes': False, 'error': 'Group not full exist and you are leader'})
 			return JsonResponse({'succes': False, 'error': 'Existing groups are all full'})
@@ -469,20 +467,37 @@ def MatchmakingView(request):
 			print("Creation d'un groupe")
 			leader = User.objects.get(username=request.user.username)
 			print("leader matchmaking: " + leader.username)
-			group = Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
+			Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
 			return JsonResponse({'success': True, 'waiting': True, 'maxPlayer': maxPlayer})
 	return redirect('/')
 
 def NotificationsView(request):
 	print("Recption Notif view")
-	Notifications.objects.filter(user=request.user, is_read=True).delete()
-	notifications = Notifications.objects.filter(user=request.user, is_read=False)
-	messages = []
-	if notifications:
-		for notif in notifications:	
-			notif.is_read = True
-			messages.append(notif.message)
-		return JsonResponse({'success': True, 'messages': messages})
-	else:
-		print("pas de notifs")
-		return JsonResponse({'success': False, 'message': 'Aucune notification'})
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		notifs_read = Notifications.objects.filter(user=request.user, is_read=True)
+		if notifs_read:
+			for notif_read in notifs_read:
+				print("notif read: " + notif_read.message)
+				notif_read.delete()
+		if data.get('update_notif_nb') == False:
+			notifications = Notifications.objects.filter(user=request.user, is_read=False)
+			messages = []
+			if notifications:
+				for notif in notifications:
+					print("new notif: " + notif.message)
+					notif.is_read = True
+					notif.save()
+					messages.append(notif.message)
+				return JsonResponse({'success': True, 'messages': messages, 'update_notif_nb': False})
+			else:
+				print("pas de notifs")
+				return JsonResponse({'success': False, 'message': 'Aucune notification', 'update_notif_nb': False})
+		else:
+			Notifications.objects.create(user=request.user, message=data.get('message'))
+			print("Notification cree")
+			notifications = Notifications.objects.filter(user=request.user, is_read=False)
+			notif_nb = notifications.count()
+			print("notif_nb: " + str(notif_nb))
+			return JsonResponse({'update_notif_nb': True, 'notif_nb': notif_nb})
+

@@ -1,4 +1,5 @@
 import {showSuccessModal} from './utils.js';
+import {updateNotifications} from './main.js';
 
 export let MatchmakingSocket = null;
 
@@ -194,7 +195,6 @@ export function initAll(invite_bool, invite_username) {
 			console.error('Fatal Error: player not initialised!');changeMenu('MainMenu');resetAllData();return ;}
 		LeftPlayerUserNameContent.textContent = value1;
 		RightPlayerUserNameContent.textContent = value2;
-		
 	}
 
 	function setFightIcons(value1, value2) {
@@ -215,12 +215,6 @@ export function initAll(invite_bool, invite_username) {
 	}
 	
 	function changeMenu(menu) {
-		if (MatchmakingSocket){
-			MatchmakingSocket.send(JSON.stringify({
-				command: 'delete',
-			}));
-			console.log("delete group")
-		}
 		hideOptnMenu();
 		AnimationAIMenu('out');
 		AnimationMainMenu('out');
@@ -264,12 +258,34 @@ export function initAll(invite_bool, invite_username) {
 			Delimiter.style.display = 'block';
 			ReadyButton.style.display = 'block';
 			defineWhoFight();
+			send_notif();
 		} else if (menu === 'endGameMenu') {document.getElementById('EndGameMenu').style.display = 'block';}
 		else
 		console.error('Menu not found');
 	}
 
+	function send_notif(){
+		if (MatchmakingSocket){
+			MatchmakingSocket.send(JSON.stringify({
+				command: 'notif',
+				username1: LeftPlayerUserNameContent.textContent,
+				username2: RightPlayerUserNameContent.textContent,
+			}));
+			console.log("command notif")
+		}
+	}
+
+	function delete_MatchGroup(){
+		if (MatchmakingSocket){
+			MatchmakingSocket.send(JSON.stringify({
+				command: 'delete',
+			}));
+			console.log("delete group")
+		}
+	}
+
 	function resetAllData() {
+		delete_MatchGroup()
 		gameStarted = false;
 		AIDifficulty = "none";
 		PVPMode = "none";
@@ -375,6 +391,7 @@ export function initAll(invite_bool, invite_username) {
 		document.getElementById("WinnerName").style.display = "block";
 		document.getElementById("WinnerIcon").style.display = "block";
 		if (scoreleftplayer === 3 || scorerightplayer === 3) {
+			delete_MatchGroup()
 			softReset();
 			gameStarted = false;
 			if (PVPMode === 'none' || PVPMode === '1vs1') {
@@ -631,6 +648,7 @@ export function initAll(invite_bool, invite_username) {
 					const message = data.leader_username + " vous attend a son poste"
 					document.getElementById('infoco').innerText = message
 					showSuccessModal()
+					updateNotifications(true, message)
 				}
 			} else{
 				MatchmakingSocket.send(JSON.stringify({
@@ -648,6 +666,13 @@ export function initAll(invite_bool, invite_username) {
 		
 		MatchmakingSocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
+			if (data.type == 'notif'){
+				console.log("type notif commpris")
+				document.getElementById('infoco').innerText = data.message
+				showSuccessModal()
+				updateNotifications(true, data.message)
+				return
+			}
 			if (data.playerNb === 1 ){
 				RoomUser1Info.style.display = 'block';
 				searchUser(data.member_username, 'user1')
