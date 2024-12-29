@@ -201,6 +201,7 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 		document.getElementById('infoco').innerHTML = data.message
 		document.getElementById('dropdown_form').reset();
 		showSuccessModal()
+		updateNotifications(true, null)
 		redirect_to("/")
 	})
 	.catch(error => {
@@ -487,6 +488,7 @@ function InitializeWebsocket(){
 
 		console.log("WebSocket message received:", event.data); // Log des données brutes
 		alert(data.message); // Affichez la notification ou rafraîchissez la liste
+		updateNotifications(true, data.message)
 		fetchFriendList(() => {
 			loadfriendinput();
 			loadfriendmessage();
@@ -532,10 +534,11 @@ function respondToInvite(response, sender_username) {
 	}
 }
 
-// Fermer le WebSocket lorsque la page est déchargée
-window.addEventListener('beforeunload', function () {
-    logout()
-});
+// // Fermer le WebSocket lorsque la page est déchargée
+// document.addEventListener('visibilitychange', function () {
+// 	logout()
+// });
+  
 
 document.getElementById('notifications').addEventListener('click', () => {
 	updateNotifications(false, null);

@@ -494,8 +494,10 @@ def NotificationsView(request):
 				print("pas de notifs")
 				return JsonResponse({'success': False, 'message': 'Aucune notification', 'update_notif_nb': False})
 		else:
-			Notifications.objects.create(user=request.user, message=data.get('message'))
-			print("Notification cree")
+			message = data.get('message')
+			if message:
+				Notifications.objects.create(user=request.user, message=message)
+				print("Notification cree")
 			notifications = Notifications.objects.filter(user=request.user, is_read=False)
 			notif_nb = notifications.count()
 			print("notif_nb: " + str(notif_nb))

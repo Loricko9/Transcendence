@@ -433,12 +433,7 @@ function initializeChatWebSocket(roomId) {
 			Add_message(data.message, true)
 		else{
 			Add_message(data.message, false)
-			if (data.notif){
-				message = data.sender + " send you a message !"
-				updateNotifications(true, message)
-			}
 		}
-
     };
 
     // Gestion de l'envoi des messages
