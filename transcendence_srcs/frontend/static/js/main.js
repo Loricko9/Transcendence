@@ -215,43 +215,45 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 });
 	
 function logout(){
-	fetch('/api/logout/', {
-		method: 'POST',
-        headers: {
-			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken')
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('infoco').innerHTML = data.message
-		clearFormFields()
-		refreshCSRFToken()
-		showSuccessModal()
-		if (socket){
-			socket.close()
-			socket = null
-			console.log("websocket close")
-		}
-		if (chatSocket)
-		{
-			chatSocket.close()
-			chatSocket = null
-			console.log("Chat websocket close")
-		}
-		if (MatchmakingSocket)
-			{
-				MatchmakingSocket.send(JSON.stringify({
-					command: 'delete',
-				}));
-				console.log("delete group")
-				MatchmakingSocket.close()
-				MatchmakingSocket = null
-				console.log("Matchmaking websocket close")
+	if (!localStorage.getItem('pageActive')) {
+		fetch('/api/logout/', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-CSRFToken': Get_Cookie('csrftoken')
+			},
+		})
+		.then(response => response.json())
+		.then(data => {
+			document.getElementById('infoco').innerHTML = data.message
+			clearFormFields()
+			refreshCSRFToken()
+			showSuccessModal()
+			if (socket){
+				socket.close()
+				socket = null
+				console.log("websocket close")
 			}
-		redirect_to("/")
-    })
-    .catch(error => console.error('Erreur:', error));
+			if (chatSocket)
+			{
+				chatSocket.close()
+				chatSocket = null
+				console.log("Chat websocket close")
+			}
+			if (MatchmakingSocket)
+				{
+					MatchmakingSocket.send(JSON.stringify({
+						command: 'delete',
+					}));
+					console.log("delete group")
+					MatchmakingSocket.close()
+					MatchmakingSocket = null
+					console.log("Matchmaking websocket close")
+				}
+			redirect_to("/")
+		})
+		.catch(error => console.error('Erreur:', error));
+	}
 }
 
 // delete account
@@ -534,12 +536,7 @@ function respondToInvite(response, sender_username) {
 	}
 }
 
-// // Fermer le WebSocket lorsque la page est déchargée
-// document.addEventListener('visibilitychange', function () {
-// 	logout()
-// });
-  
-
+// Ouvrir les noitifications
 document.getElementById('notifications').addEventListener('click', () => {
 	updateNotifications(false, null);
 	var modalElement = document.getElementById('notifModal');
@@ -547,6 +544,8 @@ document.getElementById('notifications').addEventListener('click', () => {
 	successModal.show();
 })
 
+// Ajouter ou lister les notifications
+// Ajouter avec param (true, message), lister avec param (false, null)
 export function updateNotifications(update_notif_nb, message){
 	console.log('displayNotification called')
 	fetch('/api/notifications/', {
@@ -594,3 +593,22 @@ export function updateNotifications(update_notif_nb, message){
     })
     .catch(error => console.error('Error update notifications:', error));
 }
+
+// Marquer la page comme active à son chargement
+window.addEventListener('load', setPageActive);
+
+// Deconnecter quand la page n'est plus active
+window.addEventListener('beforeunload', () => {
+	removePageActive(); // Retirer l'indicateur de page active
+	logout(); // Déclencher la déconnexion
+  });
+
+function setPageActive() {
+	// Indique que cette page est active
+	localStorage.setItem('pageActive', 'true');
+  }
+  
+  function removePageActive() {
+	// Indique que cette page n'est plus active
+	localStorage.removeItem('pageActive');
+  }
