@@ -16,6 +16,8 @@ import os, requests, json, logging
 from asgiref.sync import async_to_sync # type: ignore
 from channels.layers import get_channel_layer # type: ignore
 import logging
+import threading
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -432,7 +434,7 @@ def delete_account(request):
 		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
 	return redirect('/')
 
-
+# View Matchmaking
 def MatchmakingView(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
@@ -460,17 +462,30 @@ def MatchmakingView(request):
 								}
 							}
 						)
-						return JsonResponse({'success': True, 'waiting': False, 'leader_username': leader.username})
-					return JsonResponse({'succes': False, 'error': 'Group not full exist and you are leader'})
-			return JsonResponse({'succes': False, 'error': 'Existing groups are all full'})
-		else:
-			print("Creation d'un groupe")
-			leader = User.objects.get(username=request.user.username)
-			print("leader matchmaking: " + leader.username)
-			Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
-			return JsonResponse({'success': True, 'waiting': True, 'maxPlayer': maxPlayer})
+						return JsonResponse({'waiting': False, 'success': True, 'leader_username': leader.username})
+		print("Creation d'un groupe")
+		leader = User.objects.get(username=request.user.username)
+		print("leader matchmaking: " + leader.username)
+		new_group = Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
+		delay_in_seconds = 60
+		thread = threading.Thread(target=delete_group_after_delay, args=(new_group.id, delay_in_seconds))
+		thread.start()
+		return JsonResponse({'waiting': True, 'maxPlayer': maxPlayer})
 	return redirect('/')
 
+# Fonction pour supprimer un groupe après un délai
+def delete_group_after_delay(group_id, delay):
+	"""Delete a Matchmaking group after a certain delay."""
+	time.sleep(delay)  # Pause l'exécution pour le délai spécifié
+	try:
+		group = Matchmaking.objects.get(id=group_id)
+		group.delete()  # Supprime le groupe
+		print(f"Group with ID {group_id} has been deleted.")
+	except Matchmaking.DoesNotExist:
+		print(f"Group with ID {group_id} does not exist (already deleted?).")
+
+
+# View Notifications
 def NotificationsView(request):
 	print("Recption Notif view")
 	if request.method == 'POST':

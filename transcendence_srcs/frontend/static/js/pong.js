@@ -92,6 +92,7 @@ export function initAll(invite_bool, invite_username) {
 	let tournamentWinnerRound1Icon = null;
 	let tournamentWinnerRound2 = null;
 	let tournamentWinnerRound2Icon = null;
+	let timer;
 
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -231,6 +232,7 @@ export function initAll(invite_bool, invite_username) {
 		if (menu === 'MainMenu') {AnimationMainMenu('in');resetAllData();
 		} else if (menu === 'AIMenu') {document.getElementById('EndGameMenu').style.display = 'none';AnimationAIMenu('in');
 		} else if (menu === 'RoomMenu') {
+			delete_MatchGroup()
 			RoomHostInfo.style.backgroundColor = 'lightgrey';
 			RoomUser1Info.style.backgroundColor = 'lightgrey';
 			RoomUser2Info.style.backgroundColor = 'lightgrey';
@@ -252,6 +254,8 @@ export function initAll(invite_bool, invite_username) {
 				RoomUser3Info.style.backgroundColor = 'blue';
 			} else if (PVPMode === 'Tournament') {} 
 		} else if (menu === 'Game') {
+			if (timer)
+				clearTimeout(timer);
 			Ball.style.display = 'block';
 			PaddingLeft.style.display = 'block';
 			PaddingRight.style.display = 'block';
@@ -632,30 +636,26 @@ export function initAll(invite_bool, invite_username) {
 		})
 		.then(response => response.json())
 		.then(data => {
-			if (data.success){
-				if (data.waiting){
-					console.log("waiting")
-					if (data.maxPlayer === 1)
-						RoomUser1Info.style.display = 'none';
-					else if (data.maxPlayer === 3){
-						RoomUser1Info.style.display = 'none';
-						RoomUser2Info.style.display = 'none';
-						RoomUser3Info.style.display = 'none';
-					}
-					waitingPlayer.style.display = 'block';
+			if (data.waiting){
+				console.log("waiting")
+				if (data.maxPlayer === 1)
+					RoomUser1Info.style.display = 'none';
+				else if (data.maxPlayer === 3){
+					RoomUser1Info.style.display = 'none';
+					RoomUser2Info.style.display = 'none';
+					RoomUser3Info.style.display = 'none';
 				}
-				else{
-					const message = data.leader_username + " vous attend a son poste"
-					document.getElementById('infoco').innerText = message
-					showSuccessModal()
-					updateNotifications(true, message)
-				}
-			} else{
-				MatchmakingSocket.send(JSON.stringify({
-					command: 'delete',
-				}));
-				console.log("delete group")
-				alert(data.error)
+				waitingPlayer.style.display = 'block';
+				timer = setTimeout(() => {
+					alert("echec Matchmaking")
+					changeMenu('MainMenu')
+				}, 60000);
+			}
+			else{
+				const message = data.leader_username + " vous attend a son poste"
+				document.getElementById('infoco').innerText = message
+				showSuccessModal()
+				updateNotifications(true, message)
 			}
 		})
 		.catch(error => console.error('Error matchmaking:', error));
