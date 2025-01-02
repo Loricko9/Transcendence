@@ -550,17 +550,17 @@ export function updateNotifications(update_notif_nb, message){
 	console.log('displayNotification called')
 	fetch('/api/notifications/', {
 		method: 'POST',
-        headers: {
+		headers: {
 			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken')
-        },
+			'X-CSRFToken': Get_Cookie('csrftoken')
+		},
 		body: JSON.stringify({
 			update_notif_nb: update_notif_nb,
 			message: message
 		})
-    })
-    .then(response => response.json())
-    .then(data => {
+	})
+	.then(response => response.json())
+	.then(data => {
 		const badge_notif = document.getElementById('notif_nb')
 		if (data.update_notif_nb){
 			console.log("badge mit en place")
@@ -590,8 +590,8 @@ export function updateNotifications(update_notif_nb, message){
 			newNotification.textContent = data.message;
 			notificationList.appendChild(newNotification);
 		}
-    })
-    .catch(error => console.error('Error update notifications:', error));
+	})
+	.catch(error => console.error('Error update notifications:', error));
 }
 
 // Marquer la page comme active à son chargement

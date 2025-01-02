@@ -1,4 +1,4 @@
-import { socket, updateNotifications} from './main.js';
+import {socket} from './main.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {

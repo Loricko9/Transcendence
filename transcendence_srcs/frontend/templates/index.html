@@ -51,7 +51,7 @@
         
 		<!-- Notifications -->
 		<div id="notif-div" style="display: none;">
-			<button class="btn btn-outline-light d-none d-md-block position-relative" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡Notifications
+			<button class="btn btn-outline-light d-none d-md-block position-relative" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡{{ texts.Notifs_btn }}
 				<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_nb"><!--dynamique nbr--></span>
 			</button>
 		</div>
@@ -136,7 +136,7 @@
     {% endfor %}
     {% endif %}
 
-    <!--Templates injecter par le js dans le div app-->
+    <!--Templates injectés par le js dans le div app-->
     <template id="temp_index">
 		{% if messages %}
 			{% for message in messages %}
@@ -196,7 +196,7 @@
 						{% csrf_token %}
                         <div class="d-flex align-content-center">
 							<input type="name" class="form-control rounded-5 mx-1" id="AddFriend_input" name="name" placeholder="Friend" required>
-                            <button type="submit" class="btn btn-info rounded-5 mx-1">Send</button>
+                            <button type="submit" class="btn btn-info rounded-5 mx-1">{{ texts.Send_btn }}</button>
                         </div>
                     </form>
                 </div>
@@ -231,7 +231,7 @@
 					<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
 				</svg>
             </button>
-			<button class="btn btn-primary" title="Invite to play" id="inviteBtn">Invite to play</button>
+			<button class="btn btn-primary" title="Invite to play" id="inviteBtn">{{ texts.Invite_play_btn }}</button>
         </div>
     </template>
     <template id="temp_Friend_Request">
@@ -301,7 +301,7 @@
 						<img src="{% static 'anim/Waiting.gif' %}" alt="waiting gif">
 					</div>
                 </div>
-				<button id="launchMatchMaking">Matchmaking</button>
+				<button id="launchMatchMaking">{{ texts.Matchmaking_btn }}</button>
                 <button id="StartGame">{{ texts.StartGame }}</button>
             </div> 
             
@@ -390,7 +390,7 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heartbreak-fill" viewBox="0 0 16 16">
 	                    <path d="M8.931.586 7 3l1.5 4-2 3L8 15C22.534 5.396 13.757-2.21 8.931.586M7.358.77 5.5 3 7 7l-1.5 3 1.815 4.537C-6.533 4.96 2.685-2.467 7.358.77"/>
 	                </svg>
-					Delete
+					{{ texts.Delete_btn }}
 	            </button>
 				<button class="btn btn-outline-danger" title="Block your friend" id="blockFriend" data-bs-target="#ConfirmBlockModal" style="display: inline;">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sign-stop" viewBox="0 0 16 16">
@@ -398,7 +398,7 @@
 						<path fill-rule="evenodd" d="M11.045 7.73v.544c0 1.131-.636 1.805-1.661 1.805-1.026 0-1.664-.674-1.664-1.805V7.73c0-1.136.638-1.807 1.664-1.807s1.66.674 1.66 1.807Zm-.674.547v-.553c0-.827-.422-1.234-.987-1.234-.572 0-.99.407-.99 1.234v.553c0 .83.418 1.237.99 1.237.565 0 .987-.408.987-1.237m1.15-2.276h1.535c.82 0 1.316.55 1.316 1.292 0 .747-.501 1.289-1.321 1.289h-.865V10h-.665zm1.436 2.036c.463 0 .735-.272.735-.744s-.272-.741-.735-.741h-.774v1.485z"/>
 						<path fill-rule="evenodd" d="M4.893 0a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353L11.46.146A.5.5 0 0 0 11.107 0zM1 5.1 5.1 1h5.8L15 5.1v5.8L10.9 15H5.1L1 10.9z"/>
 					</svg>
-					Block
+					{{ texts.Block_btn }}
 				</button>
 				<button class="btn btn-primary" title="Deblock your friend" id="deblockFriend" style="display: inline;">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sign-stop" viewBox="0 0 16 16">
@@ -406,7 +406,7 @@
 						<path fill-rule="evenodd" d="M11.045 7.73v.544c0 1.131-.636 1.805-1.661 1.805-1.026 0-1.664-.674-1.664-1.805V7.73c0-1.136.638-1.807 1.664-1.807s1.66.674 1.66 1.807Zm-.674.547v-.553c0-.827-.422-1.234-.987-1.234-.572 0-.99.407-.99 1.234v.553c0 .83.418 1.237.99 1.237.565 0 .987-.408.987-1.237m1.15-2.276h1.535c.82 0 1.316.55 1.316 1.292 0 .747-.501 1.289-1.321 1.289h-.865V10h-.665zm1.436 2.036c.463 0 .735-.272.735-.744s-.272-.741-.735-.741h-.774v1.485z"/>
 						<path fill-rule="evenodd" d="M4.893 0a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353L11.46.146A.5.5 0 0 0 11.107 0zM1 5.1 5.1 1h5.8L15 5.1v5.8L10.9 15H5.1L1 10.9z"/>
 					</svg>
-					Deblock
+					{{ texts.Unblock_btn }}
 				</button>
 			</div>
 		</div>
@@ -474,17 +474,16 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Attention !</h5>
+					<h5 class="modal-title">{{ texts.Warning_title }} !</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
                 <div class="modal-body">
-                    <span>Vous etes sur le point de supprimer votre amis !</span>
-                    <span>Etes vous sur ?</span>
+                    <span>{{ texts.Delete_friend_mess }}</span>
+                    <span>{{ texts.Sure_question }}</span>
                 </div>
                 <div class="modal-footer">
-					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="delete_friend">Oui, je l'aimais pas</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="ban_friend">Oui, je veux bloquer</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ texts.No_answer }}</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="delete_friend">{{ texts.Yes_answer }}</button>
                 </div>
 			</div>
 		</div>
@@ -495,16 +494,16 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Attention !</h5>
+					<h5 class="modal-title">{{ texts.Warning_title }} !</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
                 <div class="modal-body">
-					<span>Vous etes sur le point de bloquer votre amis !</span>
-                    <span>Etes vous sur ?</span>
+					<span>{{ texts.Block_friend_mess }} !</span>
+                    <span>{{ texts.Sure_question }}</span>
                 </div>
                 <div class="modal-footer">
-					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">NON, oublie ça</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="block_friend">Oui, il me saoule</button>
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">{{ texts.No_answer }}</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="block_friend">{{ texts.Yes_answer }}</button>
                 </div>
 			</div>
 		</div>
@@ -515,7 +514,7 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h1 class="modal-title fs-5" id="exampleModalLabel">Notifications</h1>
+					<h1 class="modal-title fs-5" id="exampleModalLabel">{{ texts.Notifs_btn }}</h1>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="lst_notif">
@@ -524,7 +523,7 @@
 					</ul>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ texts.Close_btn }}</button>
 				</div>
 			</div>
 		</div>
@@ -535,16 +534,16 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Notification !</h5>
+					<h5 class="modal-title">{{ texts.Invitation_title }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
                 <div class="modal-body">
-                    <span id="inviteSender"></span><span> vous invite a jouer !</span>
-                    <span>Voulez-vous rejoindre ?</span>
+                    <span id="inviteSender"></span><span>{{ texts.Invite_mess }}</span>
+                    <span>{{ texts.Join_question }}</span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="inviteRefuse">NON, flemme</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="inviteAccepte">Oui, go le detruire</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="inviteRefuse">{{ texts.No_answer }}</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="inviteAccepte">{{ texts.Yes_answer }}</button>
                 </div>
 			</div>
 		</div>

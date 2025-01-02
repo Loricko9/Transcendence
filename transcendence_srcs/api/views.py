@@ -490,31 +490,36 @@ def NotificationsView(request):
 	print("Recption Notif view")
 	if request.method == 'POST':
 		data = json.loads(request.body)
+		# delete read notifs
 		notifs_read = Notifications.objects.filter(user=request.user, is_read=True)
-		if notifs_read:
+		if notifs_read.exists():
 			for notif_read in notifs_read:
 				print("notif read: " + notif_read.message)
 				notif_read.delete()
 		if data.get('update_notif_nb') == False:
+			# build list of notifs
 			notifications = Notifications.objects.filter(user=request.user, is_read=False)
 			messages = []
-			if notifications:
+			if notifications.exists():
 				for notif in notifications:
 					print("new notif: " + notif.message)
 					notif.is_read = True
 					notif.save()
 					messages.append(notif.message)
 				return JsonResponse({'success': True, 'messages': messages, 'update_notif_nb': False})
-			else:
-				print("pas de notifs")
-				return JsonResponse({'success': False, 'message': 'Aucune notification', 'update_notif_nb': False})
 		else:
+			# adjust number of notifs
 			message = data.get('message')
 			if message:
+				# create a notif
 				Notifications.objects.create(user=request.user, message=message)
 				print("Notification cree")
 			notifications = Notifications.objects.filter(user=request.user, is_read=False)
-			notif_nb = notifications.count()
-			print("notif_nb: " + str(notif_nb))
-			return JsonResponse({'update_notif_nb': True, 'notif_nb': notif_nb})
+			if notifications.exists():
+				notif_nb = notifications.count()
+				print("notif_nb: " + str(notif_nb))
+				return JsonResponse({'update_notif_nb': True, 'notif_nb': notif_nb})
+	print("pas de notifs")
+	return JsonResponse({'success': False, 'message': 'Aucune notification', 'update_notif_nb': False})
+		
 
