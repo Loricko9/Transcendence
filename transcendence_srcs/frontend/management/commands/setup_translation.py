@@ -291,6 +291,9 @@ class Command(BaseCommand):
 			{'Key': 'Join_question', 'Lang': 'fr', 'Text': 'Voulez-vous rejoindre le groupe ?'},
 			{'Key': 'Join_question', 'Lang': 'en', 'Text': 'Would you like to join the group ?'},
 			{'Key': 'Join_question', 'Lang': 'es', 'Text': '¿ Le gustaría unirse al grupo ?'},
+			{'Key': 'Delete_account_mess', 'Lang': 'fr', 'Text': 'Vous êtes sur le point de supprimer votre compte !'},
+			{'Key': 'Delete_account_mess', 'Lang': 'en', 'Text': 'You are about to delete your account !'},
+			{'Key': 'Delete_account_mess', 'Lang': 'es', 'Text': '¡ Estás a punto de borrar a su cuenta !'},
 		]
 
 

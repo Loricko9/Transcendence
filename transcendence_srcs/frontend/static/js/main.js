@@ -198,9 +198,25 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 	.then(response => response.json())
 	.then(data => {
 		// Affiche le message de réponse
-		document.getElementById('infoco').innerHTML = data.message
+		const lang = Get_Cookie("language")
+		let message = null;
+		if (!data.success){
+			switch (lang) {
+				case "fr":
+					message = "Connexion échouée"
+					break;
+				case "en":
+					message = "Connection failed"
+					break;
+				case "es":
+					message = "Error de conexión"
+				default:
+					break;
+			}
+			document.getElementById('infoco').innerHTML = message
+			showSuccessModal()
+		}
 		document.getElementById('dropdown_form').reset();
-		showSuccessModal()
 		updateNotifications(true, null)
 		redirect_to("/")
 	})
@@ -225,22 +241,21 @@ function logout(){
 		})
 		.then(response => response.json())
 		.then(data => {
-			document.getElementById('infoco').innerHTML = data.message
-			clearFormFields()
-			refreshCSRFToken()
-			showSuccessModal()
-			if (socket){
-				socket.close()
-				socket = null
-				console.log("websocket close")
-			}
-			if (chatSocket)
-			{
-				chatSocket.close()
-				chatSocket = null
-				console.log("Chat websocket close")
-			}
-			if (MatchmakingSocket)
+			if (data.success){
+				clearFormFields()
+				refreshCSRFToken()
+				if (socket){
+					socket.close()
+					socket = null
+					console.log("websocket close")
+				}
+				if (chatSocket)
+				{
+					chatSocket.close()
+					chatSocket = null
+					console.log("Chat websocket close")
+				}
+				if (MatchmakingSocket)
 				{
 					MatchmakingSocket.send(JSON.stringify({
 						command: 'delete',
@@ -250,6 +265,7 @@ function logout(){
 					MatchmakingSocket = null
 					console.log("Matchmaking websocket close")
 				}
+			}
 			redirect_to("/")
 		})
 		.catch(error => console.error('Erreur:', error));
@@ -257,27 +273,39 @@ function logout(){
 }
 
 // delete account
-document.getElementById('deleteAccountBtn').addEventListener('click', function() {
-    if (confirm("Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.")) {
-		fetch('/api/delete-account/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            	'X-CSRFToken': Get_Cookie('csrftoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-			if (data.success) {
-                document.getElementById('infoco').innerHTML = data.message
-				showSuccessModal()
-				redirect_to("/")
-            } else {
-				alert("Erreur lors de la suppression du compte: " + data.message);
-            }
-        })
-        .catch(error => console.error('Erreur:', error));
-    }
+document.getElementById('delete_account').addEventListener('click', function() {
+	fetch('/api/delete-account/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken')
+		}
+	})
+	.then(response => response.json())
+	.then(data => {
+		const lang = Get_Cookie("language")
+		let message = null;
+		if (data.success) {
+			switch (lang) {
+				case "fr":
+					message = "Compte supprimé avec succés"
+					break;
+				case "en":
+					message = "Account successfully deleted"
+					break;
+				case "es":
+					message = "Cuenta eliminada correctamente"
+				default:
+					break;
+			}
+			document.getElementById('infoco').innerHTML = message
+			showSuccessModal()
+			redirect_to("/")
+		} else {
+			alert("Error on delete account");
+		}
+	})
+	.catch(error => console.error('Erreur:', error));
 });
 
 function loadIndexLogin() {
@@ -323,6 +351,8 @@ function loadChangePassword() {
 	}
 }
 
+
+// J'en suis la
 function handleFormChangePassword() {
 	const oldPassword = document.getElementById('oldPassword').value;
     const newPassword = document.getElementById('newPassword').value;
@@ -343,9 +373,34 @@ function handleFormChangePassword() {
     })
     .then(response => response.json())
     .then(data => {
-		document.getElementById('infoco').innerHTML = data.message
-		showSuccessModal()
-		redirect_to("/")
+		const lang = Get_Cookie("language")
+		let message = null;
+		if (data.success){
+			switch (lang) {
+				case "fr":
+					message = "Mot de passe changé avec succés"
+					break;
+				case "en":
+					message = "Password successfully changed"
+					break;
+				case "es":
+					message = "Contraseña modificada correctamente"
+				default:
+					break;
+			}
+			document.getElementById('infoco').innerHTML = message
+			showSuccessModal()
+			redirect_to("/")
+		} else {
+			const errList = document.querySelector('#err_change_pwd ul');
+			errList.innerHTML = ''; // Supprime tous les <li>
+			data.err_list.forEach(err => {
+				const newErr = document.createElement('li');
+				newErr.style.color = 'red';
+				newErr.textContent = err;
+				errList.appendChild(newErr);
+			});
+		}
     })
     .catch(error => console.error('Erreur:', error));
 }
@@ -594,21 +649,7 @@ export function updateNotifications(update_notif_nb, message){
 	.catch(error => console.error('Error update notifications:', error));
 }
 
-// Marquer la page comme active à son chargement
-window.addEventListener('load', setPageActive);
-
 // Deconnecter quand la page n'est plus active
 window.addEventListener('beforeunload', () => {
-	removePageActive(); // Retirer l'indicateur de page active
-	logout(); // Déclencher la déconnexion
-  });
-
-function setPageActive() {
-	// Indique que cette page est active
-	localStorage.setItem('pageActive', 'true');
-  }
-  
-  function removePageActive() {
-	// Indique que cette page n'est plus active
-	localStorage.removeItem('pageActive');
-  }
+	logout();
+});

@@ -241,19 +241,35 @@ def log_42(request):
 @csrf_protect
 def change_password(request):
 	if request.method == 'POST':
+		lang_cookie = request.COOKIES.get('language', None)
 		old_password = request.POST.get('old_password')
 		new_password = request.POST.get('new_password')
 		confirm_password = request.POST.get('confirm_password')
-
+		err_list = []
 		if new_password != confirm_password:
-			return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
+			if lang_cookie == 'fr':
+				err_list.append("Les mots de passe ne correspondent pas.")
+			elif lang_cookie == 'en':
+				err_list.append("The passwords do not match.")
+			elif lang_cookie == 'es':
+				err_list.append("Las contraseñas no coinciden.")
+			# return JsonResponse({'success': False, 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
 
 		user = request.user
 
 		# Vérifie si l'ancien mot de passe est correct
 		if not user.check_password(old_password):
-			return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
+			if lang_cookie == 'fr':
+				err_list.append("Ancien mot de passe incorrect.")
+			elif lang_cookie == 'en':
+				err_list.append("Old password incorrect.")
+			elif lang_cookie == 'es':
+				err_list.append("Contraseña antigua incorrecta.")
+			# return JsonResponse({'success': False, 'message': 'Ancien mot de passe incorrect.'}, status=400)
 
+		if err_list:
+			return JsonResponse({'success': False, 'err_list': err_list}, status=400)
+		
 		# Change le mot de passe et sauvegarde l'utilisateur
 		user.set_password(new_password)
 		user.save()
@@ -262,7 +278,7 @@ def change_password(request):
 		# Authentifie à nouveau l'utilisateur avec son nouveau mot de passe
 		login(request, user)
 
-		return JsonResponse({'success': True, 'message': 'Mot de passe changé avec succès.'})
+		return JsonResponse({'success': True})
 
 	return redirect('/')
 
@@ -287,19 +303,16 @@ def login_view(request):
 		if user is not None:
 			login(request, user)
 			user.connect()
-			data = {'success': True, 'message': 'Connexion reussie'}
-			response = JsonResponse(data)
-			response['Content-Type'] = 'application/json; charset=utf-8'
-			return response
+			return JsonResponse({'success': True}, content_type='application/json; charset=utf-8')
 		else:
-			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+			return JsonResponse({'success': False, 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
 	return redirect('/')
 
 @login_required
 def logout_view(request):
 	request.user.disconnect()
 	logout(request)
-	response =  JsonResponse({'success': True, 'message': 'Déconnexion réussie'})
+	response =  JsonResponse({'success': True})
 	response['Content-Type'] = 'application/json; charset=utf-8'
 	return response
 
@@ -431,7 +444,7 @@ def delete_account(request):
 		user.disconnect()
 		logout(request)
 		user.delete()
-		return JsonResponse({'success': True, 'message': 'Votre compte a été supprimé avec succès.'})
+		return JsonResponse({'success': True})
 	return redirect('/')
 
 # View Matchmaking
