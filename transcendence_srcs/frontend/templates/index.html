@@ -42,9 +42,12 @@
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-md-end pe-3" id="dropdown_lang">
-                    <li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_fr" id="lang_fr"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_en" id="lang_en"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_es" id="lang_es"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+					<!-- onclick="Change_lang('fr')"
+					onclick="Change_lang('en')"
+					onclick="Change_lang('es')" -->
                 </ul>
             </div>
         </div>

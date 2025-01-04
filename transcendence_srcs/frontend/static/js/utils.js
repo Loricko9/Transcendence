@@ -345,7 +345,23 @@ function Click_login() {
     dropdown.show();
 }
 
+document.getElementById('lang_fr').addEventListener('click', (e) => {
+	e.preventDefault();
+	Change_lang('fr');
+});
+
+document.getElementById('lang_en').addEventListener('click', (e) => {
+	e.preventDefault();
+	Change_lang('en');
+});
+
+document.getElementById('lang_es').addEventListener('click', (e) => {
+	e.preventDefault();
+	Change_lang('es');
+});
+
 function Change_lang(lang) {
+	console.log("change_lang called with lang = " + lang)
 	const path = window.location.pathname.substring(3);
 	window.location.href = "/api/lang/" + lang + "?prev=" + path
 }

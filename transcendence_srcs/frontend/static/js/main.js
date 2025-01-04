@@ -351,8 +351,6 @@ function loadChangePassword() {
 	}
 }
 
-
-// J'en suis la
 function handleFormChangePassword() {
 	const oldPassword = document.getElementById('oldPassword').value;
     const newPassword = document.getElementById('newPassword').value;
@@ -444,7 +442,21 @@ function loadChangeAvatar() {
 function handleFormChangeAvatar() {
     const selectedImg = document.querySelector('img.selected');
     if (!selectedImg) {
-		alert("Veuillez sélectionner un avatar.");
+		const lang = Get_Cookie("language")
+		let err_msg = null;
+		switch (lang) {
+			case "fr":
+				err_msg = "Veuillez sélectionner un avatar."
+				break;
+			case "en":
+				err_msg = "Please select an avatar."
+				break;
+			case "es":
+				err_msg = "Seleccione un avatar."
+			default:
+				break;
+		}
+		alert(err_msg);
         return;
     }
 
@@ -464,12 +476,24 @@ function handleFormChangeAvatar() {
     })
     .then(response => response.json())
     .then(data => {
-		document.getElementById('infoco').innerHTML = data.message;
-        if (data.success) {
-            showSuccessModal();
+        if (data.success)
 			redirect_to("/");
-        } else {
-            alert(data.message);
+        else {
+			const lang = Get_Cookie("language")
+			let err_msg = null;
+			switch (lang) {
+				case "fr":
+					err_msg = "Echec du changement d'avatar."
+					break;
+				case "en":
+					err_msg = "Failed to change avatar."
+					break;
+				case "es":
+					err_msg = "El cambio de avatar falla."
+				default:
+					break;
+			}
+            alert(err_msg);
         }
     })
     .catch(error => console.error('Erreur:', error));
@@ -585,7 +609,21 @@ function respondToInvite(response, sender_username) {
 	if (modal) modal.remove();
 
 	if (response == "accepte"){
-		const message = sender_username + " vous attend a son poste"
+		const lang = Get_Cookie("language")
+		let continue_msg = null;
+		switch (lang) {
+			case "fr":
+				continue_msg = " vous attend a son poste"
+				break;
+			case "en":
+				continue_msg = " is waiting for you at his post."
+				break;
+			case "es":
+				continue_msg = " te espera en su puesto."
+			default:
+				break;
+		}
+		const message = sender_username + continue_msg
 		document.getElementById('infoco').innerText = message
 		showSuccessModal()
 	}
@@ -603,16 +641,19 @@ document.getElementById('notifications').addEventListener('click', () => {
 // Ajouter avec param (true, message), lister avec param (false, null)
 export function updateNotifications(update_notif_nb, message){
 	console.log('displayNotification called')
+	const requestBody = {
+		update_notif_nb: update_notif_nb,
+	};
+	if (message !== null) {
+		requestBody.message = message;
+	}
 	fetch('/api/notifications/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': Get_Cookie('csrftoken')
 		},
-		body: JSON.stringify({
-			update_notif_nb: update_notif_nb,
-			message: message
-		})
+		body: JSON.stringify({requestBody})
 	})
 	.then(response => response.json())
 	.then(data => {
@@ -649,7 +690,3 @@ export function updateNotifications(update_notif_nb, message){
 	.catch(error => console.error('Error update notifications:', error));
 }
 
-// Deconnecter quand la page n'est plus active
-window.addEventListener('beforeunload', () => {
-	logout();
-});

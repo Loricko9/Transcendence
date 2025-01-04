@@ -32,7 +32,8 @@ def set_lang(request, lang):
 	reponse = redirect(request.GET.get('prev', '/'))
 
 	tps = 31536000
-	reponse.set_cookie('language', lang, max_age=tps)
+	print("cookie lang: " + lang)
+	reponse.set_cookie('language', lang, max_age=tps, secure=True)
 	return reponse
 
 # Afficher la liste des amis
@@ -290,8 +291,8 @@ def change_avatar(request):
 		if selected_avatar and os.path.exists("/transcendence" + selected_avatar):
 			request.user.avatar = selected_avatar
 			request.user.save()
-			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
-		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
+			return JsonResponse({'success': True})
+		return JsonResponse({'success': False})
 
 def login_view(request):
 	if request.method == 'POST':
