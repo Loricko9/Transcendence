@@ -166,14 +166,20 @@ def respond_to_friend_request(request, id):
 		err_msg = "Impossible de répondre à ce joueur."
 		ok_msg = request.user.username + " a accepté votre demande d'ami."
 		no_msg = request.user.username + " a refusé votre demande d'ami."
+		ok_info = "Demande d'ami acceptée."
+		no_info = "Demande d'ami refusée."
 	elif lang_cookie == 'en':
 		err_msg = "Impossible to answer this player."
 		ok_msg = request.user.username + " has accepted your friend request."
 		no_msg = request.user.username + " has rejected your friend request."
+		ok_info = "Friend request accepted."
+		no_info = "Friend request refused."
 	elif lang_cookie == 'es':
 		err_msg = "Imposible responder a este jugador."
 		ok_msg = request.user.username + " aceptó su solicitud de amistad."
 		no_msg = request.user.username + " rechazó tu solicitud de amistad."
+		ok_info = "Solicitud de amistad aceptada."
+		no_info = "Solicitud de amistad denegada."
 	try:
 		sender = User.objects.get(username=request.data.get('username'))
 	except User.DoesNotExist:
@@ -189,10 +195,12 @@ def respond_to_friend_request(request, id):
 	if action == 'accepted':
 		friendship.status = 'accepted'
 		message = ok_msg
+		info = ok_info
 		friendship.save()
 	elif action == 'rejected':
 		friendship.delete()
 		message = no_msg
+		info = no_info
 	else:
 		return Response({"error": err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -205,7 +213,7 @@ def respond_to_friend_request(request, id):
 			"data": {"message": message}
 		}
 	)
-	return Response(status=status.HTTP_200_OK)
+	return Response({"message": info}, status=status.HTTP_200_OK)
 
 # def friend_delete(request, username):
 # 	friend = User.objects.get(username=username)
