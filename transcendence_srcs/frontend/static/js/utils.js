@@ -246,7 +246,20 @@ export function loadfriendinput() {
 			document.getElementById("inviteBtn").addEventListener('click', () => {
 				console.log("btn trouve")
 				if (socket){
-					const message = "Invitation envoyée"
+					const lang = Get_Cookie("language")
+					let message = null;
+					switch (lang) {
+						case "fr":
+							message = "Invitation envoyée."
+							break;
+						case "en":
+							message = "Invitation sent."
+							break;
+						case "es":
+							message = "Invitación enviada."
+						default:
+							break;
+					}
 					document.getElementById('infoco').innerText = message
 					showSuccessModal()
 					socket.send(JSON.stringify({
@@ -345,23 +358,7 @@ function Click_login() {
     dropdown.show();
 }
 
-document.getElementById('lang_fr').addEventListener('click', (e) => {
-	e.preventDefault();
-	Change_lang('fr');
-});
-
-document.getElementById('lang_en').addEventListener('click', (e) => {
-	e.preventDefault();
-	Change_lang('en');
-});
-
-document.getElementById('lang_es').addEventListener('click', (e) => {
-	e.preventDefault();
-	Change_lang('es');
-});
-
 function Change_lang(lang) {
-	console.log("change_lang called with lang = " + lang)
 	const path = window.location.pathname.substring(3);
 	window.location.href = "/api/lang/" + lang + "?prev=" + path
 }

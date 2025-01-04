@@ -558,12 +558,32 @@ function InitializeWebsocket(){
         }
 
 		if (data.type === 'invite_response') {
-			alert(data.message);
+			const lang = Get_Cookie("language")
+			let ok_msg = null;
+			let no_msg = null;
+			switch (lang) {
+				case "fr":
+					ok_msg = "Invitation acceptée"
+					no_msg = "Invitation refusée"
+					break;
+				case "en":
+					ok_msg = "Invitation accepted"
+					no_msg = "Invitation refused"
+					break;
+				case "es":
+					ok_msg = "Invitación aceptada"
+					no_msg = "Invitación denegada"
+				default:
+					break;
+			}
 			if (data.response === 'accepte'){
+				alert(ok_msg);
 				const appDiv = document.getElementById("app");
 				loadTemplate(appDiv, "Game");
 				initAll(true, data.sender_username)
 			}
+			else
+				alert(no_msg);
 			return
 		}
 

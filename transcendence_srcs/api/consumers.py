@@ -60,7 +60,6 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 
 	# Envoyer la mise à jour au client WebSocket
 	async def send_friendship_update(self, event):
-		logger.info(f"send_friendship_update called with data: {event['data']}")
 		await self.send(text_data=json.dumps(event['data']))
 
 	async def game_invite(self, event):
@@ -75,7 +74,6 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps({
 			'type': 'invite_response',
 			'response': event['response'],
-			'message': f"{event['from_user']} a {event['response']} votre invitation.",
 			'sender_username': event['from_user']
 		}))
 

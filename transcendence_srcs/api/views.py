@@ -123,53 +123,78 @@ class FriendProfileView(APIView):
 @api_view(['POST'])
 def send_friend_request(request):
 	receiver_username = request.data.get('receiver_username')
+	lang_cookie = request.COOKIES.get('language', None)
+	if lang_cookie == 'fr':
+		err_msg = "Impossible d'inviter ce joueur."
+		msg_to_send = "Vous avez une nouvelle demande d'ami de " + request.user.username
+		msg_info = "Demande d'ami envoyée à " + receiver_username
+	elif lang_cookie == 'en':
+		err_msg = "Impossible to invite this player."
+		msg_to_send = "You have a new friend request from " + request.user.username
+		msg_info = "Friend request sent to " + receiver_username
+	elif lang_cookie == 'es':
+		err_msg = "Imposible invitar a este jugador."
+		msg_to_send = "Tienes una nueva solicitud de amistad de " +  request.user.username
+		msg_info = "Solicitud de amistad enviada a " + receiver_username
 	if not receiver_username:
-		return Response({"error": "Receiver username is required"}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"error": err_msg}, status=status.HTTP_400_BAD_REQUEST)
 	try:
 		receiver = User.objects.get(username=receiver_username)
 	except User.DoesNotExist:
-		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+		return Response({"error": err_msg}, status=status.HTTP_404_NOT_FOUND)
 	if receiver == request.user:
-		return Response({"error": "You cannot add yourself as a friend"}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"error": err_msg}, status=status.HTTP_400_BAD_REQUEST)
 	if Friendship.objects.filter(sender=request.user, receiver=receiver).exists() or Friendship.objects.filter(sender=receiver, receiver=request.user).exists():
-		return Response({"error": "You are already friends"}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"error": err_msg}, status=status.HTTP_400_BAD_REQUEST)
 	Friendship.objects.create(sender=request.user, receiver=receiver)
 	channel_layer = get_channel_layer()
 	group_name = f"friendship_updates_{receiver.id}"
-	logger.info(f"Sending message to group: {group_name} with data: {request.user.username}")
 	async_to_sync(channel_layer.group_send)(
 	group_name,
 		{
 			"type": "send_friendship_update",
-			"data": {"message": f"You have a new friend request from {request.user.username}"}
+			"data": {"message": msg_to_send}
 		}
 	)
-	return Response({"message": f"Friend request sent to {receiver.username}"}, status=status.HTTP_201_CREATED)
+	return Response({"message": msg_info}, status=status.HTTP_201_CREATED)
 
 # repondre a la demande d'amis
 @api_view(['PATCH'])
 def respond_to_friend_request(request, id):
+	lang_cookie = request.COOKIES.get('language', None)
+	if lang_cookie == 'fr':
+		err_msg = "Impossible de répondre à ce joueur."
+		ok_msg = request.user.username + " a accepté votre demande d'ami."
+		no_msg = request.user.username + " a refusé votre demande d'ami."
+	elif lang_cookie == 'en':
+		err_msg = "Impossible to answer this player."
+		ok_msg = request.user.username + " has accepted your friend request."
+		no_msg = request.user.username + " has rejected your friend request."
+	elif lang_cookie == 'es':
+		err_msg = "Imposible responder a este jugador."
+		ok_msg = request.user.username + " aceptó su solicitud de amistad."
+		no_msg = request.user.username + " rechazó tu solicitud de amistad."
 	try:
 		sender = User.objects.get(username=request.data.get('username'))
 	except User.DoesNotExist:
-		return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+		return Response({"error": err_msg}, status=status.HTTP_404_NOT_FOUND)
 
 	# Vérifier s'il y a une demande d'ami en attente
 	friendship = Friendship.objects.filter(id=id, sender=sender, status='pending').first()
 	if not friendship:
-		return Response({"error": "No pending friend request from this user"}, status=status.HTTP_404_NOT_FOUND)
+		return Response({"error": err_msg}, status=status.HTTP_404_NOT_FOUND)
 
 	# Vérifier l'action (accepter ou refuser)
 	action = request.data.get('action')
 	if action == 'accepted':
 		friendship.status = 'accepted'
-		message = f"{request.user.username} has accepted your friend request."
+		message = ok_msg
 		friendship.save()
 	elif action == 'rejected':
 		friendship.delete()
-		message = f"{request.user.username} has rejected your friend request."
+		message = no_msg
 	else:
-		return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"error": err_msg}, status=status.HTTP_400_BAD_REQUEST)
 
 	# Notifier l'utilisateur qui a envoyé la demande
 	channel_layer = get_channel_layer()
@@ -180,7 +205,7 @@ def respond_to_friend_request(request, id):
 			"data": {"message": message}
 		}
 	)
-	return Response({"message": f"Friend request {action}"}, status=status.HTTP_200_OK)
+	return Response(status=status.HTTP_200_OK)
 
 # def friend_delete(request, username):
 # 	friend = User.objects.get(username=username)
