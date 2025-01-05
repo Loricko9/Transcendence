@@ -1,4 +1,4 @@
-import {socket} from './main.js';
+import {socket, updateNotifications} from './main.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {
@@ -371,16 +371,36 @@ function deleteFriendship(friendshipId){
 			'X-CSRFToken': Get_Cookie('csrftoken')
 		}
 	})
-	.then(response => {
-		if (response.ok) {
-			console.log('Friendship deleted successfully.');
+	.then(response => response.json())
+	.then(data => {
+		const lang = Get_Cookie("language")
+		let err_msg;
+		let del_msg;
+		switch (lang) {
+			case "fr":
+				err_msg = "Impossible de supprimer ce lien d'amitié"
+				del_msg = "Amitié supprimée avec succès."
+				break;
+			case "en":
+				err_msg = "Impossible to remove this friendship."
+				del_msg = "Friendship successfully suppressed."
+				break;
+			case "es":
+				err_msg = "Imposible eliminar este amistad."
+				del_msg = "Amistad eliminada con éxito."
+			default:
+				break;
+		}
+		
+		if (data.success) {
+			alert(del_msg)
 			friendshipId = -1;
 			fetchFriendList(() => {
 				loadfriendinput();
 				loadfriendmessage();
 			});
 		} else {
-			console.error('Failed to delete friendship.');
+			alert(err_msg)
 		}
 	})
 	.catch(error => console.error('Error deleting friendship:', error));
@@ -398,7 +418,39 @@ function respondToRequest(action) {
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message || data.error);
+		const lang = Get_Cookie("language")
+		let err_msg;
+		let ok_info;
+		let no_info;
+		switch (lang) {
+			case "fr":
+				err_msg = "Impossible de répondre à ce joueur."
+				ok_info = "Demande d'ami acceptée."
+				no_info = "Demande d'ami refusée."
+				break;
+			case "en":
+				err_msg = "Impossible to answer this player."
+				ok_info = "Friend request accepted."
+				no_info = "Friend request refused."
+				break;
+			case "es":
+				err_msg = "Imposible responder a este jugador."
+				ok_info = "Solicitud de amistad aceptada."
+				no_info = "Solicitud de amistad denegada."
+			default:
+				break;
+		}
+
+		let message;
+		if (data.success){
+			if (data.status)
+				message = ok_info
+			else
+				message = no_info
+		}
+		else
+			message = err_msg
+        alert(message);
 		fetchFriendList(() => {
 			console.log(friendship_lst);
 			loadfriendinput();
@@ -441,6 +493,14 @@ function initializeChatWebSocket(roomId) {
     // Réception des messages
     chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
+		
+		if (data.type === 'notif'){
+			console.log("type notif chat")
+			document.getElementById('infoco').innerHTML = data.message
+			showSuccessModal()
+			updateNotifications(true, data.message)
+			return
+		}
 		const username = document.getElementById("user_connected").innerText;
 		if (data.sender == username)
 			Add_message(data.message, true)
@@ -453,7 +513,8 @@ function initializeChatWebSocket(roomId) {
 	document.getElementById('chat-message-form').addEventListener('submit', function(event) {
 		event.preventDefault();
         const message = document.getElementById('chat-message-input').value;
-        chatSocket.send(JSON.stringify({message: message}));
+		const lang = Get_Cookie("language")
+        chatSocket.send(JSON.stringify({message: message, lang: lang}));
 		document.getElementById('chat-message-form').reset();
 	})
 

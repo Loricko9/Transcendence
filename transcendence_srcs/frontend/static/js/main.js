@@ -533,9 +533,29 @@ function sendFriendRequest() {
     })
     .then(response => response.json())
     .then(data => {
-		console.log('Response data:', data);
-        alert(data.message || data.error);
-        fetchFriendList(); // Rafraîchir la liste des amis
+		const lang = Get_Cookie("language")
+		let msg_info;
+		let err_msg;
+		switch (lang) {
+			case "fr":
+				msg_info = "Demande d'ami envoyée à " + username
+				err_msg = "Impossible d'inviter ce joueur."
+				break;
+			case "en":
+				msg_info = "Friend request sent to " + username
+				err_msg = "Impossible to invite this player."
+				break;
+			case "es":
+				msg_info = "Solicitud de amistad enviada a " + username
+				err_msg = "Imposible invitar a este jugador."
+			default:
+				break;
+		}
+		if (data.success)
+			alert(msg_info);
+		else
+			alert(err_msg)
+		fetchFriendList(); // Rafraîchir la liste des amis
     })
     .catch(error => console.error('Error sending friend request:', error));
 }
@@ -550,6 +570,8 @@ function InitializeWebsocket(){
 	socket.onmessage = function (event) {
 
 		const data = JSON.parse(event.data);
+		
+		const lang = Get_Cookie("language")
 
 		if (data.type === 'invite') {
             // Afficher le modal avec l'invitation
@@ -558,7 +580,6 @@ function InitializeWebsocket(){
         }
 
 		if (data.type === 'invite_response') {
-			const lang = Get_Cookie("language")
 			let ok_msg = null;
 			let no_msg = null;
 			switch (lang) {
@@ -587,9 +608,42 @@ function InitializeWebsocket(){
 			return
 		}
 
-		console.log("WebSocket message received:", event.data); // Log des données brutes
-		alert(data.message); // Affichez la notification ou rafraîchissez la liste
-		updateNotifications(true, data.message)
+		let msg_to_send;
+		let ok_msg;
+		let no_msg;
+		switch (lang) {
+			case "fr":
+				msg_to_send = "Vous avez une nouvelle demande d'ami de " + data.sender_username
+				ok_msg = data.sender_username + " a accepté votre demande d'ami."
+				no_msg = data.sender_username + " a refusé votre demande d'ami."
+				del_msg = data.sender_username + " a supprimé votre lien d'amitié."
+				break;
+			case "en":
+				msg_to_send = "You have a new friend request from " + data.sender_username
+				ok_msg = data.sender_username + " has accepted your friend request."
+				no_msg = data.sender_username + " has rejected your friend request."
+				del_msg = data.sender_username + " removed your friendship."
+				break;
+			case "es":
+				msg_to_send = "Tienes una nueva solicitud de amistad de " +  data.sender_username
+				ok_msg = data.sender_username + " aceptó su solicitud de amistad."
+				no_msg = data.sender_username + " rechazó tu solicitud de amistad."
+				del_msg = data.sender_username + " cortó tu amistad."
+			default:
+				break;
+		}
+		let message;
+		if (data.type_msg == 'request')
+			message = msg_to_send
+		else if (data.type_msg == 'respond')
+			if (data.status)
+				message = ok_msg
+			else
+				message = no_msg
+		else if (data.type_msg == 'delete')
+			message = del_msg
+		alert(message); // Affichez la notification ou rafraîchissez la liste
+		updateNotifications(true, message)
 		fetchFriendList(() => {
 			loadfriendinput();
 			loadfriendmessage();

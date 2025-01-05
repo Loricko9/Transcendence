@@ -52,37 +52,51 @@ class ChatConsumers(AsyncWebsocketConsumer):
 		Friendship = apps.get_model('api', 'Friendship')
 		room = await sync_to_async(Friendship.objects.get)(id=self.room_name)
 
+		# Recuperer la langue pour les notifs
+		lang = data.get('lang')
+
 		if command == 'delete_messages':
 			# Supprimer les messages de la salle
-			deleted_count, _ = await sync_to_async(ChatMessage.objects.filter(room=room).delete)()
-			# Informer l'utilisateur de la suppression
-			await self.send(text_data=json.dumps({
-				'status': 'success',
-				'deleted_count': deleted_count
-			}))
+			await sync_to_async(ChatMessage.objects.filter(room=room).delete)()
 			return
 		elif command == 'block':
 			username = data.get('username')
 			user = await sync_to_async(User.objects.get)(username=username)
 			if await room.is_blocked(user):
+				unblock_msg = username + " debloqué(e)."
+				if lang == 'en':
+					unblock_msg = username + " unblocked."
+				elif lang == 'es':
+					unblock_msg = username + " desbloqueado."
 				await sync_to_async(room.blocked_users.remove)(user)
 				await self.send(text_data=json.dumps({
-					'status': 'success',
-					'message': f'{user.username} a été débloqué.'
+					'type': 'notif_message',
+					'message': unblock_msg
 				}))
 			else:
 				# Ajouter l'utilisateur bloqué
+				block_msg = username + " bloqué(e)."
+				if lang == 'en':
+					block_msg = username + " blocked."
+				elif lang == 'es':
+					block_msg = username + " bloqueado."
 				await sync_to_async(room.blocked_users.add)(user)
+				print(block_msg)
 				await self.send(text_data=json.dumps({
-					'status': 'success',
-					'message': f'{user.username} a été bloqué.'
+					'type': 'notif_message',
+					'message': block_msg
 				}))
 			return
 		else:
 			if await room.is_blocked(self.scope['user']):
+				blocked_msg = "Vous êtes bloqué(e) par ce joueur."
+				if lang == 'en':
+					blocked_msg = "You are blocked by this player."
+				elif lang == 'es':
+					blocked_msg = "Este jugador te ha bloqueado."
 				await self.send(text_data=json.dumps({
-					'status': 'error',
-					'message': 'Vous êtes bloqué par cet utilisateur.'
+					'type': 'notif_message',
+					'message': blocked_msg
 				}))
 				return
 			message = data['message']
@@ -106,7 +120,11 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				friend_username = await sync_to_async(lambda: room.sender.username)()
 			friend = await sync_to_async(User.objects.get)(username=friend_username)
 			if await sync_to_async(lambda: not friend.is_connected)():
-				notif_message = friend_username + " send you a message !"
+				notif_message = friend_username + " vous a envoyé un message !"
+				if lang == 'en':
+					notif_message = friend_username + " send you a message !"
+				elif lang == 'es':
+					notif_message = friend_username + " te ha enviado un mensaje !"
 				await sync_to_async(Notifications.objects.create)(user=friend, message=notif_message)
 				print("notif de message saved")
 
@@ -127,4 +145,11 @@ class ChatConsumers(AsyncWebsocketConsumer):
 			'message': event['message'],      # Contenu du message
 			'sender': event.get('sender', 'Anonymous'),  # Expéditeur (par défaut : 'Anonymous')
 			'timestamp': event.get('timestamp', 'Unknown Time'),  # Heure d'envoi (par défaut : 'Unknown Time')
+		}))
+
+	async def notif_message(self, event):
+		# Envoyer le message au WebSocket du client
+		await self.send(text_data=json.dumps({
+			'type': 'notif',
+			'message': event['message'],
 		}))

@@ -652,7 +652,21 @@ export function initAll(invite_bool, invite_username) {
 				}, 60000);
 			}
 			else{
-				const message = data.leader_username + " vous attend a son poste"
+				const lang = Get_Cookie("language")
+				let continue_msg = null;
+				switch (lang) {
+					case "fr":
+						continue_msg = " vous attend a son poste."
+						break;
+					case "en":
+						continue_msg = " is waiting for you at his post."
+						break;
+					case "es":
+						continue_msg = " te espera en su puesto."
+					default:
+						break;
+				}
+				const message = data.leader_username + continue_msg
 				document.getElementById('infoco').innerText = message
 				showSuccessModal()
 				updateNotifications(true, message)
@@ -667,10 +681,23 @@ export function initAll(invite_bool, invite_username) {
 		MatchmakingSocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
 			if (data.type == 'notif'){
-				console.log("type notif commpris")
-				document.getElementById('infoco').innerText = data.message
+				const lang = Get_Cookie("language")
+				let message = null;
+				switch (lang) {
+					case "fr":
+						message = data.leader_username + " vous attend, c'est a votre tour de jouer !"
+						break;
+					case "en":
+						message = data.leader_username + " is waiting for you, now it's your turn to play!"
+						break;
+					case "es":
+						message = data.leader_username + " te está esperando, ¡ahora es tu turno de jugar!"
+					default:
+						break;
+				}
+				document.getElementById('infoco').innerText = message
 				showSuccessModal()
-				updateNotifications(true, data.message)
+				updateNotifications(true, message)
 				return
 			}
 			if (data.playerNb === 1 ){

@@ -106,20 +106,20 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 			print("notif compris par django")
 			user1 = await sync_to_async(User.objects.get)(username=data.get('username1'))
 			user2 = await sync_to_async(User.objects.get)(username=data.get('username2'))
-			message = self.scope['user'].username + " vous attend, c'est a votre tour de jouer !"
+			leader_username = self.scope['user'].username
 			if data.get('username1') != self.scope['user'].username:
 				await self.channel_layer.group_send(
 					f'matchmaking_{user1.id}',
 					{
 						'type': 'notif_update',
-						'message': message,
+						'leader_username': leader_username,
 					}
 				)	
 			await self.channel_layer.group_send(
 				f'matchmaking_{user2.id}',
 				{
 					'type': 'notif_update',
-					'message': message,
+					'leader_username': leader_username,
 				}
 			)
 			return
@@ -132,6 +132,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		print("notif_update called")
 		await self.send(text_data=json.dumps({
 			'type': 'notif',
-			'message': event['message']
+			'leader_username': event['leader_username']
 		}))
 
