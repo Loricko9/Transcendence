@@ -302,7 +302,7 @@ function loadFriendProfile() {
 	});
 	document.getElementById('block_friend').addEventListener('click', function() {
 		if (chatSocket){
-			const friend_username = document.getElementById("span_friend_username").innerText;
+			const friend_username = document.getElementById("span_friend_username").textContent;
 			const appDiv = document.getElementById("app")
 			loadTemplate(appDiv, "temp_login")
 			fetchFriendList()
@@ -494,14 +494,16 @@ function initializeChatWebSocket(roomId) {
     chatSocket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		
-		if (data.type === 'notif'){
-			console.log("type notif chat")
-			document.getElementById('infoco').innerHTML = data.message
-			showSuccessModal()
-			updateNotifications(true, data.message)
+		const username = document.getElementById("user_connected").innerText;
+
+		if (data.type == 'notif_message'){
+			if (data.sender_username == username){
+				updateNotifications(true, data.message)
+				document.getElementById('infoco').innerHTML = data.message
+				showSuccessModal()
+			}
 			return
 		}
-		const username = document.getElementById("user_connected").innerText;
 		if (data.sender == username)
 			Add_message(data.message, true)
 		else{

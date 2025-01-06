@@ -667,9 +667,9 @@ export function initAll(invite_bool, invite_username) {
 						break;
 				}
 				const message = data.leader_username + continue_msg
+				updateNotifications(true, message)
 				document.getElementById('infoco').innerText = message
 				showSuccessModal()
-				updateNotifications(true, message)
 			}
 		})
 		.catch(error => console.error('Error matchmaking:', error));
@@ -695,9 +695,9 @@ export function initAll(invite_bool, invite_username) {
 					default:
 						break;
 				}
+				updateNotifications(true, message)
 				document.getElementById('infoco').innerText = message
 				showSuccessModal()
-				updateNotifications(true, message)
 				return
 			}
 			if (data.playerNb === 1 ){

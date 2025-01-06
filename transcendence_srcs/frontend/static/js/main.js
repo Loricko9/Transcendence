@@ -231,45 +231,43 @@ document.getElementById('logout_btn').addEventListener('click', function() {
 });
 	
 function logout(){
-	if (!localStorage.getItem('pageActive')) {
-		fetch('/api/logout/', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-CSRFToken': Get_Cookie('csrftoken')
-			},
-		})
-		.then(response => response.json())
-		.then(data => {
-			if (data.success){
-				clearFormFields()
-				refreshCSRFToken()
-				if (socket){
-					socket.close()
-					socket = null
-					console.log("websocket close")
-				}
-				if (chatSocket)
-				{
-					chatSocket.close()
-					chatSocket = null
-					console.log("Chat websocket close")
-				}
-				if (MatchmakingSocket)
-				{
-					MatchmakingSocket.send(JSON.stringify({
-						command: 'delete',
-					}));
-					console.log("delete group")
-					MatchmakingSocket.close()
-					MatchmakingSocket = null
-					console.log("Matchmaking websocket close")
-				}
+	fetch('/api/logout/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': Get_Cookie('csrftoken')
+		},
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (data.success){
+			clearFormFields()
+			refreshCSRFToken()
+			if (socket){
+				socket.close()
+				socket = null
+				console.log("websocket close")
 			}
-			redirect_to("/")
-		})
-		.catch(error => console.error('Erreur:', error));
-	}
+			if (chatSocket)
+			{
+				chatSocket.close()
+				chatSocket = null
+				console.log("Chat websocket close")
+			}
+			if (MatchmakingSocket)
+			{
+				MatchmakingSocket.send(JSON.stringify({
+					command: 'delete',
+				}));
+				console.log("delete group")
+				MatchmakingSocket.close()
+				MatchmakingSocket = null
+				console.log("Matchmaking websocket close")
+			}
+		}
+		redirect_to("/")
+	})
+	.catch(error => console.error('Erreur:', error));
 }
 
 // delete account
@@ -611,6 +609,7 @@ function InitializeWebsocket(){
 		let msg_to_send;
 		let ok_msg;
 		let no_msg;
+		let del_msg;
 		switch (lang) {
 			case "fr":
 				msg_to_send = "Vous avez une nouvelle demande d'ami de " + data.sender_username
@@ -635,15 +634,15 @@ function InitializeWebsocket(){
 		let message;
 		if (data.type_msg == 'request')
 			message = msg_to_send
-		else if (data.type_msg == 'respond')
+		else if (data.type_msg == 'response')
 			if (data.status)
 				message = ok_msg
 			else
 				message = no_msg
 		else if (data.type_msg == 'delete')
 			message = del_msg
-		alert(message); // Affichez la notification ou rafraîchissez la liste
 		updateNotifications(true, message)
+		alert(message);
 		fetchFriendList(() => {
 			loadfriendinput();
 			loadfriendmessage();
@@ -698,6 +697,7 @@ function respondToInvite(response, sender_username) {
 				break;
 		}
 		const message = sender_username + continue_msg
+		updateNotifications(true, message)
 		document.getElementById('infoco').innerText = message
 		showSuccessModal()
 	}
@@ -715,19 +715,17 @@ document.getElementById('notifications').addEventListener('click', () => {
 // Ajouter avec param (true, message), lister avec param (false, null)
 export function updateNotifications(update_notif_nb, message){
 	console.log('displayNotification called')
-	const requestBody = {
-		update_notif_nb: update_notif_nb,
-	};
-	if (message !== null) {
-		requestBody.message = message;
-	}
+	console.log("message: " + message)
 	fetch('/api/notifications/', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			'X-CSRFToken': Get_Cookie('csrftoken')
 		},
-		body: JSON.stringify({requestBody})
+		body: JSON.stringify({
+			update_notif_nb: update_notif_nb,
+			message: message
+		})
 	})
 	.then(response => response.json())
 	.then(data => {
