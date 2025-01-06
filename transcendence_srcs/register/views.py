@@ -4,24 +4,43 @@ from django.contrib.auth import get_user_model, login # type: ignore# type: igno
 from django.contrib import messages # type: ignore
 from frontend.models import TextTranslation
 from django.utils.translation import get_language # type: ignore
-from django.core.mail import send_mail # type: ignore
+from django.core.mail import EmailMultiAlternatives # type: ignore
 from django.utils.crypto import get_random_string # type: ignore
 from django.urls import reverse # type: ignore
 from django.conf import settings # type: ignore
 from django.http import HttpResponse # type: ignore
 from django.http import JsonResponse # type: ignore
+from django.template.loader import render_to_string # type: ignore
+from django.utils.html import strip_tags # type: ignore
 
 User = get_user_model()
 
 def send_verification_email(user):
     # Créer le lien d'activation
     verification_link = f"{settings.SITE_URL}{reverse('verify_email')}?token={user.verification_token}&username={user.username}"
-    send_mail(
-        'Vérifiez votre adresse email',
-        f"Veuillez cliquer sur ce lien pour vérifier votre email : {verification_link}",
-        settings.DEFAULT_FROM_EMAIL,
-        [user.Email],
+
+    # Charger le template HTML
+    html_content = render_to_string('emails/verification_email.html', {
+        'user': user,
+        'verification_link': verification_link,
+    })
+    
+    # Extraire le texte brut depuis le HTML (fallback pour les clients email simples)
+    text_content = strip_tags(html_content)
+
+    # Préparer l'email
+    email = EmailMultiAlternatives(
+        subject="Vérifiez votre adresse email",
+        body=text_content,  # version texte brut
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[user.Email],
     )
+
+    # Ajouter la version HTML
+    email.attach_alternative(html_content, "text/html")
+
+    # Envoyer l'email
+    email.send()
 
 def verify_email(request):
 	token = request.GET.get('token')

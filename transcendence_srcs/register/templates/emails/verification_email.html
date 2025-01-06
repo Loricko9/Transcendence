@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            color: #ffffff;
+            background-color: #007bff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <h2>Bienvenue, {{ user.username }} !</h2>
+        <p>Merci de vous être inscrit sur notre site. Veuillez vérifier votre adresse email pour activer votre compte.</p>
+        <p>
+            <a href="{{ verification_link }}" class="button">Vérifier mon email</a>
+        </p>
+        <p class="footer">
+            Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
+        </p>
+    </div>
+</body>
+</html>
