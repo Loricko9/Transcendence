@@ -24,8 +24,7 @@ urlpatterns = [
 	path("prometheus/", include('django_prometheus.urls')),
 	path('api/', include('api.urls')),
 	path('sign_in/', include('register.urls')),
-    path('<str:lang>/sign_in/', include('register.urls')),
+    # path('<str:lang>/sign_in/', include('register.urls')),
 	path('', include('frontend.urls')),
 	path('<str:lang>/', include('frontend.urls')),
-	# path('accounts/', include('allauth.urls')),  # Ajoute toutes les URL d'allauth
 ]

@@ -38,13 +38,13 @@
 </head>
 <body>
     <div class="email-container">
-        <h2>Bienvenue, {{ user.username }} !</h2>
-        <p>Merci de vous être inscrit sur notre site. Veuillez vérifier votre adresse email pour activer votre compte.</p>
+        <h2>{{ texts.Welcome }} {{ user.username }} !</h2>
+        <p>{{ texts.Verif_msg }}</p>
         <p>
-            <a href="{{ verification_link }}" class="button">Vérifier mon email</a>
+            <a href="{{ verification_link }}" class="button">{{ texts.Verif_btn }}</a>
         </p>
         <p class="footer">
-            Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
+            {{ texts.Email_err }}
         </p>
     </div>
 </body>

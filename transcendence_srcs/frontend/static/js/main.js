@@ -69,6 +69,12 @@ function router(){
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
 	blockage = false;
 	DestroyCharts();
+	if (path == "/sign_in/"){
+		loadTemplate(appDiv, "temp_sign_in");
+		appDiv.className = "container col-md-5 py-2 px-3 my-5";
+		loadSignIn();
+		return;
+	}
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
@@ -171,6 +177,71 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	router();
 });
+
+
+// sign_in
+function loadSignIn() {
+	refreshCSRFToken()
+	const form = document.getElementById('sub_form');
+	if (form) {
+		form.addEventListener('submit', function(event) {
+			event.preventDefault();
+			handleFormSignIn();
+		});
+	}
+	else {
+		console.error("Form error");
+		redirect_to("/error/")
+	}
+}
+
+function handleFormSignIn() {
+	const email = document.getElementById('email_input').value;
+    const username = document.getElementById('username_input').value;
+	const password = document.getElementById('passwd_input').value;
+    const confirmPassword = document.getElementById('passwd_input2').value;
+	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+	console.log("email: " + email)
+	console.log("username: " + username)
+	console.log("password: " + password)
+	console.log("confirmPwd: " + confirmPassword)
+	
+    fetch('/sign_in/', {
+        method: 'POST',
+        headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            'email': email,
+			'username': username,
+            'password': password,
+            'confirm_password': confirmPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+		if (data.success){
+			alert(data.info_msg)
+			const appDiv = document.getElementById("app");
+			loadTemplate(appDiv, "temp_index");
+			const div_info_msg = document.getElementById('alert_info_msg')
+			div_info_msg.style.display = 'block'
+			div_info_msg.textContent = data.info_msg
+		}else{
+			const errList = document.querySelector('#err_sign_in ul');
+			errList.innerHTML = '';
+			data.err_list.forEach(err => {
+				const newErr = document.createElement('li');
+				newErr.style.color = 'red';
+				newErr.textContent = err;
+				errList.appendChild(newErr);
+			});
+		}
+    })
+    .catch(error => console.error('Erreur:', error));
+}
 
 
 // gère le retour arrière/avant dans l'historique (les flèches)

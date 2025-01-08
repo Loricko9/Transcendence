@@ -210,6 +210,10 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+# EMAIL_HOST_USER = 'fb1f3ef5beb417'
+# EMAIL_HOST_PASSWORD = 'd7d1ca68991db2'
+# EMAIL_PORT = '2525'
 DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL')
 SITE_URL = 'https://localhost'
 

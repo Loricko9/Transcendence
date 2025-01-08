@@ -36,6 +36,9 @@ class Command(BaseCommand):
 			{'Key': 'Register_1', 'Lang': 'fr', 'Text': 'Nouveau dans le jeux'},
 			{'Key': 'Register_1', 'Lang': 'en', 'Text': 'New in the game'},
 			{'Key': 'Register_1', 'Lang': 'es', 'Text': 'Nuevo en el juego'},
+			{'Key': 'Username', 'Lang': 'fr', 'Text': "Nom d'utilisateur"},
+			{'Key': 'Username', 'Lang': 'en', 'Text': 'Username'},
+			{'Key': 'Username', 'Lang': 'es', 'Text': 'Nombre de usuario'},
 			{'Key': 'Email_1', 'Lang': 'fr', 'Text': 'Adresse Mail'},
 			{'Key': 'Email_1', 'Lang': 'en', 'Text': 'E-Mail Address'},
 			{'Key': 'Email_1', 'Lang': 'es', 'Text': 'Correo electrónico'},
@@ -294,6 +297,15 @@ class Command(BaseCommand):
 			{'Key': 'Delete_account_mess', 'Lang': 'fr', 'Text': 'Vous êtes sur le point de supprimer votre compte !'},
 			{'Key': 'Delete_account_mess', 'Lang': 'en', 'Text': 'You are about to delete your account !'},
 			{'Key': 'Delete_account_mess', 'Lang': 'es', 'Text': '¡ Estás a punto de borrar a su cuenta !'},
+			{'Key': 'Verif_msg', 'Lang': 'fr', 'Text': "Merci de vous être inscrit sur notre site. Veuillez vérifier votre adresse email pour activer votre compte."},
+			{'Key': 'Verif_msg', 'Lang': 'en', 'Text': "Thank you for registering on our site. Please verify your email address to activate your account."},
+			{'Key': 'Verif_msg', 'Lang': 'es', 'Text': "Gracias por registrarse en nuestro sitio. Compruebe su dirección de correo electrónico para activar su cuenta."},
+			{'Key': 'Verif_btn', 'Lang': 'fr', 'Text': 'Vérifier mon email'},
+			{'Key': 'Verif_btn', 'Lang': 'en', 'Text': 'Check my email'},
+			{'Key': 'Verif_btn', 'Lang': 'es', 'Text': 'Comprobar mi correo electrónico'},
+			{'Key': 'Email_err', 'Lang': 'fr', 'Text': "Si vous n'avez pas créé de compte, vous pouvez ignorer cet email."},
+			{'Key': 'Email_err', 'Lang': 'en', 'Text': "If you haven't created an account, you can ignore this email."},
+			{'Key': 'Email_err', 'Lang': 'es', 'Text': "Si no ha creado una cuenta, puede ignorar este correo electrónico."},
 		]
 
 
