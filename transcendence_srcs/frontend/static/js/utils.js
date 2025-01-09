@@ -256,6 +256,35 @@ export function loadfriendinput() {
 	div.style.display = "none";
 }
 
+export function loadPrivacyPolicy(appDiv) {
+	let lang = Get_Cookie("language");
+	let path;
+	switch (lang) {
+		case "fr":
+			path = "/static/html/privacy-policy_fr.html"
+			break;
+		case "es":
+			path = "/static/html/privacy-policy_es.html"
+			break;
+		default:
+			path = "/static/html/privacy-policy_en.html"
+	}
+	fetch(path)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur lors du chargement du fichier HTML');
+      }
+      return response.text();
+    })
+    .then(data => {
+      appDiv.innerHTML = data;
+    })
+    .catch(error => {
+      console.error('Erreur:', error);
+      appDiv.innerHTML = '<h3>Impossible de charger la politique de confidentialité.</h3>';
+    });
+}
+
 function Add_message(txt, bool) {
 	const tempDiv = document.createElement("div");
 	const tempDivtxt = document.createElement("div");

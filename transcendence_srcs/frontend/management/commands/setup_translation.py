@@ -240,7 +240,10 @@ class Command(BaseCommand):
 			{'Key': 'Stat_result', 'Lang': 'fr', 'Text': 'Résultat'},
 			{'Key': 'Stat_result', 'Lang': 'en', 'Text': 'Result'},
 			{'Key': 'Stat_result', 'Lang': 'es', 'Text': 'Resultado'},
-
+			{'Key': 'Privacy_Policy', 'Lang': 'fr', 'Text': 'Politique de Confidentialité'},
+			{'Key': 'Privacy_Policy', 'Lang': 'en', 'Text': 'Privacy Policy'},
+			{'Key': 'Privacy_Policy', 'Lang': 'es', 'Text': 'Política de privacidad'},
+			
 		]
 
 

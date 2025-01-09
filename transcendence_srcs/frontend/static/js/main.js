@@ -1,7 +1,7 @@
 import { initAll } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields,
-	fetchFriendList, loadfriendinput,
+	fetchFriendList, loadfriendinput, loadPrivacyPolicy,
 	loadfriendmessage} from './utils.js';
 
 window.handleFormChangeAvatar = handleFormChangeAvatar;
@@ -114,6 +114,10 @@ function router(){
 				}
 				else
 					redirect_to("/");
+				break;
+			case "/privacy-policy/":
+				loadPrivacyPolicy(appDiv);
+				appDiv.className = "container col-md-10 py-2 px-3 my-5";
 				break;
 			default:
 				loadTemplate(appDiv, "temp_notFound");
