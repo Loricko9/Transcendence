@@ -306,6 +306,10 @@ class Command(BaseCommand):
 			{'Key': 'Email_err', 'Lang': 'fr', 'Text': "Si vous n'avez pas créé de compte, vous pouvez ignorer cet email."},
 			{'Key': 'Email_err', 'Lang': 'en', 'Text': "If you haven't created an account, you can ignore this email."},
 			{'Key': 'Email_err', 'Lang': 'es', 'Text': "Si no ha creado una cuenta, puede ignorar este correo electrónico."},
+			{'Key': 'Privacy_Policy', 'Lang': 'fr', 'Text': 'Politique de Confidentialité'},
+			{'Key': 'Privacy_Policy', 'Lang': 'en', 'Text': 'Privacy Policy'},
+			{'Key': 'Privacy_Policy', 'Lang': 'es', 'Text': 'Política de privacidad'},
+			
 		]
 
 

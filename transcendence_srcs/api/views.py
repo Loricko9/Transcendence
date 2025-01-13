@@ -32,8 +32,7 @@ def set_lang(request, lang):
 	reponse = redirect(request.GET.get('prev', '/'))
 
 	tps = 31536000
-	print("cookie lang: " + lang)
-	reponse.set_cookie('language', lang, max_age=tps, secure=True)
+	reponse.set_cookie('language', lang, max_age=tps, secure=True, samesite='Strict')
 	return reponse
 
 # Afficher la liste des amis
