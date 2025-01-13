@@ -1,5 +1,5 @@
 all:
-	@docker-compose -f Docker-compose.yml up -d --build
+	@docker-compose -f Docker-compose.yml up --build
 
 stop:
 	@echo "Stopping the project..."
@@ -7,7 +7,7 @@ stop:
 
 migrations:
 	@echo "Updating the database..."
-	@docker-compose exec django /migrations.sh
+	@docker exec -it Django python3 manage.py collectstatic --noinput
 	@echo "Database updated successfully!"
 
 help:

@@ -583,9 +583,11 @@ function get_stats() {
 	.then(response => response.json())
     .then(data => {
 		loadChart(0, data.win, data.lose);
-		loadChart(1, 3, 8)
+		loadChart(1, data.Twin, data.Tlose);
 		document.getElementById('Win_game').innerHTML = data.win
 		document.getElementById('Lose_game').innerHTML = data.lose
+		document.getElementById('Win_tournament').innerHTML = data.Twin
+		document.getElementById('Lose_tournament').innerHTML = data.Tlose
 		Fill_table(data.history)
 	})
 	.catch(error => console.error('Error fetching stats', error));

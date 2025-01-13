@@ -301,8 +301,26 @@ def change_avatar(request):
 		if selected_avatar and os.path.exists("/transcendence" + selected_avatar):
 			request.user.avatar = selected_avatar
 			request.user.save()
-			return JsonResponse({'success': True})
-		return JsonResponse({'success': False})
+			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
+		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
+	
+def login_view(request):
+	if request.method == 'POST':
+		email = request.POST.get('email')
+		password = request.POST.get('password')
+
+		user = authenticate(request, Email=email, password=password)
+        
+		if user is not None:
+			login(request, user)
+			user.connect()
+			data = {'success': True, 'message': 'Connexion reussie'}
+			response = JsonResponse(data)
+			response['Content-Type'] = 'application/json; charset=utf-8'
+			return response
+		else:
+			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
+	return redirect('/')
 
 def login_view(request):
 	if request.method == 'POST':
@@ -352,7 +370,7 @@ def get_stats(request):
 			user = request.user
 			if user.is_authenticated:
 				history_data = History.objects.filter(user=user).values('date', 'enemy', 'score', 'result')
-				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'history': list(history_data)})
+				return JsonResponse({'win': user.nb_win, 'lose': user.nb_lose, 'Twin': user.nb_tournament_win, 'Tlose': user.nb_tournament_lose, 'history': list(history_data)})
 			else:
 				return JsonResponse({'error': 'User not authenticated'})
 		except json.JSONDecodeError:
@@ -364,7 +382,8 @@ def update_score(request):
 		data = json.loads(request.body)
 		user_win = data.get('winner')
 		user_win_score = data.get('winnerScore')
-
+		Wuser = 'AI'
+		Luser = 'AI'
 		user_lose = data.get('loser')
 		user_lose_score = data.get('loserScore')
 
@@ -384,17 +403,8 @@ def update_score(request):
 				Luser.nb_lose += 1
 				if isTournament:
 					Luser.nb_tournament_lose += 1
-				Luser.save() # i forgot to save the user lol
-			
-		# if user_win and user_lose:
-		# 	if User_tab.objects.filter(username=user_win).exists() and User_tab.objects.filter(username=user_lose).exists():
-		# 		Wuser = User_tab.objects.get(username=user_win)
-		# 		Luser = User_tab.objects.get(username=user_lose)
-		# 		Wuser.nb_win += 1
-		# 		Luser.nb_lose += 1
-		# 		if isTournament:
-		# 			Wuser.nb_tournament_win += 1
-		# 			Luser.nb_tournament_lose += 1
+				Luser.save()
+				
 				try:
 					if (user_win != 'AI'):
 						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
@@ -427,8 +437,6 @@ def find_hostname(request):
 	if request.method == 'POST':
 		try:
 			user = request.user
-			print("Host name", flush=True)
-			print(user.avatar, flush=True)
 			if user.is_authenticated:
 				path_avatar = str(user.avatar)
 				if path_avatar.startswith("avatars"):

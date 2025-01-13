@@ -343,15 +343,6 @@
                 <button id="PlayAgain">{{ texts.PlayAgain }}</button>
                 <button id="NextButton">{{ texts.NextButton }}</button>
             </div>
-			
-            <div id="OptnMenu">
-				<p id="DarkModeText">Dark Mode:</p>
-                <label class="switch" id="DarkModeSwitch">
-					<input type="checkbox">
-                    <span class="slider round"></span>
-                </label>
-                <button id="OptnControlsButton">Controls</button>
-            </div>
     
             <!-- game area -->
             <div id="game-area">
@@ -362,13 +353,8 @@
                 <button id="ready">{{ texts.Ready }}</button>
                 <p id="counter">3</p>
             </div>
-			
-            <!-- Others elements -->
-            <p id="tips1" style="display: none">tips</p>
-            <p id="tips2" style="display: none">tips</p>
             <button id="BackMainMenuButton">{{ texts.MainMenu }}</button>
-            <button id="OptnButton">⚙</button>
-            <!-- <h4 id="GameTypeHeader">none</h4> -->
+            <button><img id="darkModeSwitch" src="{% static 'img/darkmodeicon.png' %}"/></button>
         </div>
     </template>
 	

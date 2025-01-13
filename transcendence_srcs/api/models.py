@@ -120,7 +120,8 @@ class History(models.Model):
 	def __str__(self):
 		return f"{self.date} : {self.user.username} vs {self.enemy} - {self.score} -> {self.result}"
 	
-	def Add_History(self, user, enemy, score_user, score_enemy):
+	@classmethod
+	def Add_History(cls, user, enemy, score_user, score_enemy):
 		score_forma = f"{score_user} - {score_enemy}"
 		if (score_user > score_enemy) :
 			result = 'Victory'
@@ -132,7 +133,7 @@ class History(models.Model):
 			user_instance = User_tab.objects.get(username=user)
 		except User_tab.DoesNotExist:
 			raise ValueError("Le User n'existe pas !")
-		new_history = self.model(
+		new_history = cls(
 			user=user_instance,
 			enemy=enemy,
 			score=score_forma,
