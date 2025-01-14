@@ -94,6 +94,7 @@ export function initAll(invite_bool, invite_username) {
 	let tournamentWinnerRound2 = null;
 	let tournamentWinnerRound2Icon = null;
 	let timer;
+	let game2started = false;
 
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -234,7 +235,7 @@ export function initAll(invite_bool, invite_username) {
 		RoomMenu.style.display = 'none';
 		ReadyButton.style.display = 'none';
 		counterElement.style.display = 'none';
-		if (menu === 'MainMenu') {AnimationMainMenu('in');resetAllData();
+		if (menu === 'MainMenu') {AnimationMainMenu('in');resetAllData();gameStarted = false;
 		} else if (menu === 'AIMenu') {document.getElementById('EndGameMenu').style.display = 'none';AnimationAIMenu('in');
 		} else if (menu === 'RoomMenu') {
 			delete_MatchGroup()
@@ -346,6 +347,7 @@ export function initAll(invite_bool, invite_username) {
 		counterElement.style.display = 'block';
 		counterElement.textContent = counter;
 		let interval = setInterval(() => {
+			if (gameStarted === false) {clearInterval(interval);counterElement.style.display = 'none';return;}
 			counter--;
 			counterElement.textContent = counter;
 			if (counter === 0) {
@@ -357,6 +359,7 @@ export function initAll(invite_bool, invite_username) {
 	}
 
 	function startGame() {
+		gameStarted = 10;
 		counter(() => {
 			gameStarted = true;
 			// if (PVPMode === 'none') {Rtips.style.display = 'none';Ltips.style.display = 'block';} else {Ltips.style.display = 'block';Rtips.style.display = 'block';}
