@@ -155,6 +155,10 @@ footer a:hover {
 	background-color: #007bff;
 }
 
+.div-empty {
+	background-color: #007bff00 !important;
+}
+
 .Diagram {
 	width: 60%;
 	height: auto;
@@ -278,18 +282,6 @@ span {
 }
 
 /* pong game */
-
-#main-menu {
-    position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-	z-index: 1;
-}
 
 #main-menu button {
     background-color: white;
