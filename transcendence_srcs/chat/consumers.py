@@ -132,7 +132,7 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				friend_username = await sync_to_async(lambda: room.sender.username)()
 			friend = await sync_to_async(User.objects.get)(username=friend_username)
 			if await sync_to_async(lambda: not friend.is_connected)():
-				notif_message = friend_username + ": " + message
+				notif_message = sender.username + ": " + message
 				await sync_to_async(Notifications.objects.create)(user=friend, message=notif_message)
 				print("notif de message saved")
 

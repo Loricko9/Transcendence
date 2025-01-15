@@ -1,7 +1,19 @@
 import {showSuccessModal} from './utils.js';
 import {updateNotifications} from './main.js';
 
-export let MatchmakingSocket = null;
+let MatchmakingSocket = null;
+
+export function closeMatchmakingSocket() {
+	if (MatchmakingSocket){
+		MatchmakingSocket.send(JSON.stringify({
+			command: 'delete',
+		}));
+		console.log("delete group")
+		MatchmakingSocket.close();
+		MatchmakingSocket = null;
+		console.log("Matchmaking websocket close")
+	}
+}
 
 export function initAll(invite_bool, invite_username) {
 	const PaddingLeft = document.getElementById('left-paddle');
@@ -294,6 +306,8 @@ export function initAll(invite_bool, invite_username) {
 	}
 
 	function resetAllData() {
+		if (timer)
+			clearTimeout(timer);
 		delete_MatchGroup()
 		gameStarted = false;
 		AIDifficulty = "none";

@@ -1,4 +1,4 @@
-import {socket, updateNotifications} from './main.js';
+import {socket, updateNotifications, loadSignIn} from './main.js';
 const charts = {}
 
 export function loadChart(chart_num, win, lose) {
@@ -110,10 +110,11 @@ export function AppendTemplateFriends(appDiv, friend) {
 	const img = tempDiv.querySelector("img");
 	if (friend.status == "pending")
 		button.classList.add('btn-warning');
-	else
-	button.classList.add('btn-light');
-	span.textContent = friend.username;
-	img.src = friend.avatar
+	else{
+		button.classList.add('btn-light');
+		span.textContent = friend.username;
+		img.src = friend.avatar;
+	}
 	if (friend.is_connected == true)
 		img.classList.add('border-green');
 	else
@@ -133,17 +134,20 @@ export function AppendTemplateFriends(appDiv, friend) {
 		button.classList.add("border-blue");
 }
 
-export let chatSocket = null;
+let chatSocket = null;
+
+export function closeChatSocket() {
+	if (chatSocket){
+		chatSocket.close();
+		chatSocket = null;
+		console.log("Chat websocket close")
+	}
+}
 
 export function loadfriendmessage() {
 	const div = document.getElementById("message_lst");
 	const friend = friendship_lst.find(line => line.id == id_friend_active);
-	if (chatSocket) {
-		// chatSocket.send(JSON.stringify({command: 'delete_messages'}));
-		chatSocket.close()
-		chatSocket = null
-		console.log("Chat websocket closed")
-	}
+	closeChatSocket()
 	if (friend && friend.status == "accepted") {
 		div.innerHTML = "";
 		div.className = "d-flex flex-column flex-grow-1"
@@ -378,6 +382,7 @@ function Add_message(txt, bool) {
 
 window.Click_login = Click_login;
 window.Change_lang = Change_lang;
+window.Click_signin = Click_signin;
 var friendship_lst;
 var id_friend_active = -1;
 
@@ -390,6 +395,14 @@ function Click_login() {
 function Change_lang(lang) {
 	const path = window.location.pathname.substring(3);
 	window.location.href = "/api/lang/" + lang + "?prev=" + path
+}
+
+function Click_signin() {
+	const appDiv = document.getElementById("app");
+	appDiv.className = "container col-md-5 py-2 px-3 my-5";
+	loadTemplate(appDiv, "temp_sign_in");
+	loadSignIn();
+	return;
 }
 
 function deleteFriendship(friendshipId){
@@ -525,14 +538,15 @@ function initializeChatWebSocket(roomId) {
 		
 		const username = document.getElementById("user_connected").innerText;
 
-		if (data.type == 'notif_message'){
+		if (data.type == 'notif'){
 			if (data.sender_username == username){
-				updateNotifications(true, data.message)
-				document.getElementById('infoco').innerHTML = data.message
-				showSuccessModal()
+				updateNotifications(true, data.message);
+				document.getElementById('infoco').innerHTML = data.message;
+				showSuccessModal();
 			}
-			return
+			return;
 		}
+
 		if (data.sender == username)
 			Add_message(data.message, true)
 		else{

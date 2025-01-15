@@ -14,7 +14,7 @@ services:
       - Transcendence
     depends_on:
       - postgreSQL
-      - redis
+      # - redis
   django-exporter:
     build:
       context: Containers/Django-exporter
@@ -62,10 +62,10 @@ services:
       - Transcendence
     depends_on:
       - django
-  redis:
-    image: redis:alpine # Utilisation de l'image officielle Redis Alpine (légère)
-    ports:
-      - "6379:6379"
+  # redis:
+  #   image: redis:alpine # Utilisation de l'image officielle Redis Alpine (légère)
+  #   ports:
+  #     - "6379:6379"
   nginx-exporter:
     build:
       context: Containers/Nginx-exporter
