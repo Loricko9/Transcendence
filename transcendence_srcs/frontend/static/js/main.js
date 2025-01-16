@@ -504,7 +504,7 @@ function loadChangeAvatar() {
             const doc = parser.parseFromString(html, 'text/html');
             const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
             const avatarContainer = document.getElementById('avatar-container');
-			
+			avatarContainer.innerHTML = '' // Vider le container
             links.forEach(link => {
 				const href = link.getAttribute('href');
                 if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
@@ -701,7 +701,10 @@ function InitializeWebsocket(){
 
 		if (data.type === 'connexion'){
 			console.log('fetch friend list effectue');
-			fetchFriendList();
+			fetchFriendList(() => {
+				loadfriendinput();
+				loadfriendmessage();
+			});
 			return;
 		}
 
@@ -754,7 +757,7 @@ function InitializeWebsocket(){
 };
 
 // afficher le modal d'invitation a jouer
-function showInvitationModal(sender_username){
+export function showInvitationModal(sender_username){
 	var modalElement = document.getElementById('inviteModal');
 	var invite_modal = new bootstrap.Modal(modalElement);
 	invite_modal.show();

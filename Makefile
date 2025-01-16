@@ -19,6 +19,9 @@ help:
 	@echo "  down         - Stop the project and remove all volumes"
 	@echo "  help         - Show this help message and exit"
 
+restart:
+	@docker restart Django
+
 down:
 	@docker-compose -f Docker-compose.yml down -v
 	@docker system prune -af

@@ -294,8 +294,8 @@ def change_avatar(request):
 		if selected_avatar and os.path.exists("/transcendence" + selected_avatar):
 			request.user.avatar = selected_avatar
 			request.user.save()
-			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
-		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
+			return JsonResponse({'success': True})
+		return JsonResponse({'success': False})
 
 def login_view(request):
 	if request.method == 'POST':

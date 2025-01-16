@@ -697,8 +697,10 @@ export function initAll(invite_bool, invite_username) {
 		
 		MatchmakingSocket.onmessage = function (event) {
 			const data = JSON.parse(event.data);
+
+			const lang = Get_Cookie("language");
+
 			if (data.type == 'notif'){
-				const lang = Get_Cookie("language")
 				let message = null;
 				switch (lang) {
 					case "fr":
@@ -717,6 +719,7 @@ export function initAll(invite_bool, invite_username) {
 				showSuccessModal()
 				return
 			}
+
 			if (data.playerNb === 1 ){
 				RoomUser1Info.style.display = 'block';
 				searchUser(data.member_username, 'user1')

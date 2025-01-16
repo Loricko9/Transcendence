@@ -154,4 +154,3 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 			'type': 'notif',
 			'leader_username': event['leader_username']
 		}))
-
