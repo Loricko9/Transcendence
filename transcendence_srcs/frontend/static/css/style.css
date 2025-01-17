@@ -160,8 +160,10 @@ footer a:hover {
 }
 
 .Diagram {
-	width: 60%;
-	height: auto;
+	width: 100% !important;
+	min-width: 10vw;
+	min-height: auto;
+	height: auto !important;
 }
 
 .border-green {

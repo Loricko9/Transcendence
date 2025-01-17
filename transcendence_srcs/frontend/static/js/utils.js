@@ -23,9 +23,8 @@ export function loadChart(chart_num, win, lose) {
             }]
         },
         options: {
+			responsive: false,
 			plugins: {
-				responsive: false,
-				maintainAspectRatio: false,
 				legend: {
 					display: false
 				},
