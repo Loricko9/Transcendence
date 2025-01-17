@@ -81,6 +81,40 @@ export function loadTemplate(appDiv, Id) {
 	appDiv.innerHTML = template ? template.innerHTML : "";
 }
 
+export function loadIndex() {
+	const btn = document.getElementById('login_btn_index');
+	if (btn)
+		btn.addEventListener('click', Click_login);
+}
+
+export function loadChangeLang() {
+	let lang = Get_Cookie("language");
+	if (lang != null) {
+		switch (lang) {
+			case "fr":
+				document.getElementsByClassName("btn_fr")[0].classList.add("active")
+				document.getElementsByClassName("btn_fr")[1].classList.add("active")
+				break;
+			case "en":
+				document.getElementsByClassName("btn_en")[0].classList.add("active")
+				document.getElementsByClassName("btn_en")[1].classList.add("active")
+				break;
+			case "es":
+				document.getElementsByClassName("btn_es")[0].classList.add("active")
+				document.getElementsByClassName("btn_es")[1].classList.add("active")
+				break;
+			default:
+				break;
+		}
+	}
+	document.getElementsByClassName("btn_fr")[0].addEventListener('click', () => Change_lang("fr"));
+	document.getElementsByClassName("btn_fr")[1].addEventListener('click', () => Change_lang("fr"));
+	document.getElementsByClassName("btn_en")[0].addEventListener('click', () => Change_lang("en"));
+	document.getElementsByClassName("btn_en")[1].addEventListener('click', () => Change_lang("en"));
+	document.getElementsByClassName("btn_es")[0].addEventListener('click', () => Change_lang("es"));
+	document.getElementsByClassName("btn_es")[1].addEventListener('click', () => Change_lang("es"));
+}
+
 export async function fetchFriendList(callback) {
 	fetch('/api/friends/', {
 		method: 'GET',
@@ -376,7 +410,6 @@ function Add_message(txt, bool) {
 	Div.scrollTop = Div.scrollHeight;
 }
 
-window.Click_login = Click_login;
 window.Change_lang = Change_lang;
 var friendship_lst;
 var id_friend_active = -1;

@@ -42,25 +42,24 @@
                     <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-md-end pe-3" id="dropdown_lang">
-                    <li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
-                    <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_fr"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_en"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                    <li><button class="dropdown-item px-3 mx-2 btn_es"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                 </ul>
             </div>
         </div>
         
 		<!-- Notifications -->
 		<div id="notif-div" style="display: none;">
-			<button class="btn btn-outline-light d-none d-md-block position-relative" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡{{ texts.Notifs_btn }}
+			<button class="btn btn-outline-light d-none d-md-block position-relative mx-1" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡{{ texts.Notifs_btn }}
 				<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_nb"><!--dynamique nbr--></span>
 			</button>
 		</div>
-		  
 		
 		<!-- options button when connected-->
 		<button class="btn btn-outline-primary me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" id="option" style="display: none;">
-			<img class="ms-2 rounded-circle" id="user_avatar" src="" alt="Avatar" width="70" height="65" style="display: none;">
-            <span id="user_connected" style="display: none;"><!-- script dyhnamique --></span>
+			<img class="rounded-circle" id="user_avatar" src="" alt="Avatar" width="70" height="65" style="display: none;">
+            <span id="user_connected" style="display: none;"></span>
 		</button>
 
 		<!-- sign-in / login buttons -->
@@ -102,9 +101,9 @@
         </div>
         <div class="offcanvas-body d-flex flex-column pt-0">
 			<ul class="navbar-nav me-auto mb-2 mb-md-0 lst_link">
-				<li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-link>{{ texts.Home }}</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-link>{{ texts.Game_link }}</a></li>
-                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-link>{{ texts.Stat_link }}</a></li>
+				<li class="nav-item"><a class="nav-link fs-4 fw-bold me-2" href="/" data-bs-dismiss="offcanvas" data-link>{{ texts.Home }}</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/Game/" data-bs-dismiss="offcanvas" data-link>{{ texts.Game_link }}</a></li>
+                <li class="nav-item"><a class="nav-link fs-5 me-2" href="/stats/" data-bs-dismiss="offcanvas" data-link>{{ texts.Stat_link }}</a></li>
             </ul>
             <div class="mt-auto">
                 <div class="dropdown">
@@ -112,9 +111,9 @@
                         <img src="{{ texts.Flag_nav }}" alt="lang" height="30px" width="30px"/>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-lg-end pe-3" id="dropdown_lang">
-						<li><button class="dropdown-item px-3 mx-2 btn_fr" onclick="Change_lang('fr')"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
-                        <li><button class="dropdown-item px-3 mx-2 btn_en" onclick="Change_lang('en')"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
-                        <li><button class="dropdown-item px-3 mx-2 btn_es" onclick="Change_lang('es')"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
+						<li><button class="dropdown-item px-3 mx-2 btn_fr"><img src="{% static 'img/flags/fr.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4"> Français</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2 btn_en"><img src="{% static 'img/flags/en.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	English</span></button></li>
+                        <li><button class="dropdown-item px-3 mx-2 btn_es"><img src="{% static 'img/flags/es.png' %}" alt="fr" height="50px" width="50px"/><span class="fs-4">	Español</span></button></li>
                     </ul>
                 </div>
                 <a href="/sign_in/" id="signin_btn_little" class="btn btn-outline-light mt-2 w-100 rounded-5" style="display: block;">{{ texts.Sign_in }}</a>
@@ -134,13 +133,10 @@
     </footer>
     
     <!--Templates injectés par le js dans le div app-->
-	
     <template id="temp_index">
-		
 		<div class="alert alert-info" id="alert_info_msg" style="display: none;">
 			<!-- msg dynamique -->
 		</div>
-		
 		<div class="row align-items-center" id="sign_log" style="display: flex;">
 			<div class="col p-2 ">
 				<p class="fs-3 fw-bold m-0 txt-blue">{{ texts.Index_1 }}</p>
@@ -148,7 +144,7 @@
         		<p class="fs-5 txt-blue">{{ texts.Index_2 }}</p>
                 <div class="btn-group btn-group-lg d-flex justify-content-center" aria-label="Connexion Inscription">
 					<a class="btn btn-dark" id="signin_btn_index" href="/sign_in/" data-link><span>{{ texts.Regis_now }}</span></a>
-                    <button class="btn btn-dark" id="login_btn_index" type="button" onclick="Click_login();"><span>{{ texts.Log_on }}</span></button>
+                    <button class="btn btn-dark" id="login_btn_index" type="button"><span>{{ texts.Log_on }}</span></button>
                 </div>
     		</div>
             <div class="col p-4">
@@ -158,37 +154,35 @@
 	</template>
 
 	<template id="temp_sign_in">
-		<div class="container rounded col-md-10 py-2 px-3 my-2">
-			<h1 class="text-center fw-bold">{{ texts.Register_1 }}</h1>
-			<form class="mx-1" method="post" id="sub_form">
-				{% csrf_token %}
-				<div class="form-group my-2">
-					<label for="Email_input">{{ texts.Email_1 }}</label>
-					<input type="email" class="form-control" id="email_input" aria-describedby="emailInfo" placeholder="email@exemple.com" name="Email" required>
-					<small id="emailInfo" class="form-text text-muted">{{ texts.Email_2 }}</small>
-				</div>
-				<div class="form-group my-2">
-					<label for="username">{{ texts.Username }}</label>
-					<input type="username" class="form-control" id="username_input" placeholder="Paul" name="username" required>
-				</div>
-				<div class="form-group my-2">
-					<label for="Passwd_input">{{ texts.Passwd_1 }}</label>
-					<input type="password" class="form-control" id="passwd_input" placeholder="mDp42" name="Password1" required>
-				</div>
-				<div class="form-group my-2">
-					<label for="Passwd_input2">{{ texts.Passwd_2 }}</label>
-					<input type="password" class="form-control" id="passwd_input2" placeholder="mDp42" name="Password2" required>
-				</div>
-				<div class="text-center m-2">
-					<button type="submit" class="btn btn-primary">{{ texts.OK_btn }}</button>
-				</div>
-				<div id="err_sign_in">
-					<ul>
-						<!-- error dynamique -->
-					</ul>
-				</div>
-			</form>
-		</div>
+		<h1 class="text-center fw-bold">{{ texts.Register_1 }}</h1>
+		<form class="mx-1" method="post" id="sub_form">
+			{% csrf_token %}
+			<div class="form-group my-2">
+				<label for="Email_input">{{ texts.Email_1 }}</label>
+				<input type="email" class="form-control" id="email_input" aria-describedby="emailInfo" placeholder="email@exemple.com" name="Email" required>
+				<small id="emailInfo" class="form-text text-muted">{{ texts.Email_2 }}</small>
+			</div>
+			<div class="form-group my-2">
+				<label for="username">{{ texts.Username }}</label>
+				<input type="username" class="form-control" id="username_input" placeholder="Paul" name="username" required>
+			</div>
+			<div class="form-group my-2">
+				<label for="Passwd_input">{{ texts.Passwd_1 }}</label>
+				<input type="password" class="form-control" id="passwd_input" placeholder="mDp42" name="Password1" required>
+			</div>
+			<div class="form-group my-2">
+				<label for="Passwd_input2">{{ texts.Passwd_2 }}</label>
+				<input type="password" class="form-control" id="passwd_input2" placeholder="mDp42" name="Password2" required>
+			</div>
+			<div class="text-center m-2">
+				<button type="submit" class="btn btn-primary">{{ texts.OK_btn }}</button>
+			</div>
+			<div id="err_sign_in">
+				<ul>
+					<!-- error dynamique -->
+				</ul>
+			</div>
+		</form>
 	</template>
 	
     <template id="temp_login">
@@ -370,7 +364,7 @@
 			<form method="post" id="change-avatar-form">
 				<div id="avatar-container" class="d-flex flex-wrap gap-2"></div>
                 <div class="text-center mt-3">   
-					<button type="button" class="btn btn-primary" onclick="handleFormChangeAvatar()">{{ texts.Save }}</button>
+					<button type="button" class="btn btn-primary" id="ChangeAvatar_btn">{{ texts.Save }}</button>
                 </div>
 			</form>
 		</div>
@@ -600,15 +594,14 @@
 	<!-- options when client is connected -->
 	<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
 		<div class="offcanvas-header">
-		  <h1 class="offcanvas-title" id="offcanvasRightLabel">{{ texts.Options }}</h1>
-		  <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+			<h1 class="offcanvas-title" id="offcanvasRightLabel">{{ texts.Options }}</h1>
+			<button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 		</div>
 		<div class="offcanvas-body">
-		  <!-- Contenu de la fenêtre coulissante -->
-		  <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn" href="/change-avatar/" data-link>{{ texts.Change_avatar2 }}</a>
-          <a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-link>{{ texts.Change_Passwd_5 }}</a>
-		  <button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button">{{ texts.Log_out }}</button>
-		  <button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5" title="Delete your account" data-bs-toggle="modal" data-bs-target="#ConfirmDeleteAccount">{{ texts.Del_account }}</button>
+			<a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_avatar_btn" href="/change-avatar/" data-bs-dismiss="offcanvas" data-link>{{ texts.Change_avatar2 }}</a>
+        	<a class="btn btn-outline-light mt-2 w-100 rounded-5" id="change_password_btn" href="/change-password/" data-bs-dismiss="offcanvas" data-link>{{ texts.Change_Passwd_5 }}</a>
+			<button class="btn btn-outline-light mt-2 w-100 rounded-5" id="logout_btn" type="button" data-bs-dismiss="offcanvas">{{ texts.Log_out }}</button>
+			<button id="deleteAccountBtn" class="btn btn-outline-light mt-2 w-100 rounded-5" title="Delete your account" data-bs-toggle="modal" data-bs-target="#ConfirmDeleteAccount" data-bs-dismiss="offcanvas">{{ texts.Del_account }}</button>
 		</div>
 	</div>
     <script type="module" defer src="{% static 'js/main.js' %}"></script>

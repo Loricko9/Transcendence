@@ -1,10 +1,8 @@
 import { initAll, MatchmakingSocket } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
 	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields, chatSocket,
-	fetchFriendList, loadfriendinput, loadPrivacyPolicy,
+	fetchFriendList, loadfriendinput, loadPrivacyPolicy, loadIndex, loadChangeLang,
 	loadfriendmessage} from './utils.js';
-
-window.handleFormChangeAvatar = handleFormChangeAvatar;
 
 // fonction pour gerer l'affichage en fonction de si un client est connecte
 async function checkAuthentification() {
@@ -49,12 +47,28 @@ async function checkAuthentification() {
 	}
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+	loadChangeLang();	
+	handle_datalink();
+	router();
+});
+
 // Fonction qui permet de ne pas recharger la page (1ère appeler)
 function redirect_to(url) {
 	const lang_path = window.location.pathname.substring(0, 3);
 	let new_url = lang_path + url
 	history.pushState(null, null, new_url);
 	router();
+}
+
+function handle_datalink() {
+	document.querySelectorAll('a[data-link]').forEach(link => {
+		link.addEventListener('click', (event) => {
+			event.preventDefault();
+			const target = event.currentTarget.getAttribute('href');
+			redirect_to(target);
+		});
+	});
 }
 
 let blockage = false;
@@ -69,12 +83,6 @@ function router(){
 	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
 	blockage = false;
 	DestroyCharts();
-	if (path == "/sign_in/"){
-		loadTemplate(appDiv, "temp_sign_in");
-		appDiv.className = "container col-md-5 py-2 px-3 my-5";
-		loadSignIn();
-		return;
-	}
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
 		switch (path) {
 			case "/":
@@ -82,9 +90,17 @@ function router(){
 					loadTemplate(appDiv, "temp_login");
 					loadIndexLogin();
 				}
-				else
+				else {
 					loadTemplate(appDiv, "temp_index");
+					handle_datalink();
+					loadIndex();
+				}
 				appDiv.className = "container col-md-10 py-2 px-3 my-5";
+				break;
+			case "/sign_in/":
+				loadTemplate(appDiv, "temp_sign_in");
+				appDiv.className = "container col-md-6 py-3 px-4 my-5";
+				loadSignIn();
 				break;
 			case "/Game/":
 				if (isAuthenticated) {
@@ -133,57 +149,6 @@ function router(){
 	});
 }
 
-// Fonction pour detecter les click sur le liens / chargement page
-document.addEventListener("DOMContentLoaded", () => {
-	let lang = Get_Cookie("language");
-	if (lang != null) {
-		switch (lang) {
-			case "fr":
-				document.getElementsByClassName("btn_fr")[0].classList.add("active")
-				document.getElementsByClassName("btn_fr")[1].classList.add("active")
-				break;
-			case "en":
-				document.getElementsByClassName("btn_en")[0].classList.add("active")
-				document.getElementsByClassName("btn_en")[1].classList.add("active")
-				break;
-			case "es":
-				document.getElementsByClassName("btn_es")[0].classList.add("active")
-				document.getElementsByClassName("btn_es")[1].classList.add("active")
-				break;
-			default:
-				break;
-		}
-	}
-	
-	// fermeture auto de la fenetre de droite
-	const offcanvasElement = document.getElementById('offcanvasRight');
-	const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
-	
-	document.getElementById('logout_btn').addEventListener('click', function () {
-		offcanvasInstance.hide();
-	});
-	document.getElementById('deleteAccountBtn').addEventListener('click', function () {
-		offcanvasInstance.hide();
-	});
-	document.getElementById('change_password_btn').addEventListener('click', function () {
-		offcanvasInstance.hide();
-	});
-	document.getElementById('change_avatar_btn').addEventListener('click', function () {
-		offcanvasInstance.hide();
-	});
-	
-	document.querySelectorAll('a[data-link]').forEach(link => {
-		link.addEventListener('click', (event) => {
-			event.preventDefault();
-			const target = event.currentTarget.getAttribute('href');
-			redirect_to(target);
-		});
-	});
-	router();
-});
-
-
-// sign_in
 function loadSignIn() {
 	refreshCSRFToken()
 	const form = document.getElementById('sub_form');
@@ -246,7 +211,6 @@ function handleFormSignIn() {
     })
     .catch(error => console.error('Erreur:', error));
 }
-
 
 // gère le retour arrière/avant dans l'historique (les flèches)
 window.addEventListener('popstate', router);
@@ -384,13 +348,7 @@ document.getElementById('delete_account').addEventListener('click', function() {
 function loadIndexLogin() {
 	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
 	fetchFriendList();
-	document.querySelectorAll('a[data-link]').forEach(link => {
-		link.addEventListener('click', (event) => {
-			event.preventDefault();
-			const target = event.currentTarget.getAttribute('href');
-			redirect_to(target);
-		});
-	});
+	handle_datalink();
 	document.getElementById("Openfriends_menu").addEventListener("click", function() {
 		document.getElementById("friends_menu").classList.add("open");
 	});
@@ -408,7 +366,6 @@ function loadIndexLogin() {
 		console.error("form_AddFriend not found")
 }
 
-// change password
 function loadChangePassword() {
 	refreshCSRFToken()
 	const form = document.getElementById('change-password-form');
@@ -479,6 +436,9 @@ function handleFormChangePassword() {
 // change avatar
 function loadChangeAvatar() {
     refreshCSRFToken();
+	const btn = document.getElementById('ChangeAvatar_btn');
+	if (btn)
+		btn.addEventListener('click', handleFormChangeAvatar);
 
     // Charger dynamiquement les avatars
     fetch('/media/avatars/')
@@ -780,7 +740,7 @@ function respondToInvite(response, sender_username) {
 	}
 }
 
-// Ouvrir les noitifications
+// Ouvrir les notifications
 document.getElementById('notifications').addEventListener('click', () => {
 	updateNotifications(false, null);
 	var modalElement = document.getElementById('notifModal');
@@ -838,4 +798,3 @@ export function updateNotifications(update_notif_nb, message){
 	})
 	.catch(error => console.error('Error update notifications:', error));
 }
-
