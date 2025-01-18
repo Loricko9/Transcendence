@@ -51,8 +51,8 @@
         
 		<!-- Notifications -->
 		<div id="notif-div" style="display: none;">
-			<button class="btn btn-outline-light d-none d-md-block position-relative mx-1" id="notifications" type="button" data-bs-toggle="modal" data-bs-target="notifModal">💡{{ texts.Notifs_btn }}
-				<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif_nb"><!--dynamique nbr--></span>
+			<button class="btn btn-outline-light d-none d-md-block position-relative mx-1 notifications" type="button">💡{{ texts.Notifs_btn }}
+				<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notif_nb"><!--dynamique nbr--></span>
 			</button>
 		</div>
 		
@@ -118,6 +118,11 @@
                 </div>
                 <a href="/sign_in/" id="signin_btn_little" class="btn btn-outline-light mt-2 w-100 rounded-5" style="display: block;">{{ texts.Sign_in }}</a>
             </div>
+			<div id="notif-div-little" style="display: none;">
+				<button class="btn btn-outline-light position-relative mx-1 w-100 notifications" type="button">💡{{ texts.Notifs_btn }}
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notif_nb"><!--dynamique nbr--></span>
+				</button>
+			</div>
         </div>
     </div>
 	
@@ -552,7 +557,7 @@
 	</div>
 	
 	<!-- Modal pour Notifications-->
-	<div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal" id="notifModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">

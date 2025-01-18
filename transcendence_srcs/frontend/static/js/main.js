@@ -16,6 +16,7 @@ async function checkAuthentification() {
 				console.log("websocket init")
 			}
 			document.getElementById('notif-div').style.display = 'flex';
+			document.getElementById('notif-div-little').style.display = 'flex';
 			document.getElementById('option').style.display = 'flex';
 			document.querySelector('.lst_link').style.display = 'flex';
 			document.getElementById('bar_sub_login').classList.add('d-none');
@@ -31,6 +32,7 @@ async function checkAuthentification() {
 		}
 		else {
 			document.getElementById('notif-div').style.display = 'none';
+			document.getElementById('notif-div-little').style.display = 'none';
 			document.getElementById('option').style.display = 'none';
 			document.querySelector('.lst_link').style.display = 'none';
 			document.getElementById('bar_sub_login').classList.remove('d-none');
@@ -48,6 +50,17 @@ async function checkAuthentification() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+	const notif_btn = Array.from(document.getElementsByClassName("notifications"));
+	notif_btn.forEach(btn => {
+		btn.addEventListener('click', () => {
+			updateNotifications(false, null);
+			setTimeout(() => {
+				var modalElement = document.getElementById('notifModal');
+				var successModal = new bootstrap.Modal(modalElement);
+				successModal.show();
+			}, 300);
+		});
+	});
 	loadChangeLang();	
 	handle_datalink();
 	router();
@@ -740,14 +753,6 @@ function respondToInvite(response, sender_username) {
 	}
 }
 
-// Ouvrir les notifications
-document.getElementById('notifications').addEventListener('click', () => {
-	updateNotifications(false, null);
-	var modalElement = document.getElementById('notifModal');
-	var successModal = new bootstrap.Modal(modalElement);
-	successModal.show();
-})
-
 // Ajouter ou lister les notifications
 // Ajouter avec param (true, message), lister avec param (false, null)
 export function updateNotifications(update_notif_nb, message){
@@ -766,11 +771,13 @@ export function updateNotifications(update_notif_nb, message){
 	})
 	.then(response => response.json())
 	.then(data => {
-		const badge_notif = document.getElementById('notif_nb')
+		const badge_notif = Array.from(document.getElementsByClassName("notif_nb"));
 		if (data.update_notif_nb){
 			console.log("badge mit en place")
-			badge_notif.style.display = 'inline'
-			badge_notif.textContent = data.notif_nb
+			badge_notif.forEach(badge => {
+				badge.style.display = 'inline'
+				badge.textContent = data.notif_nb
+			});
 			return
 		}
 		if (data.success){
@@ -783,8 +790,10 @@ export function updateNotifications(update_notif_nb, message){
 				newNotification.textContent = message;
 				notificationList.appendChild(newNotification);
 			});
-			badge_notif.style.display = 'none';
-			badge_notif.textContent = '';
+			badge_notif.forEach(badge => {
+				badge.style.display = 'none';
+				badge.textContent = '';
+			});
 		}
 		else{
 			console.log("aucune notif")
