@@ -51,7 +51,7 @@
 
 .zone {
     position: absolute;
-    background: rgba(255, 0, 0, 0.379);
+    /* background: rgba(255, 0, 0, 0.379); */
     touch-action: none;
     z-index: 20000;
     cursor: pointer;
@@ -69,7 +69,7 @@
     left: 0;
     width: 25%;
     height: 50%;
-    background: rgba(0, 0, 255, 0.379);
+    /* background: rgba(0, 0, 255, 0.379); */
 }
 
 #zone-right-up {
@@ -84,7 +84,7 @@
     right: 0;
     width: 25%;
     height: 50%;
-    background: rgba(0, 0, 255, 0.379);
+    /* background: rgba(0, 0, 255, 0.379); */
 }
 
 /* /////////////////////////////////////////////////////////////////////////// */

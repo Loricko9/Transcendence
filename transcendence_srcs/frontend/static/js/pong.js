@@ -217,6 +217,7 @@ export function initAll(invite_bool, invite_username) {
 
 	function AnimationMainMenu(mode) {
 		if (mode === 'in') {
+			document.getElementById('main-menu').style.pointerEvents = 'auto';
 			PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';
 			document.getElementById('game-area').style.display = 'none';
 			// console.log("mainmenu");
@@ -226,18 +227,23 @@ export function initAll(invite_bool, invite_username) {
 			PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';
 			document.getElementById('game-area').style.display = 'block';
 			document.getElementById('game-header').style.display = 'flex';
+			document.getElementById('main-menu').style.pointerEvents = 'none';
 		}
 	}
 
 	function AnimationAIMenu(mode) {
-		if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';
+		if (mode === 'in') {
+			document.getElementById('AIMenu').style.pointerEvents = 'auto';
+			PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';
 			// console.log("Aimenu");
 			document.getElementById('game-area').style.display = 'none';
 			document.getElementById('game-header').style.display = 'none';
 		}
-		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';
+		else {
+			PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';
 			document.getElementById('game-area').style.display = 'block';
 			document.getElementById('game-header').style.display = 'flex';
+			document.getElementById('AIMenu').style.pointerEvents = 'none';
 		}
 	}
 	
@@ -293,7 +299,10 @@ export function initAll(invite_bool, invite_username) {
 			document.getElementById('game-header').style.display = 'flex';
 			defineWhoFight();
 			send_notif();
-		} else if (menu === 'endGameMenu') {document.getElementById('EndGameMenu').style.display = 'block';}
+		} else if (menu === 'endGameMenu') {
+			document.getElementById('game-area').style.display = 'none';
+			document.getElementById('game-header').style.display = 'none';
+			document.getElementById('EndGameMenu').style.display = 'block';}
 		else
 			console.error('Menu not found');
 	}
