@@ -399,14 +399,14 @@ def update_score(request):
 				if isTournament:
 					Luser.nb_tournament_lose += 1
 				Luser.save()
-				
-				try:
-					if (user_win != 'AI'):
-						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
-					if (user_lose != 'AI'):
-						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
-				except ValueError as e:
-					return JsonResponse({'error': str(e)})
+	
+		try:
+			if (user_win != 'AI'):
+				History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
+			if (user_lose != 'AI'):
+				History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
+		except ValueError as e:
+			return JsonResponse({'error': str(e)})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 
