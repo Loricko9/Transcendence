@@ -12,6 +12,7 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 		self.group_name = f"friendship_updates_{self.scope['user'].id}"
 		await self.channel_layer.group_add(self.group_name, self.channel_name)
 		await self.accept()
+		print("id de " + str(self.scope['user'].username) + ': ' + str(self.scope['user'].id))
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(self.group_name, self.channel_name)
@@ -57,6 +58,18 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 					'sender_username': sender_username
 				}
 			)
+		elif command == 'connexion_info':
+			print('command connexion recu')
+			friend_username = data.get('friend_username')
+			friend = await sync_to_async(User.objects.get)(username=friend_username)
+			print("friend_id: " + str(friend.id))
+			await self.channel_layer.group_send(
+				f'friendship_updates_{friend.id}',
+				{
+					'type': 'connect_info',
+					'success': True
+				}
+			)
 
 	# Envoyer la mise à jour au client WebSocket
 	async def send_friendship_update(self, event):
@@ -75,6 +88,13 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 			'type': 'invite_response',
 			'response': event['response'],
 			'sender_username': event['from_user']
+		}))
+
+	async def connect_info(self, event):
+		print("connect info envoye")
+		await self.send(text_data=json.dumps({
+			'type': 'connexion',
+			'success': event['success']
 		}))
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
@@ -134,4 +154,3 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 			'type': 'notif',
 			'leader_username': event['leader_username']
 		}))
-

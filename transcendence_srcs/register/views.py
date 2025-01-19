@@ -63,12 +63,11 @@ def verify_email(request):
 		user.is_active = True  # Activez le compte de l'utilisateur
 		user.save()
 		login(request, user)
-		return redirect('/')
+		return redirect('index')
 
 
 def register(request, lang=None):
 	lang_cookie = request.COOKIES.get('language', None)
-	# lang_accepted = ['fr', 'en', 'es']
 	
 	if request.method == 'POST':
 		lang_cookie = request.COOKIES.get('language', None)
@@ -137,33 +136,3 @@ def register(request, lang=None):
 			return JsonResponse({'success': False, 'err_list': err_list}, status=400)
 
 	return redirect('/')
-	
-	# if lang == None: #Cas avec aucune lang
-	# 	if lang_cookie == None:
-	# 		nav_lang = get_language()
-	# 	else:
-	# 		nav_lang = lang_cookie
-	# 	if nav_lang == "en":
-	# 		return redirect('/en/sign_in')
-	# 	if nav_lang == "es":
-	# 		return redirect('/es/sign_in')
-	# 	else:
-	# 		return redirect('/fr/sign_in')
-
-
-	# if lang_cookie != lang and lang in lang_accepted:
-	# 	return redirect('/api/lang/' + lang + "?prev=/sign_in")
-
-	
-	# if lang in lang_accepted:
-	# 	translations = TextTranslation.objects.filter(Lang=lang)
-	# 	texts_trans = {trans.Key : trans.Text for trans in translations}
-	# 	return render(request, 'register.html', {'texts': texts_trans})
-
-	# if lang_cookie == None:
-	# 	nav_lang = get_language()
-	# else:
-	# 	nav_lang = lang_cookie
-
-	# new_path = "/" + nav_lang + "/sign_in/"
-	# return redirect(new_path)

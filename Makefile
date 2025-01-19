@@ -1,5 +1,5 @@
 all:
-	@docker-compose -f Docker-compose.yml up --build
+	@docker-compose -f Docker-compose.yml up -d --build
 
 stop:
 	@echo "Stopping the project..."
@@ -18,6 +18,9 @@ help:
 	@echo "  stop         - Stop the project"
 	@echo "  down         - Stop the project and remove all volumes"
 	@echo "  help         - Show this help message and exit"
+
+restart:
+	@docker restart Django
 
 down:
 	@docker-compose -f Docker-compose.yml down -v

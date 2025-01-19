@@ -1,6 +1,6 @@
-import { initAll, MatchmakingSocket } from './pong.js';
+import { initAll, closeMatchmakingSocket } from './pong.js';
 import { loadChart, ActChart, DestroyCharts, loadTemplate, Fill_table,
-	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields, chatSocket,
+	Get_Cookie, showSuccessModal, refreshCSRFToken, clearFormFields, closeChatSocket,
 	fetchFriendList, loadfriendinput, loadPrivacyPolicy, loadIndex, loadChangeLang,
 	loadfriendmessage} from './utils.js';
 
@@ -13,6 +13,9 @@ async function checkAuthentification() {
 			if (!socket)
 			{
 				InitializeWebsocket();
+				if (data.friend_lst)
+					connexion_info(data.friend_lst)
+				updateNotifications(true, null);
 				console.log("websocket init")
 			}
 			document.getElementById('notif-div').style.display = 'flex';
@@ -162,7 +165,7 @@ function router(){
 	});
 }
 
-function loadSignIn() {
+export function loadSignIn() {
 	refreshCSRFToken()
 	const form = document.getElementById('sub_form');
 	if (form) {
@@ -205,13 +208,14 @@ function handleFormSignIn() {
     .then(response => response.json())
     .then(data => {
 		if (data.success){
-			alert(data.info_msg)
+			alert(data.info_msg);
 			const appDiv = document.getElementById("app");
+			appDiv.className = "container col-md-10 py-2 px-3 my-5";
 			loadTemplate(appDiv, "temp_index");
-			const div_info_msg = document.getElementById('alert_info_msg')
-			div_info_msg.style.display = 'block'
-			div_info_msg.textContent = data.info_msg
-		}else{
+			const div_info_msg = document.getElementById('alert_info_msg');
+			div_info_msg.style.display = 'block';
+			div_info_msg.textContent = data.info_msg;
+		} else {
 			const errList = document.querySelector('#err_sign_in ul');
 			errList.innerHTML = '';
 			data.err_list.forEach(err => {
@@ -269,13 +273,37 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 			showSuccessModal()
 		}
 		document.getElementById('dropdown_form').reset();
-		updateNotifications(true, null)
-		redirect_to("/")
+		redirect_to("/");
 	})
 	.catch(error => {
 		console.error('Erreur:', error);
 	});
 });
+
+// envoit l'info de connexion ou de deconnexion aux amis
+function connexion_info(friend_lst) {
+	console.log('conexion info envoyee')
+	setTimeout(() => {
+		friend_lst.forEach(friend => {
+			console.log("friend_username: " + friend)
+			socket.send(JSON.stringify({
+				command: 'connexion_info',
+				friend_username: friend,
+			}));
+		});
+	}, 3000);
+}
+
+function deconnexion_info(friend_lst){
+	console.log('deconexion info envoyee')
+	friend_lst.forEach(friend => {
+		console.log("friend_username: " + friend)
+		socket.send(JSON.stringify({
+			command: 'connexion_info',
+			friend_username: friend,
+		}));
+	});
+}
 
 // Gestion du logout en SPA
 document.getElementById('logout_btn').addEventListener('click', function() {
@@ -296,26 +324,14 @@ function logout(){
 			clearFormFields()
 			refreshCSRFToken()
 			if (socket){
+				if (data.friend_lst)
+					deconnexion_info(data.friend_lst)
 				socket.close()
 				socket = null
 				console.log("websocket close")
 			}
-			if (chatSocket)
-			{
-				chatSocket.close()
-				chatSocket = null
-				console.log("Chat websocket close")
-			}
-			if (MatchmakingSocket)
-			{
-				MatchmakingSocket.send(JSON.stringify({
-					command: 'delete',
-				}));
-				console.log("delete group")
-				MatchmakingSocket.close()
-				MatchmakingSocket = null
-				console.log("Matchmaking websocket close")
-			}
+			closeChatSocket()
+			closeMatchmakingSocket()
 		}
 		redirect_to("/")
 	})
@@ -461,7 +477,7 @@ function loadChangeAvatar() {
             const doc = parser.parseFromString(html, 'text/html');
             const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
             const avatarContainer = document.getElementById('avatar-container');
-			
+			avatarContainer.innerHTML = '' // Vider le container
             links.forEach(link => {
 				const href = link.getAttribute('href');
                 if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
@@ -656,6 +672,15 @@ function InitializeWebsocket(){
 			return
 		}
 
+		if (data.type === 'connexion'){
+			console.log('fetch friend list effectue');
+			fetchFriendList(() => {
+				loadfriendinput();
+				loadfriendmessage();
+			});
+			return;
+		}
+
 		let msg_to_send;
 		let ok_msg;
 		let no_msg;
@@ -705,7 +730,7 @@ function InitializeWebsocket(){
 };
 
 // afficher le modal d'invitation a jouer
-function showInvitationModal(sender_username){
+export function showInvitationModal(sender_username){
 	var modalElement = document.getElementById('inviteModal');
 	var invite_modal = new bootstrap.Modal(modalElement);
 	invite_modal.show();

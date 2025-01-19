@@ -85,11 +85,11 @@ class FriendshipListView(APIView):
 						}
 					}
 				)
-				return Response({"success": True}, status=status.HTTP_204_NO_CONTENT)
+				return JsonResponse({"success": True}, status=status.HTTP_200_OK)
 			else:
-				return Response({"success": False}, status=status.HTTP_403_FORBIDDEN)
+				return JsonResponse({"success": False}, status=status.HTTP_403_FORBIDDEN)
 		except Friendship.DoesNotExist:
-			return Response({"success": False}, status=status.HTTP_404_NOT_FOUND)
+			return JsonResponse({"success": False}, status=status.HTTP_404_NOT_FOUND)
 
 class FriendProfileView(APIView):
 	permission_classes = [IsAuthenticated]
@@ -192,13 +192,6 @@ def respond_to_friend_request(request, id):
 	)
 	return Response({"success": True, "status": state}, status=status.HTTP_200_OK)
 
-# def friend_delete(request, username):
-# 	friend = User.objects.get(username=username)
-# 	if Friendship.objects.filter(sender=request.user, receiver=friend).exists():
-# 		Friendship.objects.delete(sender=request.user, receiver=friend)
-# 	elif Friendship.objects.filter(sender=friend, receiver=request.user).exists():
-# 		Friendship.objects.delete(sender=friend, receiver=request.user)
-# 	return Response({"message": "Friend successful delete"}, status=status.HTTP_200_OK)
 
 def log_42(request):
 	code = request.GET.get('code')
@@ -301,26 +294,8 @@ def change_avatar(request):
 		if selected_avatar and os.path.exists("/transcendence" + selected_avatar):
 			request.user.avatar = selected_avatar
 			request.user.save()
-			return JsonResponse({'success': True, 'message': 'Avatar changé avec succès.'})
-		return JsonResponse({'success': False, 'message': 'Aucun avatar sélectionné ou Avatar invalide'})
-	
-def login_view(request):
-	if request.method == 'POST':
-		email = request.POST.get('email')
-		password = request.POST.get('password')
-
-		user = authenticate(request, Email=email, password=password)
-        
-		if user is not None:
-			login(request, user)
-			user.connect()
-			data = {'success': True, 'message': 'Connexion reussie'}
-			response = JsonResponse(data)
-			response['Content-Type'] = 'application/json; charset=utf-8'
-			return response
-		else:
-			return JsonResponse({'success': False, 'message' : 'Connexion echouée', 'error': 'Identifiants invalides.'}, content_type='application/json; charset=utf-8')
-	return redirect('/')
+			return JsonResponse({'success': True})
+		return JsonResponse({'success': False})
 
 def login_view(request):
 	if request.method == 'POST':
@@ -340,8 +315,18 @@ def login_view(request):
 @login_required
 def logout_view(request):
 	request.user.disconnect()
+	friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
+	friend_lst = []
+	if friendships:
+		for friendship in friendships:
+			if (friendship.sender == request.user):
+				friend_username = friendship.receiver.username
+			else :
+				friend_username = friendship.sender.username
+			print("friend_username: " + friend_username)
+			friend_lst.append(friend_username)
 	logout(request)
-	response =  JsonResponse({'success': True})
+	response =  JsonResponse({'success': True, 'friend_lst': friend_lst})
 	response['Content-Type'] = 'application/json; charset=utf-8'
 	return response
 
@@ -352,12 +337,24 @@ def check_authentication(request):
 			avatar = request.user.avatar.url
 		else:
 			avatar = request.user.avatar
-		response = JsonResponse({'is_authenticated': True,
-								'is_user_42': request.user.is_user_42,
-								'avatar': str(avatar),
-								'user': request.user.username,
-								'nb_win': request.user.nb_win,
-								'nb_lose': request.user.nb_lose
+		friendships = Friendship.objects.filter(sender=request.user) | Friendship.objects.filter(receiver=request.user)
+		friend_lst = []
+		if friendships:
+			for friendship in friendships:
+				if (friendship.sender == request.user):
+					friend_username = friendship.receiver.username
+				else :
+					friend_username = friendship.sender.username
+				print("friend_username: " + friend_username)
+				friend_lst.append(friend_username)
+		response = JsonResponse({
+			'is_authenticated': True,
+			'is_user_42': request.user.is_user_42,
+			'avatar': str(avatar),
+			'user': request.user.username,
+			'nb_win': request.user.nb_win,
+			'nb_lose': request.user.nb_lose,
+			'friend_lst': friend_lst
 		})
 		response['Content-Type'] = 'application/json; charset=utf-8'
 		return response
