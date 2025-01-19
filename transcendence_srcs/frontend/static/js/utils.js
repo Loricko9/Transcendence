@@ -81,9 +81,12 @@ export function loadTemplate(appDiv, Id) {
 }
 
 export function loadIndex() {
-	const btn = document.getElementById('login_btn_index');
-	if (btn)
-		btn.addEventListener('click', Click_login);
+	const btn_login = document.getElementById('login_btn_index');
+	const btn_signin = document.getElementById('signin_btn_index');
+	if (btn_login)
+		btn_login.addEventListener('click', Click_login);
+	if (btn_signin)
+		btn_signin.addEventListener('click', Click_signin);
 }
 
 export function loadChangeLang() {
@@ -413,8 +416,6 @@ function Add_message(txt, bool) {
 	Div.scrollTop = Div.scrollHeight;
 }
 
-window.Change_lang = Change_lang;
-window.Click_signin = Click_signin;
 var friendship_lst;
 var id_friend_active = -1;
 
