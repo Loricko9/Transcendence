@@ -92,7 +92,7 @@ function router(){
 			case "/Game/":
 				if (isAuthenticated) {
 					loadTemplate(appDiv, "Game");
-					appDiv.className = "";
+					appDiv.className = "container-md col-md-10 py-2 px-3 mt-4 mb-1 div-empty";
 					blockage = true;
 					initAll(false, null);
 				} else

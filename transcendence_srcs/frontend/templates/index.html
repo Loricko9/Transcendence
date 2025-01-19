@@ -9,7 +9,6 @@
 
     <!--Boostrp css requirement-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,6 +18,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
     
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/Game_css/Buttons.css' %}" rel="stylesheet">
     <link href="{% static 'css/Game_css/Elements.css' %}" rel="stylesheet">
     <link href="{% static 'css/Game_css/Menus.css' %}" rel="stylesheet">
@@ -275,87 +275,93 @@
     </template>
 
     <template id="Game">
-		<div id="game-container">
-			<!-- players information area -->
-            <div id="LeftPlayer">
-				<p id="LeftPlayerName">...</p>
-                <p id="LeftPlayerScore">0</p>
-                <img src="icons/DefaultIcon.png" alt="LeftUserIcon" id="leftUserIcon">
-            </div>
-            <div id="RightPlayer">
-				<p id="RightPlayerName">...</p>
-                <p id="RightPlayerScore">0</p>
-                <img src="icons/DefaultIcon.png" alt="RightUserIcon" id="rightUserIcon">
-            </div>
+		<div class="row d-flex align-content-start flex-column" id="game-container">
+			<div class="align-items-center" id="game-header">
+				<div id="LeftPlayer" class="col">
+					<span id="LeftPlayerName">...</span>
+					<span id="LeftPlayerScore">0</span>
+					<img src="icons/DefaultIcon.png" alt="LeftUserIcon" id="leftUserIcon">
+				</div>
+				<div class="col"></div>
+				<div id="RightPlayer" class="col">
+					<span id="RightPlayerName">...</span>
+					<span id="RightPlayerScore">0</span>
+					<img src="icons/DefaultIcon.png" alt="RightUserIcon" id="rightUserIcon">
+				</div>
+			</div>
+			<div class="flex-grow-1" id="game-area">
+				<div id="ball"></div>
+				<div id="left-paddle"></div>
+				<div id="right-paddle"></div>
+				<div id="delimiter"></div>
+				<button id="ready">{{ texts.Ready }}</button>
+				<p id="counter">3</p>
+				<div class="zone" id="zone-left-up"></div>
+				<div class="zone" id="zone-left-down"></div>
+				<div class="zone" id="zone-right-up"></div>
+				<div class="zone" id="zone-right-down"></div>
+			</div>
+
+			<div class="p-2 border-3" id="main-menu">
+				<button id="AIButton">{{ texts.PlayerVsAI }}</button>
+				<button id="HostGame1v1Button">{{ texts.PlayerVsPlayer }}</button>
+				<button id="HostGame2v2Button">{{ texts.GameTeams }}</button>
+				<button id="HostTournamentButton">{{ texts.Tournament }}</button>
+			</div>
 			
-            <!-- menu area -->
-            <div id="main-menu">
-                <button id="AIButton">{{ texts.PlayerVsAI }}</button>
-                <button id="HostGame1v1Button">{{ texts.PlayerVsPlayer }}</button>
-                <button id="HostGame2v2Button">{{ texts.GameTeams }}</button>
-                <button id="HostTournamentButton">{{ texts.Tournament }}</button>
-            </div>
-            
-            <div id="AIMenu">
+			<div id="AIMenu">
 				<button id="AIEasyButton">{{ texts.AIEasyDifficulty }}</button>
-                <button id="AIMediumButton">{{ texts.AIMediumDifficulty }}</button>
-                <button id="AIHardButton">{{ texts.AIHardDifficulty }}</button>
-            </div>
-            
-            <div id="Room" style="display: none">
+				<button id="AIMediumButton">{{ texts.AIMediumDifficulty }}</button>
+				<button id="AIHardButton">{{ texts.AIHardDifficulty }}</button>
+			</div>
+			
+			<div id="Room" style="display: none">
 				<div id="UsersInformation">
 					<div id="Host">
 						<p id="HostName">Host</p>
-                        <img src="icons/DefaultIcon.png" alt="HostUserIcon" id="hostUserIcon">
-                    </div>
-                    <div id="User1">
+						<img src="icons/DefaultIcon.png" alt="HostUserIcon" id="hostUserIcon">
+					</div>
+					<div id="User1">
 						<p id="User1Name">...</p>
-                        <img src="icons/DefaultIcon.png" alt="User1Icon" id="user1Icon">
-                        <input id="User1SearchBox" type="SearchBox">
-                        <button id="User1Search">{{ texts.GameUserSearch }}</button>
-                    </div>
-                    <div id="User2">
+						<img src="icons/DefaultIcon.png" alt="User1Icon" id="user1Icon">
+						<input id="User1SearchBox" type="SearchBox">
+						<button id="User1Search">{{ texts.GameUserSearch }}</button>
+					</div>
+					<div id="User2">
 						<p id="User2Name">...</p>
-                        <img src="icons/DefaultIcon.png" alt="User2Icon" id="user2Icon">
-                        <input id="User2SearchBox" type="SearchBox">
-                        <button id="User2Search">{{ texts.GameUserSearch }}</button>
-                    </div>
-                    <div id="User3">
+						<img src="icons/DefaultIcon.png" alt="User2Icon" id="user2Icon">
+						<input id="User2SearchBox" type="SearchBox">
+						<button id="User2Search">{{ texts.GameUserSearch }}</button>
+					</div>
+					<div id="User3">
 						<p id="User3Name">...</p>
-                        <img src="icons/DefaultIcon.png" alt="User3Icon" id="user3Icon">
-                        <input id="User3SearchBox" type="SearchBox">
-                        <button id="User3Search">{{ texts.GameUserSearch }}</button>
-                    </div>
+						<img src="icons/DefaultIcon.png" alt="User3Icon" id="user3Icon">
+						<input id="User3SearchBox" type="SearchBox">
+						<button id="User3Search">{{ texts.GameUserSearch }}</button>
+					</div>
 					<div id="waitingPlayer" style="display: none;">
 						<img src="{% static 'anim/Waiting.gif' %}" alt="waiting gif">
 					</div>
-                </div>
+				</div>
 				<button id="launchMatchMaking">{{ texts.Matchmaking_btn }}</button>
-                <button id="StartGame">{{ texts.StartGame }}</button>
-            </div> 
-            
-            <div id="EndGameMenu">
-                <p id="Winner">{{ texts.Winner }}</p>
-                <img src="icons/DefaultIcon.png" alt="WinnerIcon" id="WinnerIcon">
-                <p id="WinnerName">username</p>
-                <p id="Draw">{{ texts.GameDraw }}</p>
-                <button id="PlayAgain">{{ texts.PlayAgain }}</button>
-                <button id="NextButton">{{ texts.NextButton }}</button>
-            </div>
-    
-            <!-- game area -->
-            <div id="game-area">
-                <div id="ball"></div>
-                <div id="left-paddle"></div>
-                <div id="right-paddle"></div>
-                <div id="delimiter"></div>
-                <button id="ready">{{ texts.Ready }}</button>
-                <p id="counter">3</p>
-            </div>
-            <button id="BackMainMenuButton">{{ texts.MainMenu }}</button>
-            <button><img id="darkModeSwitch" src="{% static 'img/darkmodeicon.png' %}"/></button>
-        </div>
-    </template>
+				<button id="StartGame">{{ texts.StartGame }}</button>
+			</div> 
+			
+			<div id="EndGameMenu">
+				<p id="Winner">{{ texts.Winner }}</p>
+				<img src="icons/DefaultIcon.png" alt="WinnerIcon" id="WinnerIcon">
+				<p id="WinnerName">username</p>
+				<p id="Draw">{{ texts.GameDraw }}</p>
+				<button id="PlayAgain">{{ texts.PlayAgain }}</button>
+				<button id="NextButton">{{ texts.NextButton }}</button>
+			</div>
+		</div>
+		<div class="row align-content-end justify-content-end" id="MenuButton">
+			<button id="BackMainMenuButton">{{ texts.MainMenu }}</button>
+			<button class="btn p-0 mx-3" id="darkModeSwitch"><img class="rounded-circle" src="{% static 'img/darkmodeicon.png' %}"/></button>
+		</div>
+		
+		</template>
 	
 	<template id="temp_change_avatar">
 		<div class="py-2 px-3 my-4" id="change_avatar">

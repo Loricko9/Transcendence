@@ -46,6 +46,10 @@ export function initAll(invite_bool, invite_username) {
 	const LaunchMatchMaking = document.getElementById('launchMatchMaking');
 	const waitingPlayer = document.getElementById('waitingPlayer');
 	const DMswitch = document.getElementById('darkModeSwitch');
+	const RightDownTouchZone = document.getElementById('zone-right-down');
+	const RightUpTouchZone = document.getElementById('zone-right-up');
+	const LeftDownTouchZone = document.getElementById('zone-left-down');
+	const LeftUpTouchZone = document.getElementById('zone-left-up');
 
 	const MainMenu = document.getElementById('main-menu');
 	const AIMenu = document.getElementById('AIMenu');
@@ -224,13 +228,35 @@ export function initAll(invite_bool, invite_username) {
 	}
 
 	function AnimationMainMenu(mode) {
-		if (mode === 'in') {PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';}
-		else {PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';}
+		if (mode === 'in') {
+			document.getElementById('main-menu').style.pointerEvents = 'auto';
+			PVAButton.style.left = '0%';PVP1v1Button.style.right = '0%';PVP2v2Button.style.left = '0%';TournamentButton.style.right = '0%';
+			document.getElementById('game-area').style.display = 'none';
+			// console.log("mainmenu");
+			document.getElementById('game-header').style.display = 'none';
+		}
+		else {
+			PVAButton.style.left = '100%';PVP1v1Button.style.right = '100%';PVP2v2Button.style.left = '100%';TournamentButton.style.right = '100%';
+			document.getElementById('game-area').style.display = 'block';
+			document.getElementById('game-header').style.display = 'flex';
+			document.getElementById('main-menu').style.pointerEvents = 'none';
+		}
 	}
 
 	function AnimationAIMenu(mode) {
-		if (mode === 'in') {PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';}
-		else {PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';}
+		if (mode === 'in') {
+			document.getElementById('AIMenu').style.pointerEvents = 'auto';
+			PvAIeasyButton.style.left = '0%';PvAImediumButton.style.right = '0%';PvAIhardButton.style.left = '0%';AIMenu.style.pointerEvents = 'auto';
+			// console.log("Aimenu");
+			document.getElementById('game-area').style.display = 'none';
+			document.getElementById('game-header').style.display = 'none';
+		}
+		else {
+			PvAIeasyButton.style.left = '100%';PvAImediumButton.style.right = '100%';PvAIhardButton.style.left = '100%';AIMenu.style.pointerEvents = 'none';
+			document.getElementById('game-area').style.display = 'block';
+			document.getElementById('game-header').style.display = 'flex';
+			document.getElementById('AIMenu').style.pointerEvents = 'none';
+		}
 	}
 	
 	function changeMenu(menu) {
@@ -262,6 +288,8 @@ export function initAll(invite_bool, invite_username) {
 			RoomUser2Info.style.display = 'block';
 			RoomUser3Info.style.display = 'block';
 			RoomMenu.style.display = 'flex';
+			document.getElementById('game-area').style.display = 'none';
+			document.getElementById('game-header').style.display = 'none';
 			if (PVPMode === '1vs1') {
 				RoomUser2Info.style.display = 'none';
 				RoomUser3Info.style.display = 'none';
@@ -279,11 +307,16 @@ export function initAll(invite_bool, invite_username) {
 			PaddingRight.style.display = 'block';
 			Delimiter.style.display = 'block';
 			ReadyButton.style.display = 'block';
+			document.getElementById('game-area').style.display = 'block';
+			document.getElementById('game-header').style.display = 'flex';
 			defineWhoFight();
 			send_notif();
-		} else if (menu === 'endGameMenu') {document.getElementById('EndGameMenu').style.display = 'block';}
+		} else if (menu === 'endGameMenu') {
+			document.getElementById('game-area').style.display = 'none';
+			document.getElementById('game-header').style.display = 'none';
+			document.getElementById('EndGameMenu').style.display = 'block';}
 		else
-		console.error('Menu not found');
+			console.error('Menu not found');
 	}
 
 	function send_notif(){
@@ -293,7 +326,7 @@ export function initAll(invite_bool, invite_username) {
 				username1: LeftPlayerUserNameContent.textContent,
 				username2: RightPlayerUserNameContent.textContent,
 			}));
-			console.log("command notif")
+			// console.log("command notif")
 		}
 	}
 
@@ -302,7 +335,7 @@ export function initAll(invite_bool, invite_username) {
 			MatchmakingSocket.send(JSON.stringify({
 				command: 'delete',
 			}));
-			console.log("delete group")
+			// console.log("delete group")
 		}
 	}
 
@@ -641,7 +674,7 @@ export function initAll(invite_bool, invite_username) {
 				playerNb = 3;
 				break;
 		}
-		console.log(playerNb)
+		// console.log(playerNb) ////////////////////////////////////////////////////////////
 		console.log("Matchmaking lancee")
 		fetch('/api/matchmaking/', {
 			method: 'POST',
@@ -768,6 +801,52 @@ export function initAll(invite_bool, invite_username) {
 	Player2SearchButton.addEventListener('click', () => {searchUser(User2SearchBox.value, 'user2');});
 	Player3SearchButton.addEventListener('click', () => {searchUser(User3SearchBox.value, 'user3');});
 	
+	// tactile ///////////////////////////////////////////////////////////////////////////////////////
+
+	LeftUpTouchZone.addEventListener('touchstart', (e) => {
+		e.preventDefault();
+		keyPressed['w'] = true;
+		// console.log("Touchstart fonctionne avec passive false !"); ////////
+	}, { passive: false });
+
+	LeftUpTouchZone.addEventListener('touchend', (e) => {
+		e.preventDefault();
+		keyPressed['w'] = false;
+	}, { passive: false });
+
+	LeftDownTouchZone.addEventListener('touchstart', (e) => {
+		e.preventDefault();
+		keyPressed['s'] = true;
+		// console.log("Touchstart fonctionne avec passive false !"); ////////
+	}, { passive: false });
+
+	LeftDownTouchZone.addEventListener('touchend', (e) => {
+		e.preventDefault();
+		keyPressed['s'] = false;
+	}, { passive: false });
+
+	RightUpTouchZone.addEventListener('touchstart', (e) => {
+		e.preventDefault();
+		keyPressed['ArrowUp'] = true;
+	}, { passive: false });
+
+	RightUpTouchZone.addEventListener('touchend', (e) => {
+		e.preventDefault();
+		keyPressed['ArrowUp'] = false;
+	}, { passive: false });
+
+	RightDownTouchZone.addEventListener('touchstart', (e) => {
+		e.preventDefault();
+		keyPressed['ArrowDown'] = true;
+	}, { passive: false });
+
+	RightDownTouchZone.addEventListener('touchend', (e) => {
+		e.preventDefault();
+		keyPressed['ArrowDown'] = false;
+	}, { passive: false });
+
+	// tactile ///////////////////////////////////////////////////////////////////////////////////////
+
 	PlayAgainButton.addEventListener('click', () => {playAgain();changeMenu('Game');});
 	document.addEventListener("keydown", (e) => {keyPressed[e.key] = true;});
 	document.addEventListener("keyup", (e) => {keyPressed[e.key] = false;});
@@ -790,7 +869,7 @@ export function initAll(invite_bool, invite_username) {
 		}
 		setHostUserName();
 		if (!MatchmakingSocket){
-			console.log("Init matchmaking socket")
+			// console.log("Init matchmaking socket") //////////////////////////////
 			InitializeMatchmakingWebsocket()
 		}
 	}
