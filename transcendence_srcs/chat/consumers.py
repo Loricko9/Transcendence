@@ -85,7 +85,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 				elif lang == 'es':
 					block_msg = username + " bloqueado."
 				await sync_to_async(room.blocked_users.add)(user)
-				print(block_msg)
 				await self.channel_layer.group_send(
 				self.room_group_name,
 					{
@@ -134,7 +133,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 			if await sync_to_async(lambda: not friend.is_connected)():
 				notif_message = sender.username + ": " + message
 				await sync_to_async(Notifications.objects.create)(user=friend, message=notif_message)
-				print("notif de message saved")
 
 			# Envoyer le message à tout le groupe
 			await self.channel_layer.group_send(
@@ -157,7 +155,6 @@ class ChatConsumers(AsyncWebsocketConsumer):
 
 	async def notif_message(self, event):
 		# Envoyer le message au WebSocket du client
-		print("notif_message called")
 		await self.send(text_data=json.dumps({
 			'type': 'notif',
 			'message': event['message'],
