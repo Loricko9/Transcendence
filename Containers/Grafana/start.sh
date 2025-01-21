@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sleep 20
+sleep 30
 /usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini
