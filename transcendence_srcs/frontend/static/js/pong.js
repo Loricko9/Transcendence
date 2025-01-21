@@ -189,7 +189,7 @@ export function initAll(invite_bool, invite_username) {
 		let new_name = name + "=";
 		let tab = decodeURIComponent(document.cookie).split(';');
 		for (let i = 0; i < tab.length; i++) {
-			let cookie = tab[i].trim();H
+			let cookie = tab[i].trim();
 			if (cookie.indexOf(new_name) == 0)
 				return (cookie.substring(new_name.length, cookie.length))
 		}
