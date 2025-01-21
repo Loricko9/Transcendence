@@ -12,7 +12,6 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 		self.group_name = f"friendship_updates_{self.scope['user'].id}"
 		await self.channel_layer.group_add(self.group_name, self.channel_name)
 		await self.accept()
-		print("id de " + str(self.scope['user'].username) + ': ' + str(self.scope['user'].id))
 
 	async def disconnect(self, close_code):
 		await self.channel_layer.group_discard(self.group_name, self.channel_name)
@@ -59,10 +58,8 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 				}
 			)
 		elif command == 'connexion_info':
-			print('command connexion recu')
 			friend_username = data.get('friend_username')
 			friend = await sync_to_async(User.objects.get)(username=friend_username)
-			print("friend_id: " + str(friend.id))
 			await self.channel_layer.group_send(
 				f'friendship_updates_{friend.id}',
 				{
@@ -83,7 +80,6 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def invite_response(self, event):
-		print("invite response")
 		await self.send(text_data=json.dumps({
 			'type': 'invite_response',
 			'response': event['response'],
@@ -91,7 +87,6 @@ class FriendshipConsumer(AsyncWebsocketConsumer):
 		}))
 
 	async def connect_info(self, event):
-		print("connect info envoye")
 		await self.send(text_data=json.dumps({
 			'type': 'connexion',
 			'success': event['success']
@@ -118,12 +113,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 		command = data.get('command')
 		if command and command == 'delete':
-			print("delete group")
 			leader = await sync_to_async(User.objects.get)(username=self.scope['user'].username)
 			await sync_to_async(lambda: Matchmaking.objects.filter(leader=leader).delete())()
 			return
 		elif command and command == 'notif':
-			print("notif compris par django")
 			user1 = await sync_to_async(User.objects.get)(username=data.get('username1'))
 			user2 = await sync_to_async(User.objects.get)(username=data.get('username2'))
 			leader_username = self.scope['user'].username
@@ -149,7 +142,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		await self.send(text_data=json.dumps(event['data']))
 
 	async def notif_update(self, event):
-		print("notif_update called")
 		await self.send(text_data=json.dumps({
 			'type': 'notif',
 			'leader_username': event['leader_username']

@@ -323,7 +323,6 @@ def logout_view(request):
 				friend_username = friendship.receiver.username
 			else :
 				friend_username = friendship.sender.username
-			print("friend_username: " + friend_username)
 			friend_lst.append(friend_username)
 	logout(request)
 	response =  JsonResponse({'success': True, 'friend_lst': friend_lst})
@@ -345,7 +344,6 @@ def check_authentication(request):
 					friend_username = friendship.receiver.username
 				else :
 					friend_username = friendship.sender.username
-				print("friend_username: " + friend_username)
 				friend_lst.append(friend_username)
 		response = JsonResponse({
 			'is_authenticated': True,
@@ -401,14 +399,14 @@ def update_score(request):
 				if isTournament:
 					Luser.nb_tournament_lose += 1
 				Luser.save()
-				
-				try:
-					if (user_win != 'AI'):
-						History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
-					if (user_lose != 'AI'):
-						History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
-				except ValueError as e:
-					return JsonResponse({'error': str(e)})
+	
+		try:
+			if (user_win != 'AI'):
+				History.Add_History(Wuser, Luser, user_win_score, user_lose_score)
+			if (user_lose != 'AI'):
+				History.Add_History(Luser, Wuser, user_lose_score, user_win_score)
+		except ValueError as e:
+			return JsonResponse({'error': str(e)})
 		return JsonResponse({'username' : None})
 	return redirect('/')
 
@@ -470,7 +468,6 @@ def MatchmakingView(request):
 		maxPlayer = data.get('playerNb')
 		PVPMode = data.get('PVPMode')
 		if Matchmaking.objects.exists():
-			print("rejoindre un groupe")
 			groups =Matchmaking.objects.all()
 			for group in groups:
 				if not group.is_full() and PVPMode == group.mode:
@@ -492,9 +489,7 @@ def MatchmakingView(request):
 							}
 						)
 						return JsonResponse({'waiting': False, 'success': True, 'leader_username': leader.username})
-		print("Creation d'un groupe")
 		leader = User.objects.get(username=request.user.username)
-		print("leader matchmaking: " + leader.username)
 		new_group = Matchmaking.objects.create(leader=leader, max_members=maxPlayer, mode=PVPMode)
 		delay_in_seconds = 60
 		thread = threading.Thread(target=delete_group_after_delay, args=(new_group.id, delay_in_seconds))
@@ -508,22 +503,19 @@ def delete_group_after_delay(group_id, delay):
 	time.sleep(delay)  # Pause l'exécution pour le délai spécifié
 	try:
 		group = Matchmaking.objects.get(id=group_id)
-		group.delete()  # Supprime le groupe
-		print(f"Group with ID {group_id} has been deleted.")
+		group.delete()
 	except Matchmaking.DoesNotExist:
 		print(f"Group with ID {group_id} does not exist (already deleted?).")
 
 
 # View Notifications
 def NotificationsView(request):
-	print("Recption Notif view")
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		# delete read notifs
 		notifs_read = Notifications.objects.filter(user=request.user, is_read=True)
 		if notifs_read.exists():
 			for notif_read in notifs_read:
-				print("notif read: " + notif_read.message)
 				notif_read.delete()
 		if data.get('update_notif_nb') == False:
 			# build list of notifs
@@ -531,7 +523,6 @@ def NotificationsView(request):
 			messages = []
 			if notifications.exists():
 				for notif in notifications:
-					print("new notif: " + notif.message)
 					notif.is_read = True
 					notif.save()
 					messages.append(notif.message)
@@ -542,13 +533,10 @@ def NotificationsView(request):
 			if message:
 				# create a notif
 				Notifications.objects.create(user=request.user, message=message)
-				print("Notification cree")
 			notifications = Notifications.objects.filter(user=request.user, is_read=False)
 			if notifications.exists():
 				notif_nb = notifications.count()
-				print("notif_nb: " + str(notif_nb))
 				return JsonResponse({'update_notif_nb': True, 'notif_nb': notif_nb})
-	print("pas de notifs")
 	return JsonResponse({'success': False, 'message': 'Aucune notification', 'update_notif_nb': False})
 		
 

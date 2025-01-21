@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p137f&8iautjsybygl)_3kc0(r)(+smeu3_v^r%13csbdg--&^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
 	"transcendence-42.fr",
@@ -167,7 +167,7 @@ AUTH_USER_MODEL = 'api.User_tab'
 SESSION_COOKIE_SECURE = True # N'envoie le cookie que sur HTTPS
 CSRF_COOKIE_SECURE = True  # N'envoie le cookie CSRF que sur HTTPS
 SESSION_COOKIE_AGE = 1209600  # 2 semaines en secondes
-SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
 
 # Utilisez la politique SameSite pour les cookies
 SESSION_COOKIE_SAMESITE = 'Lax'

@@ -16,7 +16,6 @@ async function checkAuthentification() {
 				if (data.friend_lst)
 					connexion_info(data.friend_lst)
 				updateNotifications(true, null);
-				console.log("websocket init")
 			}
 			document.getElementById('notif-div').style.display = 'flex';
 			document.getElementById('notif-div-little').style.display = 'flex';
@@ -69,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	router();
 });
 
-// Fonction qui permet de ne pas recharger la page (1ère appeler)
 function redirect_to(url) {
 	const lang_path = window.location.pathname.substring(0, 3);
 	let new_url = lang_path + url
@@ -96,7 +94,7 @@ document.addEventListener('keydown', (event) => {
 // Fonction pour rediriger et obtenir le contenu des pages
 function router(){
 	const path = window.location.pathname.substring(3); //chemin demandé par le user
-	const appDiv = document.getElementById("app"); // selectionne le div 'app' pour ajouter des truc dedans 
+	const appDiv = document.getElementById("app");
 	blockage = false;
 	DestroyCharts();
 	checkAuthentification().then(([isAuthenticated, is_user_42]) => {
@@ -186,11 +184,6 @@ function handleFormSignIn() {
 	const password = document.getElementById('passwd_input').value;
     const confirmPassword = document.getElementById('passwd_input2').value;
 	const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
-	console.log("email: " + email)
-	console.log("username: " + username)
-	console.log("password: " + password)
-	console.log("confirmPwd: " + confirmPassword)
 	
     fetch('/sign_in/', {
         method: 'POST',
@@ -282,10 +275,8 @@ document.getElementById('dropdown_form').addEventListener('submit', function(eve
 
 // envoit l'info de connexion ou de deconnexion aux amis
 function connexion_info(friend_lst) {
-	console.log('conexion info envoyee')
 	setTimeout(() => {
 		friend_lst.forEach(friend => {
-			console.log("friend_username: " + friend)
 			socket.send(JSON.stringify({
 				command: 'connexion_info',
 				friend_username: friend,
@@ -294,10 +285,8 @@ function connexion_info(friend_lst) {
 	}, 3000);
 }
 
-function deconnexion_info(friend_lst){
-	console.log('deconexion info envoyee')
+function deconnexion_info(friend_lst) {
 	friend_lst.forEach(friend => {
-		console.log("friend_username: " + friend)
 		socket.send(JSON.stringify({
 			command: 'connexion_info',
 			friend_username: friend,
@@ -328,7 +317,6 @@ function logout(){
 					deconnexion_info(data.friend_lst)
 				socket.close()
 				socket = null
-				console.log("websocket close")
 			}
 			closeChatSocket()
 			closeMatchmakingSocket()
@@ -477,7 +465,7 @@ function loadChangeAvatar() {
             const doc = parser.parseFromString(html, 'text/html');
             const links = doc.querySelectorAll('a'); // Récupère tous les fichiers listés
             const avatarContainer = document.getElementById('avatar-container');
-			avatarContainer.innerHTML = '' // Vider le container
+			avatarContainer.innerHTML = ''
             links.forEach(link => {
 				const href = link.getAttribute('href');
                 if (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg')) {
@@ -523,7 +511,6 @@ function handleFormChangeAvatar() {
     }
 
     const newAvatar = selectedImg.src.replace(window.location.origin, '');
-	console.log("newAvatar : ", newAvatar);
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     fetch('/api/change-avatar/', {
@@ -586,12 +573,11 @@ function get_stats() {
 function sendFriendRequest() {
 	const username = document.getElementById('AddFriend_input').value;
 	document.getElementById('AddFriend_input').value = '';
-	console.log('Sending friend request to:', username);
     fetch('/api/friend-request/', {
         method: 'POST',
         headers: {
 			'Content-Type': 'application/json',
-            'X-CSRFToken': Get_Cookie('csrftoken') // CSRF token
+            'X-CSRFToken': Get_Cookie('csrftoken')
         },
         body: JSON.stringify({ receiver_username: username })
     })
@@ -665,7 +651,9 @@ function InitializeWebsocket(){
 				alert(ok_msg);
 				const appDiv = document.getElementById("app");
 				loadTemplate(appDiv, "Game");
-				initAll(true, data.sender_username)
+				appDiv.className = "container-md col-md-10 py-2 px-3 mt-4 mb-1 div-empty";
+				blockage = true;
+				initAll(true, data.sender_username);
 			}
 			else
 				alert(no_msg);
@@ -673,7 +661,6 @@ function InitializeWebsocket(){
 		}
 
 		if (data.type === 'connexion'){
-			console.log('fetch friend list effectue');
 			fetchFriendList(() => {
 				loadfriendinput();
 				loadfriendmessage();
@@ -781,8 +768,6 @@ function respondToInvite(response, sender_username) {
 // Ajouter ou lister les notifications
 // Ajouter avec param (true, message), lister avec param (false, null)
 export function updateNotifications(update_notif_nb, message){
-	console.log('displayNotification called')
-	console.log("message: " + message)
 	fetch('/api/notifications/', {
 		method: 'POST',
 		headers: {
@@ -798,7 +783,6 @@ export function updateNotifications(update_notif_nb, message){
 	.then(data => {
 		const badge_notif = Array.from(document.getElementsByClassName("notif_nb"));
 		if (data.update_notif_nb){
-			console.log("badge mit en place")
 			badge_notif.forEach(badge => {
 				badge.style.display = 'inline'
 				badge.textContent = data.notif_nb
@@ -806,9 +790,8 @@ export function updateNotifications(update_notif_nb, message){
 			return
 		}
 		if (data.success){
-			console.log("notif success")
 			const notificationList = document.querySelector('#lst_notif ul');
-			notificationList.innerHTML = ''; // Supprime tous les <li>
+			notificationList.innerHTML = '';
 			data.messages.forEach(message => {
 				const newNotification = document.createElement('li');
 				newNotification.classList.add('list-group-item');
@@ -821,9 +804,8 @@ export function updateNotifications(update_notif_nb, message){
 			});
 		}
 		else{
-			console.log("aucune notif")
 			const notificationList = document.querySelector('#lst_notif ul');
-			notificationList.innerHTML = ''; // Supprime tous les <li>
+			notificationList.innerHTML = '';
 			const newNotification = document.createElement('li');
 			newNotification.classList.add('list-group-item');
 			newNotification.textContent = data.message;

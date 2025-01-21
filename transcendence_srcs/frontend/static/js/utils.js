@@ -146,11 +146,10 @@ export function AppendTemplateFriends(appDiv, friend) {
 	const img = tempDiv.querySelector("img");
 	if (friend.status == "pending")
 		button.classList.add('btn-warning');
-	else{
+	else
 		button.classList.add('btn-light');
-		span.textContent = friend.username;
-		img.src = friend.avatar;
-	}
+	span.textContent = friend.username;
+	img.src = friend.avatar;
 	if (friend.is_connected == true)
 		img.classList.add('border-green');
 	else
@@ -176,7 +175,6 @@ export function closeChatSocket() {
 	if (chatSocket){
 		chatSocket.close();
 		chatSocket = null;
-		console.log("Chat websocket close")
 	}
 }
 
@@ -215,18 +213,13 @@ export function showSuccessModal() {
 	var modalElement = document.getElementById('successModal');
     var successModal = new bootstrap.Modal(modalElement);
 
-    // Supprimer aria-hidden et déplacer le focus sur la modale
     modalElement.removeAttribute('aria-hidden');
     modalElement.querySelector('.modal-content').focus();
-
-    // Afficher la modale
     successModal.show();
-
-	// Disparaît après 3 secondes (3000 ms)
 	setTimeout(function() {
 		successModal.hide();
 		modalElement.setAttribute('aria-hidden', 'true');
-	}, 3000); // 3000 ms = 3 secondes
+	}, 3000);
 }
 
 export function refreshCSRFToken() {
@@ -284,7 +277,6 @@ export function loadfriendinput() {
 			});
 			// Inviter l'ami a jouer
 			document.getElementById("inviteBtn").addEventListener('click', () => {
-				console.log("btn trouve")
 				if (socket){
 					const lang = Get_Cookie("language")
 					let message = null;
@@ -527,7 +519,6 @@ function respondToRequest(action) {
 			message = err_msg
         alert(message);
 		fetchFriendList(() => {
-			console.log(friendship_lst);
 			loadfriendinput();
 			loadfriendmessage();
 		});
@@ -594,9 +585,8 @@ function initializeChatWebSocket(roomId) {
 		const lang = Get_Cookie("language")
         chatSocket.send(JSON.stringify({message: message, lang: lang}));
 		document.getElementById('chat-message-form').reset();
-	})
+	});
 
-    // Gestion des erreurs
     chatSocket.onclose = function (e) {
         console.error('WebSocket connection closed');
     };

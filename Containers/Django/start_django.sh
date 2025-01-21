@@ -7,8 +7,8 @@ function wait_for_postgres() {
     done
 }
 
-wait_for_postgres
-# sleep 20
+# wait_for_postgres
+sleep 30
 
 export DJANGO_SETTINGS_MODULE=transcendence_srcs.settings
 
