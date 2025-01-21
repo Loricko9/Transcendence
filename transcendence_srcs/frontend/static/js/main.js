@@ -131,6 +131,8 @@ function router(){
 					appDiv.className = "container col-md-6 py-2 px-3 my-5";
 					loadChangePassword();
 				}
+				if (isAuthenticated && is_user_42)
+					alert("You can't change your password because you are a 42 user.");
 				else
 					redirect_to("/");
 				break;
@@ -140,6 +142,8 @@ function router(){
 					appDiv.className = "container col-md-10 py-2 px-3 my-5";
 					loadChangeAvatar();
 				}
+				if (isAuthenticated && is_user_42)
+					alert("You can't change your avatar because you are a 42 user.");
 				else
 					redirect_to("/");
 				break;
@@ -366,6 +370,7 @@ function loadIndexLogin() {
 	document.getElementById('username_login').innerHTML = document.getElementById('user_connected').innerText;
 	fetchFriendList();
 	handle_datalink();
+	closeChatSocket();
 	document.getElementById("Openfriends_menu").addEventListener("click", function() {
 		document.getElementById("friends_menu").classList.add("open");
 	});

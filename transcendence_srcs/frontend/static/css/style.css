@@ -189,7 +189,6 @@ footer a:hover {
 .message {
 	display: inline-block;
 	max-width: auto;
-	white-space: pre;
 }
 
 #friends_menu {
