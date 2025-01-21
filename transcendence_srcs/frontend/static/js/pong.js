@@ -279,8 +279,6 @@ export function initAll(invite_bool, invite_username) {
 				RoomUser3Info.style.backgroundColor = 'blue';
 			} else if (PVPMode === 'Tournament') {} 
 		} else if (menu === 'Game') {
-			if (timer)
-				clearTimeout(timer);
 			Ball.style.display = 'block';
 			PaddingLeft.style.display = 'block';
 			PaddingRight.style.display = 'block';
@@ -424,7 +422,6 @@ export function initAll(invite_bool, invite_username) {
 		document.getElementById("WinnerName").style.display = "block";
 		document.getElementById("WinnerIcon").style.display = "block";
 		if (scoreleftplayer === 3 || scorerightplayer === 3) {
-			delete_MatchGroup()
 			softReset();
 			gameStarted = false;
 			if (PVPMode === 'none' || PVPMode === '1vs1') {
@@ -751,8 +748,12 @@ export function initAll(invite_bool, invite_username) {
 				RoomUser3Info.style.display = 'block';
 				searchUser(data.member_username, 'user3')
 			}
-			if (data.playerNb === data.maxPlayer)
+			if (data.playerNb === data.maxPlayer){
 				waitingPlayer.style.display = 'none';
+				delete_MatchGroup()
+				if (timer)
+					clearTimeout(timer);
+			}
 		};
 
 		MatchmakingSocket.onclose = function () {
