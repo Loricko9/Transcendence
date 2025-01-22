@@ -214,7 +214,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 # EMAIL_HOST_PASSWORD = 'd7d1ca68991db2'
 # EMAIL_PORT = '2525'
 DEFAULT_FROM_EMAIL = os.environ.get('ADMIN_EMAIL')
-SITE_URL = 'https://transcendence-42.fr'
+SITE_URL = 'https://localhost'
 
 
 DEFAULT_CHARSET = 'utf-8'
@@ -228,9 +228,5 @@ ASGI_APPLICATION = 'transcendence_srcs.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
 		'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "CONFIG": {
-        #     "hosts": [("redis", 6379)],
-        # },
     },
 }

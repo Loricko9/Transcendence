@@ -22,8 +22,6 @@ export function initAll(invite_bool, invite_username) {
 	const Delimiter = document.getElementById('delimiter');
 	const counterElement = document.getElementById('counter');
 	const RoomHostInfo = document.getElementById('Host');
-	// const RoomUserInviteInfo = document.getElementById('UserInvite');
-	// const RoomWait = document.getElementById('wait');
 	const RoomUser1Info = document.getElementById('User1');
 	const RoomUser2Info = document.getElementById('User2');
 	const RoomUser3Info = document.getElementById('User3');
